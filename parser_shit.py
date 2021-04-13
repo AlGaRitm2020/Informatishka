@@ -47,6 +47,7 @@ def getTaskByNum(num):
     for i in range(len(tasks)):
         tasks[i] = tasks[i].find('script')
     print(4)
+    '''
     for i in range(len(tasks)):
         txt = str(tasks[i])
         if 'img' in txt:
@@ -70,6 +71,7 @@ def getTaskByNum(num):
                 id = j
                 break
         tasks[i].append(txt[id:id1])
+    '''
     print(5)
     for i in range(len(answers)):
         answers[i] = answers[i].find('td', class_='answer')
@@ -81,7 +83,14 @@ def getTaskByNum(num):
         id = txt.find("changeImageFilePath") + 21
         id1 = txt.rfind("'")
         answers[i].append(txt[id:id1])
+
+    result_tasks = []
+    import task_parsers
+    if num == 1:
+        for i in range(len(tasks)):
+            result_tasks.append(task_parsers.first(tasks[i]))
     # you can code here. Don't edit answers and img_adresses list, i don't want to break this shit down. Also don't touch everything before this comment
+    # <sup> менять на ^, остальные теги удалять
     print(tasksCount)
     num = random.randint(0, tasksCount - 1)
     return tasks[num], answers[num], img_adresses[num]
