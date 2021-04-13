@@ -81,6 +81,7 @@ def getTaskByNum(num):
         id = txt.find("changeImageFilePath") + 21
         id1 = txt.rfind("'")
         answers[i].append(txt[id:id1])
+    # you can code here. Don't edit answers and img_adresses list, i don't want to break this shit down. Also don't touch everything before this comment
     print(tasksCount)
     num = random.randint(0, tasksCount - 1)
     return tasks[num], answers[num], img_adresses[num]
