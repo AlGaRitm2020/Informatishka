@@ -34,7 +34,6 @@ def getTaskByNum(num):
     cats = cat_dict[num]
     URL = 'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={}&{}'.format(num, cats)
     p = requests.get(URL)
-    print(3)
     soup = BeautifulSoup(p.text, 'html.parser')
     center = soup.find('div', class_='center')
     tasksCount = int(str(center.findAll('p')[1])[20:22])
@@ -42,12 +41,13 @@ def getTaskByNum(num):
     tasks = tasks_table.findAll('tr')[::2]
     answers = tasks_table.findAll('tr')[1::2]
     img_adresses = []
+    excel_adresses = []
+    word_adresses = []
     for i in range(len(tasks)):
         tasks[i] = tasks[i].find('td', class_='topicview')
     for i in range(len(tasks)):
         tasks[i] = tasks[i].find('script')
-    print(4)
-    '''
+    # making img_adresses list
     for i in range(len(tasks)):
         txt = str(tasks[i])
         if 'img' in txt:
@@ -60,19 +60,7 @@ def getTaskByNum(num):
             img_adresses.append(txt[ind:ind1])
         else:
             img_adresses.append(None)
-        tasks[i] = []
-        id1 = txt.rfind("'")
-        cnt = 0
-        id = 0
-        for j in range(len(txt)):
-            if txt[j] == "'":
-                cnt += 1
-            if cnt == 3:
-                id = j
-                break
-        tasks[i].append(txt[id:id1])
-    '''
-    print(5)
+    # making answers list
     for i in range(len(answers)):
         answers[i] = answers[i].find('td', class_='answer')
     for i in range(len(answers)):
@@ -83,14 +71,37 @@ def getTaskByNum(num):
         id = txt.find("changeImageFilePath") + 21
         id1 = txt.rfind("'")
         answers[i].append(txt[id:id1])
-
+    # making excel_files list
+    for i in range(len(tasks)):
+        txt = str(tasks[i])
+        if '<a' in txt and 'xls' in txt:
+            ind = txt.find('<a') + 9
+            ind1 = 0
+            for j in range(ind, len(txt)):
+                if txt[j] == '"':
+                    ind1 = j
+                    break
+            excel_adresses.append(txt[ind:ind1])
+        else:
+            excel_adresses.append(None)
+    # making word_files list
+    for i in range(len(tasks)):
+        txt = str(tasks[i])
+        if '<a' in txt and 'docx' in txt:
+            ind = txt.find('<a') + 9
+            ind1 = 0
+            for j in range(ind, len(txt)):
+                if txt[j] == '"':
+                    ind1 = j
+                    break
+            word_adresses.append(txt[ind:ind1])
+        else:
+            word_adresses.append(None)
     result_tasks = []
     import task_parsers
-    if num == 1:
-        for i in range(len(tasks)):
-            result_tasks.append(task_parsers.first(tasks[i]))
+    for i in range(len(tasks)):
+        result_tasks.append(task_parsers.get_some_bullshit(tasks[i]))
     # you can code here. Don't edit answers and img_adresses list, i don't want to break this shit down. Also don't touch everything before this comment
     # <sup> менять на ^, остальные теги удалять
-    print(tasksCount)
     num = random.randint(0, tasksCount - 1)
-    return tasks[num], answers[num], img_adresses[num]
+    return result_tasks[num], answers[num], img_adresses[num], excel_adresses[num], word_adresses[num]

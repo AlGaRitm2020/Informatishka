@@ -33,36 +33,47 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def practice(update: Update, context: CallbackContext):
     if update.message.text == '/stop':
         return ConversationHandler.END
-    try:
-        nom = update.message.text
-        print(1)
-        print(nom)
-        if int(nom) < 1 or int(nom) > 27:
-            update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
-            return 1
-        print(nom)
-        info = parser_shit.getTaskByNum(nom)
-        print(nom)
-        answer = info[1]
-        task = info[0]
-        img_adr = info[2]
-        print(1)
-        global ANSWER
-        ANSWER = answer[0]
-        print(ANSWER)
-        update.message.reply_text(task[0])
-        if img_adr:
-            print(img_adr)
-            import bullshit
-            bytestring = bullshit.photo(img_adr)
-            with open('imgs/task.png', 'wb') as imagefile:
-                imagefile.write(bytestring)
-            file = open("imgs/task.png", "rb")
-            update.message.reply_photo(file)
-        return 2
-    except Exception:
-        update.message.reply_text('Попробуйте еще раз')
+    nom = update.message.text
+    if int(nom) < 1 or int(nom) > 27:
+        update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
         return 1
+    info = parser_shit.getTaskByNum(nom)
+    answer = info[1]
+    task = info[0]
+    img_adr = info[2]
+    xls_adr = info[3]
+    doc_adr = info[4]
+    global ANSWER
+    ANSWER = answer[0]
+    update.message.reply_text(task)
+    if img_adr:
+        print(img_adr)
+        import bullshit
+        bytestring = bullshit.photo(img_adr)
+        with open('imgs/task.png', 'wb') as imagefile:
+            imagefile.write(bytestring)
+        file = open("imgs/task.png", "rb")
+        update.message.reply_photo(file)
+    if xls_adr:
+        print(xls_adr)
+        import bullshit
+        bytestring = bullshit.excel(xls_adr)
+        with open('imgs/file.xlsx', 'wb') as imagefile:
+            imagefile.write(bytestring)
+        file = open("imgs/file.xlsx", "rb")
+        update.message.reply_document(file)
+    if doc_adr:
+        import bullshit
+        print(doc_adr)
+        bytestring = bullshit.word(doc_adr)
+        with open('imgs/file.docx', 'wb') as imagefile:
+            imagefile.write(bytestring)
+        file = open("imgs/file.docx", "rb")
+        update.message.reply_document(file)
+    return 2
+    # except Exception:
+    #   update.message.reply_text('Попробуйте еще раз')
+    #  return 1
 
 
 def theory(update, context):
