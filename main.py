@@ -32,54 +32,64 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def practice(update: Update, context: CallbackContext):
     if update.message.text == '/stop':
+        update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
+Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
+Введите команду /practice, чтобы начать решать задания. \
+Чтобы смотреть теорию, напишите /theory')
         return ConversationHandler.END
-    nom = update.message.text
-    if int(nom) < 1 or int(nom) > 27:
-        update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+    try:
+        nom = update.message.text
+        if int(nom) < 1 or int(nom) > 27:
+            update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+            return 1
+        info = parser_shit.getTaskByNum(nom)
+        answer = info[1]
+        task = info[0]
+        img_adr = info[2]
+        xls_adr = info[3]
+        doc_adr = info[4]
+        global ANSWER
+        ANSWER = answer[0]
+        update.message.reply_text(task)
+        if img_adr:
+            print(img_adr)
+            import bullshit
+            bytestring = bullshit.photo(img_adr)
+            with open('imgs/task.png', 'wb') as imagefile:
+                imagefile.write(bytestring)
+            file = open("imgs/task.png", "rb")
+            update.message.reply_photo(file)
+        if xls_adr:
+            print(xls_adr)
+            import bullshit
+            bytestring = bullshit.excel(xls_adr)
+            with open('imgs/file.xlsx', 'wb') as imagefile:
+                imagefile.write(bytestring)
+            file = open("imgs/file.xlsx", "rb")
+            update.message.reply_document(file)
+        if doc_adr:
+            import bullshit
+            print(doc_adr)
+            bytestring = bullshit.word(doc_adr)
+            with open('imgs/file.docx', 'wb') as imagefile:
+                imagefile.write(bytestring)
+            file = open("imgs/file.docx", "rb")
+            update.message.reply_document(file)
+        return 2
+    except Exception:
+        update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
         return 1
-    info = parser_shit.getTaskByNum(nom)
-    answer = info[1]
-    task = info[0]
-    img_adr = info[2]
-    xls_adr = info[3]
-    doc_adr = info[4]
-    global ANSWER
-    ANSWER = answer[0]
-    update.message.reply_text(task)
-    if img_adr:
-        print(img_adr)
-        import bullshit
-        bytestring = bullshit.photo(img_adr)
-        with open('imgs/task.png', 'wb') as imagefile:
-            imagefile.write(bytestring)
-        file = open("imgs/task.png", "rb")
-        update.message.reply_photo(file)
-    if xls_adr:
-        print(xls_adr)
-        import bullshit
-        bytestring = bullshit.excel(xls_adr)
-        with open('imgs/file.xlsx', 'wb') as imagefile:
-            imagefile.write(bytestring)
-        file = open("imgs/file.xlsx", "rb")
-        update.message.reply_document(file)
-    if doc_adr:
-        import bullshit
-        print(doc_adr)
-        bytestring = bullshit.word(doc_adr)
-        with open('imgs/file.docx', 'wb') as imagefile:
-            imagefile.write(bytestring)
-        file = open("imgs/file.docx", "rb")
-        update.message.reply_document(file)
-    return 2
-    # except Exception:
-    #   update.message.reply_text('Попробуйте еще раз')
-    #  return 1
 
 
 def theory(update, context):
     if update.message.text == '/stop':
+        update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
+        Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
+        Введите команду /practice, чтобы начать решать задания. \
+        Чтобы смотреть теорию, напишите /theory')
         return ConversationHandler.END
-    themes_list = ['https://code-enjoy.ru/ege_po_informatike_2021_zadanie_1_osobie_tochki/',
+    try:
+        themes_list = ['https://code-enjoy.ru/ege_po_informatike_2021_zadanie_1_osobie_tochki/',
                    'https://code-enjoy.ru/ege_po_informatike_zadanie_2_moshneyshiy_metod/',
                    'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_3_baza_dannih/',
                    'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_4_uslovie_fano/',
@@ -106,13 +116,23 @@ def theory(update, context):
                    'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_25_obrabotka_celochislennoy_informacii/',
                    'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_26_sortirovka/',
                    'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_27_zakluchitelnoye/']
-    id = int(update.message.text)
-    update.message.reply_text('По этой теме можешь почитать теорию по ссылке:\
+        id = int(update.message.text)
+        update.message.reply_text('По этой теме можешь почитать теорию по ссылке:\
 {}'.format(themes_list[id - 1]))
-    return ConversationHandler.END
+        update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory')
+        return ConversationHandler.END
+    except Exception:
+        update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
+        return 1
 
 
 def check(update: Update, context: CallbackContext):
+    if update.message.text == '/stop':
+        update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
+    Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
+    Введите команду /practice, чтобы начать решать задания. \
+    Чтобы смотреть теорию, напишите /theory')
+        return ConversationHandler.END
     global ANSWER
     ANSWER.lstrip()
     ANSWER.rstrip()
