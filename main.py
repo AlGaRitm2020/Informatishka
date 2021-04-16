@@ -40,6 +40,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def practice(update: Update, context: CallbackContext):
+    global TASKNUM
     if update.message.text == '/stop':
         update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
 Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
@@ -160,7 +161,6 @@ def check(update: Update, context: CallbackContext):
     user_answer.rstrip()
     if str(ANSWER) == str(user_answer):
         update.message.reply_text('Вы аблолютно правы. Ответ: {}'.format(user_answer))
-        global TASKNUM
         status = sql_work.add_score(TASKNUM, 1, update.message.chat_id)
         if not status:
             update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.")

@@ -126,8 +126,8 @@ def getTaskByNum(num):
                     dele = ''
         result_tasks[i] = new_str
 
-    for i in range(len(result_tasks)):
-        print(result_tasks[i])
+    # for i in range(len(result_tasks)):
+    #   print(result_tasks[i])
 
     num = random.randint(0, tasksCount - 1)
     return result_tasks[num], answers[num], img_adresses[num], excel_adresses[num], word_adresses[num]
