@@ -1,9 +1,11 @@
 import logging
-import parser_shit
-import bullshit
-import sql_work
-from telegram import Update, ForceReply, ReplyKeyboardMarkup, ReplyKeyboardRemove
+
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+
+import bullshit
+import parser_shit
+import sql_work
 from config import TOKEN
 
 # Enable logging
@@ -16,18 +18,22 @@ logger = logging.getLogger(__name__)
 
 
 def start(update: Update, context: CallbackContext):
+    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
 Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
 Введите команду /practice, чтобы начать решать задания. \
-Чтобы смотреть теорию, напишите /theory')
+Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
 
 
 def register(update: Update, context: CallbackContext):
+    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     result = sql_work.register(update.message.from_user.name, update.message.chat_id)
     if not result:
-        update.message.reply_text("Вы уже зарегистрированы")
+        update.message.reply_text("Вы уже зарегистрированы", reply_markup=markup)
     else:
-        update.message.reply_text("Вы успешно зарегистрировались.")
+        update.message.reply_text("Вы успешно зарегистрировались.", reply_markup=markup)
 
 
 def conv_begin(update: Update, context: CallbackContext):
@@ -36,16 +42,20 @@ def conv_begin(update: Update, context: CallbackContext):
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Привет! Напиши /start, чтобы начать работу')
+    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    update.message.reply_text('Привет! Напиши /start, чтобы начать работу', reply_markup=markup)
 
 
 def practice(update: Update, context: CallbackContext):
     global TASKNUM
     if update.message.text == '/stop':
+        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
 Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
 Введите команду /practice, чтобы начать решать задания. \
-Чтобы смотреть теорию, напишите /theory')
+Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
         return ConversationHandler.END
     try:
         nom = update.message.text
@@ -61,9 +71,9 @@ def practice(update: Update, context: CallbackContext):
         doc_adr = info[4]
         global ANSWER
         ANSWER = answer[0]
+        print(ANSWER)
         update.message.reply_text(task)
         if img_adr:
-            print(img_adr)
             import bullshit
             bytestring = bullshit.photo(img_adr)
             with open('imgs/task.png', 'wb') as imagefile:
@@ -71,7 +81,6 @@ def practice(update: Update, context: CallbackContext):
             file = open("imgs/task.png", "rb")
             update.message.reply_photo(file)
         if xls_adr:
-            print(xls_adr)
             import bullshit
             bytestring = bullshit.excel(xls_adr)
             with open('imgs/file.xlsx', 'wb') as imagefile:
@@ -80,7 +89,6 @@ def practice(update: Update, context: CallbackContext):
             update.message.reply_document(file)
         if doc_adr:
             import bullshit
-            print(doc_adr)
             bytestring = bullshit.word(doc_adr)
             with open('imgs/file.docx', 'wb') as imagefile:
                 imagefile.write(bytestring)
@@ -93,19 +101,25 @@ def practice(update: Update, context: CallbackContext):
 
 
 def stats(update, context):
+    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
-        update.message.reply_text("Вы не можете смотреть свою статистику, не зарегистрировавшись")
+        update.message.reply_text("Вы не можете смотреть свою статистику, не зарегистрировавшись", reply_markup=markup)
         return
     for item in result:
-        update.message.reply_text("На задаче {} у вас {} успешных решений за последнюю неделю.".format(item, result[item]))
+        update.message.reply_text(
+            "На задаче {} у вас {} успешных решений за последнюю неделю.".format(item, result[item]), reply_markup=markup)
+
 
 def theory(update, context):
     if update.message.text == '/stop':
+        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
         Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
         Введите команду /practice, чтобы начать решать задания. \
-        Чтобы смотреть теорию, напишите /theory')
+        Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
         return ConversationHandler.END
     try:
         themes_list = ['https://code-enjoy.ru/ege_po_informatike_2021_zadanie_1_osobie_tochki/',
@@ -136,12 +150,17 @@ def theory(update, context):
                        'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_26_sortirovka/',
                        'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_27_zakluchitelnoye/']
         id = int(update.message.text)
+        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text('По этой теме можешь почитать теорию по ссылке:\
 {}'.format(themes_list[id - 1]))
-        update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory')
+        update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory',
+                                  reply_markup=markup)
         return ConversationHandler.END
     except Exception:
-        update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
+        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        update.message.reply_text('Что-то пошло не так, попробуйте еще раз', reply_markup=markup)
         return 1
 
 
@@ -159,18 +178,22 @@ def check(update: Update, context: CallbackContext):
     user_answer = update.message.text
     user_answer.lstrip()
     user_answer.rstrip()
+    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     if str(ANSWER) == str(user_answer):
-        update.message.reply_text('Вы аблолютно правы. Ответ: {}'.format(user_answer))
+        update.message.reply_text('Вы аблолютно правы. Ответ: {}'.format(user_answer), reply_markup=markup)
         status = sql_work.add_score(TASKNUM, 1, update.message.chat_id)
         if not status:
-            update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.")
+            update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.",
+                                      reply_markup=markup)
         return ConversationHandler.END
     else:
         update.message.reply_text('Ваш ответ неверен. Ответ: {}. \
-Чтобы решать дальше напшите /practice'.format(ANSWER))
+Чтобы решать дальше напшите /practice'.format(ANSWER), reply_markup=markup)
         status = sql_work.add_score(TASKNUM, 0, update.message.chat_id)
         if not status:
-            update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.")
+            update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.",
+                                      reply_markup=markup)
         return ConversationHandler.END
 
 
