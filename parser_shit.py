@@ -31,7 +31,6 @@ def getTaskByNum(num):
         '26': 'cat160=on',
         '27': 'cat161=on',
     }
-    print(54)
     cats = cat_dict[num]
     URL = 'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={}&{}'.format(num, cats)
     p = requests.get(URL)
@@ -110,7 +109,6 @@ def getTaskByNum(num):
         for j in range(len(result_tasks[i])):
 
             if result_tasks[i][j] == '<':
-                print(1)
                 flag = True
 
             if flag:
