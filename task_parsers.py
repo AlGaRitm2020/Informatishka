@@ -29,4 +29,3 @@ def get_some_bullshit(text):
 
 scnd = "document.write( '(№&nbsp;3545) ' ); \
   document.write( changeImageFilePath('(Е. Джобс) Ниже представлены два фрагмента таблиц из базы данных о жителях микрорайона.  Укажите в ответе ID человека, у которого максимальное количество племянников и племянниц. Племянник или племянница&nbsp;&ndash; дети родного брата или родной сестры.<br/><img src='3545.gif'>') );"
-print(get_some_bullshit(scnd))
