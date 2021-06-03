@@ -3,7 +3,7 @@ import logging
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 
-import bullshit
+import get_files
 import parser_shit
 import sql_work
 from config import TOKEN
@@ -74,22 +74,22 @@ def practice(update: Update, context: CallbackContext):
         print(ANSWER)
         update.message.reply_text(task)
         if img_adr:
-            import bullshit
-            bytestring = bullshit.photo(img_adr)
+            import get_files
+            bytestring = get_files.get_photo(img_adr)
             with open('imgs/task.png', 'wb') as imagefile:
                 imagefile.write(bytestring)
             file = open("imgs/task.png", "rb")
             update.message.reply_photo(file)
         if xls_adr:
-            import bullshit
-            bytestring = bullshit.excel(xls_adr)
+            import get_files
+            bytestring = get_files.get_excel(xls_adr)
             with open('imgs/file.xlsx', 'wb') as imagefile:
                 imagefile.write(bytestring)
             file = open("imgs/file.xlsx", "rb")
             update.message.reply_document(file)
         if doc_adr:
-            import bullshit
-            bytestring = bullshit.word(doc_adr)
+            import get_files
+            bytestring = get_files.get_word(doc_adr)
             with open('imgs/file.docx', 'wb') as imagefile:
                 imagefile.write(bytestring)
             file = open("imgs/file.docx", "rb")
@@ -198,7 +198,7 @@ def check(update: Update, context: CallbackContext):
 
 
 def send_photo(update: Update, context: CallbackContext) -> None:
-    bytestring = bullshit.photo("60.gif")
+    bytestring = get_files.get_photo("60.gif")
     with open('imgs/task.png', 'wb') as imagefile:
         imagefile.write(bytestring)
     file = open("imgs/task.png", "rb")
