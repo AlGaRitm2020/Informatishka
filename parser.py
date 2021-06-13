@@ -1,4 +1,4 @@
-def getTaskByNum(num):
+def get_task_by_num(num):
     from bs4 import BeautifulSoup
     import requests
     import random
@@ -31,23 +31,23 @@ def getTaskByNum(num):
         '26': 'cat160=on',
         '27': 'cat161=on',
     }
-    cats = cat_dict[num]
-    URL = 'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={}&{}'.format(num, cats)
-    p = requests.get(URL)
-    soup = BeautifulSoup(p.text, 'html.parser')
+    category = cat_dict[num]
+    URL = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={num}&{category}'
+    response = requests.get(URL)
+    soup = BeautifulSoup(response.text, 'html.parser')
     center = soup.find('div', class_='center')
-    tasksCount = int(str(center.findAll('p')[1])[20:22])
+    tasks_count = int(str(center.findAll('p')[1])[20:22])
     tasks_table = center.find('table', class_='vartopic')
     tasks = tasks_table.findAll('tr')[::2]
     answers = tasks_table.findAll('tr')[1::2]
-    img_adresses = []
-    excel_adresses = []
-    word_adresses = []
+    img_addresses = []
+    excel_addresses = []
+    word_addresses = []
     for i in range(len(tasks)):
         tasks[i] = tasks[i].find('td', class_='topicview')
-    for i in range(len(tasks)):
         tasks[i] = tasks[i].find('script')
-    # making img_adresses list
+
+    # making img_addresses list
     for i in range(len(tasks)):
         txt = str(tasks[i])
         if 'img' in txt:
@@ -57,20 +57,19 @@ def getTaskByNum(num):
                 if txt[j] == '"':
                     ind1 = j
                     break
-            img_adresses.append(txt[ind:ind1])
+            img_addresses.append(txt[ind:ind1])
         else:
-            img_adresses.append(None)
+            img_addresses.append(None)
+
     # making answers list
     for i in range(len(answers)):
-        answers[i] = answers[i].find('td', class_='answer')
-    for i in range(len(answers)):
         answers[i] = answers[i].find('script')
-    for i in range(len(answers)):
-        txt = str(answers[i])
-        answers[i] = []
-        id = txt.find("changeImageFilePath") + 21
-        id1 = txt.rfind("'")
-        answers[i].append(txt[id:id1])
+        script_txt = str(answers[i])
+        left_border_index = script_txt.find("'") + 1
+        right_border_index = script_txt.rfind("'")
+        answers[i] = [script_txt[left_border_index:right_border_index]]
+
+
     # making excel_files list
     for i in range(len(tasks)):
         txt = str(tasks[i])
@@ -81,9 +80,9 @@ def getTaskByNum(num):
                 if txt[j] == '"':
                     ind1 = j
                     break
-            excel_adresses.append(txt[ind:ind1])
+            excel_addresses.append(txt[ind:ind1])
         else:
-            excel_adresses.append(None)
+            excel_addresses.append(None)
     # making word_files list
     for i in range(len(tasks)):
         txt = str(tasks[i])
@@ -94,9 +93,9 @@ def getTaskByNum(num):
                 if txt[j] == '"':
                     ind1 = j
                     break
-            word_adresses.append(txt[ind:ind1])
+            word_addresses.append(txt[ind:ind1])
         else:
-            word_adresses.append(None)
+            word_addresses.append(None)
     result_tasks = []
     import task_parsers
     for i in range(len(tasks)):
@@ -127,5 +126,5 @@ def getTaskByNum(num):
     # for i in range(len(result_tasks)):
     #   print(result_tasks[i])
 
-    num = random.randint(0, tasksCount - 1)
-    return result_tasks[num], answers[num], img_adresses[num], excel_adresses[num], word_adresses[num]
+    num = random.randint(0, tasks_count - 1)
+    return result_tasks[num], answers[num], img_addresses[num], excel_addresses[num], word_addresses[num]
