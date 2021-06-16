@@ -1,3 +1,6 @@
+from pprint import pprint
+
+
 def get_task_by_num(num):
     from bs4 import BeautifulSoup
     import requests
@@ -40,7 +43,7 @@ def get_task_by_num(num):
     tasks_table = center.find('table', class_='vartopic')
 
     tasks = tasks_table.findAll('tr')[::2]
-    print('tasks 0 text', tasks[3].find('img'), 'tasks 0 text')
+    # print('tasks 0 text', tasks[3].find('img'), 'tasks 0 text')
     answers = tasks_table.findAll('tr')[1::2]
     img_addresses = []
     excel_addresses = []
@@ -124,11 +127,18 @@ def get_task_by_num(num):
                 else:
                     new_str = new_str.replace(dele, '"')
                     dele = ''
+
+
+
+
         result_tasks[i] = new_str
+
+    for i in result_tasks:
+        print(i)
 
     # for i in range(len(result_tasks)):
     #   print(result_tasks[i])
 
     num = random.randint(0, tasks_count - 1)
     return result_tasks[num], answers[num], img_addresses[num], excel_addresses[num], word_addresses[num]
-get_task_by_num('5')
+get_task_by_num('6')

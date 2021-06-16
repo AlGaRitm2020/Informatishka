@@ -180,8 +180,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.get_task_by_num" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.test_task_parser" />
         <item itemvalue="Python.task_parsers" />
         <item itemvalue="Python.sql_work" />
@@ -227,7 +227,14 @@
       <option name="project" value="LOCAL" />
       <updated>1623846037669</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="deleted tags in message">
+      <created>1623847972456</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1623847972456</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -249,6 +256,7 @@
     <MESSAGE value="created requirements.txt" />
     <MESSAGE value="created test_task_parser.py" />
     <MESSAGE value="refactored variables in task_parsers.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactored variables in task_parsers.py" />
+    <MESSAGE value="deleted tags in message" />
+    <option name="LAST_COMMIT_MESSAGE" value="deleted tags in message" />
   </component>
 </project>
