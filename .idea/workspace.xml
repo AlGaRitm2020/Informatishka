@@ -21,7 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="47fd3aac-b187-46fd-95eb-5f2c5f3f4d16" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/task_parsers.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_parsers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get_task_by_num.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_task_by_num.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +63,28 @@
       <recent name="C:\Users\student\PycharmProjects\Informatishka_2\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test_task_parser">
+  <component name="RunManager" selected="Python.get_task_by_num">
+    <configuration name="get_task_by_num" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="final_proj" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/get_task_by_num.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="final_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -155,12 +176,14 @@
       <item itemvalue="Python.sql_work" />
       <item itemvalue="Python.task_parsers" />
       <item itemvalue="Python.test_task_parser" />
+      <item itemvalue="Python.get_task_by_num" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.get_task_by_num" />
         <item itemvalue="Python.test_task_parser" />
         <item itemvalue="Python.task_parsers" />
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.sql_work" />
       </list>
     </recent_temporary>
@@ -197,7 +220,14 @@
       <option name="project" value="LOCAL" />
       <updated>1623845144034</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="refactored variables in task_parsers.py">
+      <created>1623846037669</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1623846037669</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -218,6 +248,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="created requirements.txt" />
     <MESSAGE value="created test_task_parser.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="created test_task_parser.py" />
+    <MESSAGE value="refactored variables in task_parsers.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactored variables in task_parsers.py" />
   </component>
 </project>

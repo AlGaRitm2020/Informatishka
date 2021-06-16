@@ -38,7 +38,9 @@ def get_task_by_num(num):
     center = soup.find('div', class_='center')
     tasks_count = int(str(center.findAll('p')[1])[20:22])
     tasks_table = center.find('table', class_='vartopic')
+
     tasks = tasks_table.findAll('tr')[::2]
+    print('tasks 0 text', tasks[3].find('img'), 'tasks 0 text')
     answers = tasks_table.findAll('tr')[1::2]
     img_addresses = []
     excel_addresses = []
@@ -47,7 +49,7 @@ def get_task_by_num(num):
         tasks[i] = tasks[i].find('td', class_='topicview')
         tasks[i] = tasks[i].find('script')
 
-    print(tasks)
+
     # making img_addresses list
     for i in range(len(tasks)):
         txt = str(tasks[i])
@@ -108,13 +110,13 @@ def get_task_by_num(num):
         new_str = result_tasks[i]
         for j in range(len(result_tasks[i])):
 
-            if result_tasks[i][j] == '<':
+            if result_tasks[i][j] == '<' and result_tasks[i][j + 1] != ' ':
                 flag = True
 
             if flag:
                 dele += result_tasks[i][j]
 
-            if result_tasks[i][j] == '>':
+            if result_tasks[i][j] == '>' and result_tasks[i][j - 1] != ' ':
                 flag = False
                 if dele != "<sup>":
                     new_str = new_str.replace(dele, ' ')
@@ -129,3 +131,4 @@ def get_task_by_num(num):
 
     num = random.randint(0, tasks_count - 1)
     return result_tasks[num], answers[num], img_addresses[num], excel_addresses[num], word_addresses[num]
+get_task_by_num('5')
