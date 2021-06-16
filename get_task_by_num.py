@@ -47,6 +47,7 @@ def get_task_by_num(num):
         tasks[i] = tasks[i].find('td', class_='topicview')
         tasks[i] = tasks[i].find('script')
 
+    print(tasks)
     # making img_addresses list
     for i in range(len(tasks)):
         txt = str(tasks[i])
@@ -99,7 +100,7 @@ def get_task_by_num(num):
     result_tasks = []
     import task_parsers
     for i in range(len(tasks)):
-        result_tasks.append(task_parsers.get_some_bullshit(tasks[i]))
+        result_tasks.append(task_parsers.get_all_tasks(tasks[i]))
 
     for i in range(0, len(result_tasks)):
         flag = False
