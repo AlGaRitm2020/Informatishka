@@ -4,7 +4,7 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 
 import get_files
-import parser
+from get_task_by_num import get_task_by_num
 import sql_work
 from config import TOKEN
 
@@ -63,7 +63,7 @@ def practice(update: Update, context: CallbackContext):
             update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
             return 1
         TASKNUM = nom
-        info = parser.get_task_by_num(nom)
+        info = get_task_by_num(nom)
         answer = info[1]
         task = info[0]
         img_adr = info[2]
