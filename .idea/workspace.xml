@@ -20,13 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="47fd3aac-b187-46fd-95eb-5f2c5f3f4d16" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/html_for_test.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_task_parser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_task_by_num.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_task_by_num.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imgs/task.png" beforeDir="false" afterPath="$PROJECT_DIR$/imgs/task.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/task_parsers.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_parsers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/users.sqlite" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +56,12 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Confirmation" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\student\PycharmProjects\Informatishka_2\tests\src" />
+      <recent name="C:\Users\student\PycharmProjects\Informatishka_2\tests" />
+    </key>
   </component>
   <component name="RunManager" selected="Python.test_task_parser">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -189,7 +190,14 @@
       <option name="project" value="LOCAL" />
       <updated>1623842004873</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="created test_task_parser.py">
+      <created>1623845144034</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1623845144034</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -209,6 +217,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="created requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="created requirements.txt" />
+    <MESSAGE value="created test_task_parser.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="created test_task_parser.py" />
   </component>
 </project>
