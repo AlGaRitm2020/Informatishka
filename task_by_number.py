@@ -26,8 +26,8 @@ def get_task_by_number(task_number):
     task_td = task_tr.find('td', class_='topicview')
     task_script = task_td.find('script')
     task_script_text = str(task_script)
-    # making img_addresses list
 
+    # making img_addresses list
     if 'img' in task_script_text:
         begin_index = task_script_text.find('img') + 9
         end_index = 0
@@ -39,14 +39,13 @@ def get_task_by_number(task_number):
     else:
         img_address = None
 
-    # making answers list
-    answer = answer.find('script')
-    script_txt = str(answer)
-    left_border_index = script_txt.find("'") + 1
-    right_border_index = script_txt.rfind("'")
-    answer = [script_txt[left_border_index:right_border_index]]
+    # getting answer
+    answer = str(answer.find('script'))
+    left_border_index = answer.find("'") + 1
+    right_border_index = answer.rfind("'")
+    answer = [answer[left_border_index:right_border_index]]
 
-    # making excel_files list
+    # getting excel file
     if '<a' in task_script_text and 'xls' in task_script_text:
         begin_index = task_script_text.find('<a') + 9
         end_index = 0
@@ -58,7 +57,7 @@ def get_task_by_number(task_number):
     else:
         excel_address = None
 
-    # making word_files list
+    # getting word file
     if '<a' in task_script_text and 'docx' in task_script_text:
         begin_index = task_script_text.find('<a') + 9
         end_index = 0
@@ -75,4 +74,4 @@ def get_task_by_number(task_number):
     return result_task, answer, img_address, excel_address, word_address
 
 
-get_task_by_number('6')
+get_task_by_number('19')

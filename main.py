@@ -71,21 +71,21 @@ def practice(update: Update, context: CallbackContext):
         update.message.reply_text(task)
         if img_adr:
             bytestring = get_photo(img_adr)
-            with open('imgs/task.png', 'wb') as imagefile:
+            with open('temp_task_files/task.png', 'wb') as imagefile:
                 imagefile.write(bytestring)
-            file = open("imgs/task.png", "rb")
+            file = open("temp_task_files/task.png", "rb")
             update.message.reply_photo(file)
         if xls_adr:
             bytestring = get_excel(xls_adr)
-            with open('imgs/file.xlsx', 'wb') as imagefile:
+            with open('temp_task_files/file.xlsx', 'wb') as imagefile:
                 imagefile.write(bytestring)
-            file = open("imgs/file.xlsx", "rb")
+            file = open("temp_task_files/file.xlsx", "rb")
             update.message.reply_document(file)
         if doc_adr:
             bytestring = get_word(doc_adr)
-            with open('imgs/file.docx', 'wb') as imagefile:
+            with open('temp_task_files/file.docx', 'wb') as imagefile:
                 imagefile.write(bytestring)
-            file = open("imgs/file.docx", "rb")
+            file = open("temp_task_files/file.docx", "rb")
             update.message.reply_document(file)
         return 2
     except Exception:
@@ -192,9 +192,9 @@ def check(update: Update, context: CallbackContext):
 
 def send_photo(update: Update, context: CallbackContext) -> None:
     bytestring = get_photo("60.gif")
-    with open('imgs/task.png', 'wb') as imagefile:
+    with open('temp_task_files/task.png', 'wb') as imagefile:
         imagefile.write(bytestring)
-    file = open("imgs/task.png", "rb")
+    file = open("temp_task_files/task.png", "rb")
     update.message.reply_photo(file)
     update.message.reply_text("(№ 3652) (С.В. Логинова) Логическая функция F задаётся выражением (x ∧ y) ∨ (¬x ∧ ¬z).")
 
