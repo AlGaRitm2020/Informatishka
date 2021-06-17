@@ -108,36 +108,39 @@ def get_task_by_num(num):
         result_tasks.append(task_parsers.get_all_tasks(tasks[i]))
 
     for i in range(0, len(result_tasks)):
-        flag = False
-        dele = ''
-        new_str = result_tasks[i]
+        in_tag = False
+        html_tag = ''
+        cleaned_task = result_tasks[i]
+        # print(result_tasks[i])
         for j in range(len(result_tasks[i])):
 
             if result_tasks[i][j] == '<' and result_tasks[i][j + 1] != ' ':
-                flag = True
+                in_tag = True
 
-            if flag:
-                dele += result_tasks[i][j]
+            if in_tag:
+                html_tag += result_tasks[i][j]
 
             if result_tasks[i][j] == '>' and result_tasks[i][j - 1] != ' ':
-                flag = False
-                if dele != "<sup>":
-                    new_str = new_str.replace(dele, ' ')
-                    dele = ''
+                in_tag = False
+                if html_tag == '<br/>':
+                    cleaned_task = cleaned_task.replace(html_tag, '\n')
+                elif html_tag != "<sup>":
+                    cleaned_task = cleaned_task.replace(html_tag, ' ')
+                    html_tag = ''
+
                 else:
-                    new_str = new_str.replace(dele, '"')
-                    dele = ''
+                    cleaned_task = cleaned_task.replace(html_tag, '"')
+                    html_tag = ''
 
 
 
 
-        result_tasks[i] = new_str
+        result_tasks[i] = cleaned_task
 
-    for i in result_tasks:
-        print(i)
 
-    # for i in range(len(result_tasks)):
-    #   print(result_tasks[i])
+
+    for i in range(len(result_tasks)):
+      print(result_tasks[i])
 
     num = random.randint(0, tasks_count - 1)
     return result_tasks[num], answers[num], img_addresses[num], excel_addresses[num], word_addresses[num]
