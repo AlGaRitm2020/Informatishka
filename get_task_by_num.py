@@ -128,12 +128,13 @@ def get_task_by_num(task_number):
 
     result_task = cleaned_task
 
-    result_task = result_task.replace('PythonС++', ':\n')
+    result_task = result_task.replace('PythonС++', '\n ')
+    result_task = result_task.replace('PythonСи', '\n')
+    result_task = result_task.replace('Паскаль', '\nПаскаль:')
     result_task = result_task.replace('PythonСи', ':\n')
-    result_task = result_task.replace('PythonСи', ':\n')
-    result_task = result_task.replace('end.\n', 'end.\nPython:\n')
-    result_task = result_task.replace('#include', 'Си/C++:\n#include')
-    pprint(result_task)
+    result_task = result_task.replace('end.\n', 'end.\n\nPython:\n')
+    result_task = result_task.replace('#include', '\nСи/C++:\n#include')
+
     return result_task, answer, img_address, excel_address, word_address
 
 
