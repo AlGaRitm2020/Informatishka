@@ -19,11 +19,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="47fd3aac-b187-46fd-95eb-5f2c5f3f4d16" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/final_proj.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/final_proj.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="47fd3aac-b187-46fd-95eb-5f2c5f3f4d16" name="Default Changelist" comment="added endlines to code (task 6)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_task_by_num.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_task_by_num.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,8 +182,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.get_task_by_num" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.test_task_parser" />
         <item itemvalue="Python.task_parsers" />
         <item itemvalue="Python.sql_work" />
@@ -239,7 +236,14 @@
       <option name="project" value="LOCAL" />
       <updated>1623847972456</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added endlines to code (task 6)">
+      <created>1623916136880</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1623916136880</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -262,12 +266,13 @@
     <MESSAGE value="created test_task_parser.py" />
     <MESSAGE value="refactored variables in task_parsers.py" />
     <MESSAGE value="deleted tags in message" />
-    <option name="LAST_COMMIT_MESSAGE" value="deleted tags in message" />
+    <MESSAGE value="added endlines to code (task 6)" />
+    <option name="LAST_COMMIT_MESSAGE" value="added endlines to code (task 6)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Informatishka$parser_shit.coverage" NAME="parser_shit Coverage Results" MODIFIED="1623576503873" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Informatishka$html_sucks.coverage" NAME="html_sucks Coverage Results" MODIFIED="1623574720763" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Informatishka$get_task_by_num.coverage" NAME="get_task_by_num Coverage Results" MODIFIED="1623915185782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Informatishka$main.coverage" NAME="main Coverage Results" MODIFIED="1623914533748" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Informatishka$get_task_by_num.coverage" NAME="get_task_by_num Coverage Results" MODIFIED="1623916093946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Informatishka$main.coverage" NAME="main Coverage Results" MODIFIED="1623915623523" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

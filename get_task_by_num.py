@@ -124,12 +124,14 @@ def get_task_by_num(num):
                 in_tag = False
                 if html_tag == '<br/>':
                     cleaned_task = cleaned_task.replace(html_tag, '\n')
-                elif html_tag != "<sup>":
-                    cleaned_task = cleaned_task.replace(html_tag, ' ')
+                    html_tag = ''
+                elif html_tag == "<sup>":
+
+                    cleaned_task = cleaned_task.replace(html_tag, '"')
                     html_tag = ''
 
                 else:
-                    cleaned_task = cleaned_task.replace(html_tag, '"')
+                    cleaned_task = cleaned_task.replace(html_tag, ' ')
                     html_tag = ''
 
 
