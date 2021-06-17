@@ -43,7 +43,12 @@ def get_task_by_number(task_number):
     answer = str(answer.find('script'))
     left_border_index = answer.find("'") + 1
     right_border_index = answer.rfind("'")
-    answer = [answer[left_border_index:right_border_index]]
+    answer = answer[left_border_index:right_border_index]
+
+    # formatting answer for tasks 19-21, because there are 3 answers
+    if 21 >= int(task_number) >= 19:
+        answer = answer.replace('1) ', '').replace('<br/>2) ', ';').replace('<br/>3) ', ';')
+    print('answer', answer)
 
     # getting excel file
     if '<a' in task_script_text and 'xls' in task_script_text:
@@ -70,7 +75,9 @@ def get_task_by_number(task_number):
         word_address = None
 
     result_task = get_task_text(task_script)
-
+    # add a hint to task 19-21, because there are 3 answers
+    if 21 >= int(task_number) >= 19:
+        result_task += '\n Ответы на каждый из трех вопросов разделите точкой с запятой(;), а ответы внутри одного вопроса пробелом'
     return result_task, answer, img_address, excel_address, word_address
 
 

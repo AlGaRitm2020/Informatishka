@@ -66,7 +66,7 @@ def practice(update: Update, context: CallbackContext):
         task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
 
         global ANSWER
-        ANSWER = answer[0]
+        ANSWER = answer
         print('Answer:', ANSWER)
         update.message.reply_text(task)
         if img_adr:
