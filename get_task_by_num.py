@@ -104,8 +104,6 @@ def get_task_by_num(task_number):
     import task_parsers
 
     result_task = task_parsers.get_all_tasks(task)
-    print(result_task)
-    # result_task = result_task[1::2]
     in_tag = False
     html_tag = ''
     cleaned_task = result_task
@@ -130,8 +128,12 @@ def get_task_by_num(task_number):
 
     result_task = cleaned_task
 
-
-
+    result_task = result_task.replace('PythonС++', ':\n')
+    result_task = result_task.replace('PythonСи', ':\n')
+    result_task = result_task.replace('PythonСи', ':\n')
+    result_task = result_task.replace('end.\n', 'end.\nPython:\n')
+    result_task = result_task.replace('#include', 'Си/C++:\n#include')
+    pprint(result_task)
     return result_task, answer, img_address, excel_address, word_address
 
 
