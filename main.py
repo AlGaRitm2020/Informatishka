@@ -3,7 +3,7 @@ import logging
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 
-import get_files
+from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
 import sql_work
 from config import TOKEN
@@ -58,38 +58,31 @@ def practice(update: Update, context: CallbackContext):
 Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
         return ConversationHandler.END
     try:
-        nom = update.message.text
-        if int(nom) < 1 or int(nom) > 27:
+        task_number = update.message.text
+        if int(task_number) < 1 or int(task_number) > 27:
             update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
             return 1
-        TASKNUM = nom
-        info = get_task_by_number(nom)
-        answer = info[1]
-        task = info[0]
-        img_adr = info[2]
-        xls_adr = info[3]
-        doc_adr = info[4]
+        TASKNUM = task_number
+        task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
+
         global ANSWER
         ANSWER = answer[0]
-        print(ANSWER)
+        print('Answer:', ANSWER)
         update.message.reply_text(task)
         if img_adr:
-            import get_files
-            bytestring = get_files.get_photo(img_adr)
+            bytestring = get_photo(img_adr)
             with open('imgs/task.png', 'wb') as imagefile:
                 imagefile.write(bytestring)
             file = open("imgs/task.png", "rb")
             update.message.reply_photo(file)
         if xls_adr:
-            import get_files
-            bytestring = get_files.get_excel(xls_adr)
+            bytestring = get_excel(xls_adr)
             with open('imgs/file.xlsx', 'wb') as imagefile:
                 imagefile.write(bytestring)
             file = open("imgs/file.xlsx", "rb")
             update.message.reply_document(file)
         if doc_adr:
-            import get_files
-            bytestring = get_files.get_word(doc_adr)
+            bytestring = get_word(doc_adr)
             with open('imgs/file.docx', 'wb') as imagefile:
                 imagefile.write(bytestring)
             file = open("imgs/file.docx", "rb")
@@ -198,7 +191,7 @@ def check(update: Update, context: CallbackContext):
 
 
 def send_photo(update: Update, context: CallbackContext) -> None:
-    bytestring = get_files.get_photo("60.gif")
+    bytestring = get_photo("60.gif")
     with open('imgs/task.png', 'wb') as imagefile:
         imagefile.write(bytestring)
     file = open("imgs/task.png", "rb")
