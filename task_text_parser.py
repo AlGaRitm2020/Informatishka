@@ -31,12 +31,12 @@ def get_task_text(task):
     html_tag = ''
     cleaned_task = result_task
 
-    for j in range(len(result_task)):
-        if result_task[j] == '<' and result_task[j + 1] != ' ':
+    for i in range(len(result_task)):
+        if result_task[i] == '<' and result_task[i + 1] != ' ':
             in_tag = True
         if in_tag:
-            html_tag += result_task[j]
-        if result_task[j] == '>' and result_task[j - 1] != ' ':
+            html_tag += result_task[i]
+        if result_task[i] == '>' and result_task[i - 1] != ' ':
             in_tag = False
             if html_tag == '<br/>':
                 cleaned_task = cleaned_task.replace(html_tag, '\n')

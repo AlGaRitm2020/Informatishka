@@ -29,13 +29,13 @@ def get_task_by_number(task_number):
     # making img_addresses list
 
     if 'img' in task_script_text:
-        ind = task_script_text.find('img') + 9
-        ind1 = 0
-        for j in range(ind, len(task_script_text)):
-            if task_script_text[j] == '"':
-                ind1 = j
+        begin_index = task_script_text.find('img') + 9
+        end_index = 0
+        for i in range(begin_index, len(task_script_text)):
+            if task_script_text[i] == '"':
+                end_index = i
                 break
-        img_address = task_script_text[ind:ind1]
+        img_address = task_script_text[begin_index:end_index]
     else:
         img_address = None
 
@@ -48,25 +48,25 @@ def get_task_by_number(task_number):
 
     # making excel_files list
     if '<a' in task_script_text and 'xls' in task_script_text:
-        ind = task_script_text.find('<a') + 9
-        ind1 = 0
-        for j in range(ind, len(task_script_text)):
-            if task_script_text[j] == '"':
-                ind1 = j
+        begin_index = task_script_text.find('<a') + 9
+        end_index = 0
+        for i in range(begin_index, len(task_script_text)):
+            if task_script_text[i] == '"':
+                end_index = i
                 break
-        excel_address = task_script_text[ind:ind1]
+        excel_address = task_script_text[begin_index:end_index]
     else:
         excel_address = None
 
     # making word_files list
     if '<a' in task_script_text and 'docx' in task_script_text:
-        ind = task_script_text.find('<a') + 9
-        ind1 = 0
-        for j in range(ind, len(task_script_text)):
-            if task_script_text[j] == '"':
-                ind1 = j
+        begin_index = task_script_text.find('<a') + 9
+        end_index = 0
+        for i in range(begin_index, len(task_script_text)):
+            if task_script_text[i] == '"':
+                end_index = i
                 break
-        word_address = task_script_text[ind:ind1]
+        word_address = task_script_text[begin_index:end_index]
     else:
         word_address = None
 
