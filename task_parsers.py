@@ -4,7 +4,7 @@ from pprint import pprint
 
 def get_all_tasks(task):
     task = str(task)
-    pprint(task)
+    # pprint(task)
     result = ""
     begin_num_index = task.find("(")
     end_num_index = task.find(")")

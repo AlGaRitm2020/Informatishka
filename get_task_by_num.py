@@ -104,11 +104,13 @@ def get_task_by_num(task_number):
     import task_parsers
 
     result_task = task_parsers.get_all_tasks(task)
-
+    print(result_task)
+    # result_task = result_task[1::2]
     in_tag = False
     html_tag = ''
     cleaned_task = result_task
     # print(result_tasks[i])
+
     for j in range(len(result_task)):
         if result_task[j] == '<' and result_task[j + 1] != ' ':
             in_tag = True
@@ -123,12 +125,12 @@ def get_task_by_num(task_number):
                 cleaned_task = cleaned_task.replace(html_tag, '"')
                 html_tag = ''
             else:
-                cleaned_task = cleaned_task.replace(html_tag, ' ')
+                cleaned_task = cleaned_task.replace(html_tag, '')
                 html_tag = ''
 
-        result_task = cleaned_task
+    result_task = cleaned_task
 
-    print(result_task)
+
 
     return result_task, answer, img_address, excel_address, word_address
 

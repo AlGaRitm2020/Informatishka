@@ -19,10 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="47fd3aac-b187-46fd-95eb-5f2c5f3f4d16" name="Default Changelist" comment="added endlines to code (task 6)">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="47fd3aac-b187-46fd-95eb-5f2c5f3f4d16" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/get_task_by_num.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_task_by_num.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_parsers.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_parsers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +65,7 @@
       <recent name="C:\Users\student\PycharmProjects\Informatishka_2\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.get_task_by_num">
+  <component name="RunManager" selected="Python.main">
     <configuration name="get_task_by_num" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="final_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -246,7 +246,14 @@
       <option name="project" value="LOCAL" />
       <updated>1623916136880</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="get random task number before processing tasks (global optimization)">
+      <created>1623925456439</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1623925456439</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -270,6 +277,7 @@
     <MESSAGE value="refactored variables in task_parsers.py" />
     <MESSAGE value="deleted tags in message" />
     <MESSAGE value="added endlines to code (task 6)" />
-    <option name="LAST_COMMIT_MESSAGE" value="added endlines to code (task 6)" />
+    <MESSAGE value="get random task number before processing tasks (global optimization)" />
+    <option name="LAST_COMMIT_MESSAGE" value="get random task number before processing tasks (global optimization)" />
   </component>
 </project>
