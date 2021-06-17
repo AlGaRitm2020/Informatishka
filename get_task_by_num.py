@@ -1,11 +1,12 @@
 from pprint import pprint
+from bs4 import BeautifulSoup
+import requests
+import random
+from task_text_parser import get_task_text
 
 
-def get_task_by_num(task_number):
-    from bs4 import BeautifulSoup
-    import requests
-    import random
-    cat_dict = {
+def get_task_by_number(task_number):
+    categories_dict = {
         '1': 'cat12=on&cat13=on',
         '2': 'cat8=on',
         '3': 'cat16=on',
@@ -34,36 +35,30 @@ def get_task_by_num(task_number):
         '26': 'cat160=on',
         '27': 'cat161=on',
     }
-    category = cat_dict[task_number]
-    URL = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={task_number}&{category}'
-    response = requests.get(URL)
+    category = categories_dict[task_number]
+    url = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={task_number}&{category}'
+    response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     center = soup.find('div', class_='center')
     tasks_count = int(str(center.findAll('p')[1])[20:22])
     tasks_table = center.find('table', class_='vartopic')
     random_task = random.randint(0, tasks_count - 1)
 
-    task = tasks_table.findAll('tr')[::2][random_task]
-
-    # print('tasks 0 text', task, 'tasks 0 text')
     answer = tasks_table.findAll('tr')[1::2][random_task]
-    img_address = []
-    excel_address = []
-    word_address = []
-    # for i in range(len(task)):
-    task = task.find('td', class_='topicview')
-    task = task.find('script')
-
+    task_tr = tasks_table.findAll('tr')[::2][random_task]
+    task_td = task_tr.find('td', class_='topicview')
+    task_script = task_td.find('script')
+    task_script_text = str(task_script)
     # making img_addresses list
-    txt = str(task)
-    if 'img' in txt:
-        ind = txt.find('img') + 9
+
+    if 'img' in task_script_text:
+        ind = task_script_text.find('img') + 9
         ind1 = 0
-        for j in range(ind, len(txt)):
-            if txt[j] == '"':
+        for j in range(ind, len(task_script_text)):
+            if task_script_text[j] == '"':
                 ind1 = j
                 break
-        img_address = txt[ind:ind1]
+        img_address = task_script_text[ind:ind1]
     else:
         img_address = None
 
@@ -75,69 +70,32 @@ def get_task_by_num(task_number):
     answer = [script_txt[left_border_index:right_border_index]]
 
     # making excel_files list
-    txt = str(task)
-    if '<a' in txt and 'xls' in txt:
-        ind = txt.find('<a') + 9
+    if '<a' in task_script_text and 'xls' in task_script_text:
+        ind = task_script_text.find('<a') + 9
         ind1 = 0
-        for j in range(ind, len(txt)):
-            if txt[j] == '"':
+        for j in range(ind, len(task_script_text)):
+            if task_script_text[j] == '"':
                 ind1 = j
                 break
-        excel_address = txt[ind:ind1]
+        excel_address = task_script_text[ind:ind1]
     else:
         excel_address = None
 
     # making word_files list
-
-    txt = str(task)
-    if '<a' in txt and 'docx' in txt:
-        ind = txt.find('<a') + 9
+    if '<a' in task_script_text and 'docx' in task_script_text:
+        ind = task_script_text.find('<a') + 9
         ind1 = 0
-        for j in range(ind, len(txt)):
-            if txt[j] == '"':
+        for j in range(ind, len(task_script_text)):
+            if task_script_text[j] == '"':
                 ind1 = j
                 break
-        word_address = txt[ind:ind1]
+        word_address = task_script_text[ind:ind1]
     else:
         word_address = None
 
-    import task_parsers
-
-    result_task = task_parsers.get_all_tasks(task)
-    in_tag = False
-    html_tag = ''
-    cleaned_task = result_task
-    # print(result_tasks[i])
-
-    for j in range(len(result_task)):
-        if result_task[j] == '<' and result_task[j + 1] != ' ':
-            in_tag = True
-        if in_tag:
-            html_tag += result_task[j]
-        if result_task[j] == '>' and result_task[j - 1] != ' ':
-            in_tag = False
-            if html_tag == '<br/>':
-                cleaned_task = cleaned_task.replace(html_tag, '\n')
-                html_tag = ''
-            elif html_tag == "<sup>":
-                cleaned_task = cleaned_task.replace(html_tag, '"')
-                html_tag = ''
-            else:
-                cleaned_task = cleaned_task.replace(html_tag, '')
-                html_tag = ''
-
-    result_task = cleaned_task
-
-    # replace 'ПаскальPythonС++' string
-    result_task = result_task.replace('PythonС++', '\n ')
-    result_task = result_task.replace('PythonСи', '\n')
-
-    # add languages names for codes
-    result_task = result_task.replace('Паскаль', '\nПаскаль:')
-    result_task = result_task.replace('end.\n', 'end.\n\nPython:\n')
-    result_task = result_task.replace('#include', '\nC/C++:\n#include')
+    result_task = get_task_text(task_script)
 
     return result_task, answer, img_address, excel_address, word_address
 
 
-get_task_by_num('6')
+get_task_by_number('6')

@@ -1,5 +1,5 @@
-from task_parsers import get_all_tasks
+from task_text_parser import get_task_text
 from pprint import pprint
 
 with open('src/for_test_task_parser.txt', encoding='utf-8') as task:
-    pprint(get_all_tasks(task.read()))
+    pprint(get_task_text(task.read()))
