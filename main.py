@@ -194,6 +194,11 @@ def send_photo(update: Update, context: CallbackContext) -> None:
 def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("reg", register))
+    dispatcher.add_handler(CommandHandler("stats", stats))
+    dispatcher.add_handler(CommandHandler("send", send_photo))
     practice_dialog = ConversationHandler(
         entry_points=[CommandHandler('practice', conv_begin)],
         states={
@@ -214,11 +219,7 @@ def main() -> None:
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("reg", register))
-    dispatcher.add_handler(CommandHandler("stats", stats))
-    dispatcher.add_handler(CommandHandler("send", send_photo))
+
 
 
     updater.start_polling()
