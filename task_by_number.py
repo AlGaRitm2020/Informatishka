@@ -9,7 +9,7 @@ import json
 def get_task_by_number(task_number):
     """This function return task, answer and extra files like images, excel, word"""
     # get dict from json
-    with open("categories.json", "r") as categories:
+    with open("data/categories.json", "r") as categories:
         categories_dict = json.load(categories)
 
     category = categories_dict[task_number]

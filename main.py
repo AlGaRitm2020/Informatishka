@@ -1,3 +1,4 @@
+import json
 import logging
 
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -121,40 +122,26 @@ def theory(update, context):
         Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
         return ConversationHandler.END
     try:
-        themes_list = ['https://code-enjoy.ru/ege_po_informatike_2021_zadanie_1_osobie_tochki/',
-                       'https://code-enjoy.ru/ege_po_informatike_zadanie_2_moshneyshiy_metod/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_3_baza_dannih/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_4_uslovie_fano/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_5_algoritmi_avtomati/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_6_cikli/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_7_foto_zvuk/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_8_super_razbor/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_9_tablica_excel/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_10_tekstoviy_redaktor/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_11_kolichestvo_informacii/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_12_ukrosheniye_robota/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_13_legkoe/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_14_chempionskaya_podgotoka/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_15_prostim_yazikom/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_16_rekursiya/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_17_pishem_programmu/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_18_tablica_chisel/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_19_igraem_i_viigrivaem/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_20_ubileyniy_vipusk/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_21_igroki_v_igre/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_22_analiziruem_programmu/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_23_opiraemsa_na_predidushie_shagi/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_24_obrabotka_simvolnoy_informacii/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_25_obrabotka_celochislennoy_informacii/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_26_sortirovka/',
-                       'https://code-enjoy.ru/ege_po_informatike_2021_zadanie_27_zakluchitelnoye/']
-        id = int(update.message.text)
+
+        task_number = update.message.text
+        try:
+            if int(task_number) < 1 or int(task_number) > 27:
+                update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+                return 1
+        except ValueError:
+            "if task_number isn't int"
+            update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
+            return 1
+
+        with open('data/theory_links.json', 'r') as file:
+            theory_links = json.load(file)
+
         reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(f'По этой теме можешь почитать теорию по ссылке:\n'
-                                  f'{themes_list[id - 1]}\n'
+                                  f'{theory_links[task_number]}\n'
                                   f'Или посмотреть видео:\n'
-                                  f'{get_theory_video(themes_list[id - 1])}')
+                                  f'{get_theory_video(theory_links[task_number])}')
         update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory',
                                   reply_markup=markup)
         return ConversationHandler.END
