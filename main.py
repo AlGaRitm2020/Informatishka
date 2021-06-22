@@ -162,28 +162,24 @@ def check(update: Update, context: CallbackContext):
     Чтобы смотреть теорию, напишите /theory')
         return ConversationHandler.END
     global ANSWER
-    ANSWER.lstrip()
-    ANSWER.rstrip()
+    ANSWER.lstrip().rstrip()
+
     user_answer = update.message.text
-    user_answer.lstrip()
-    user_answer.rstrip()
+    user_answer.lstrip().rstrip()
     reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     if str(ANSWER) == str(user_answer):
-        update.message.reply_text('Вы аблолютно правы. Ответ: {}'.format(user_answer), reply_markup=markup)
+        update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
         status = sql_work.add_score(TASKNUM, 1, update.message.chat_id)
-        if not status:
-            update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.",
-                                      reply_markup=markup)
-        return ConversationHandler.END
     else:
-        update.message.reply_text('Ваш ответ неверен. Ответ: {}. \
-Чтобы решать дальше напшите /practice'.format(ANSWER), reply_markup=markup)
+        update.message.reply_text(f'Ваш ответ неверен. Ответ: {ANSWER}. '
+                                  f'Чтобы решать дальше напшите /practice',
+                                  reply_markup=markup)
         status = sql_work.add_score(TASKNUM, 0, update.message.chat_id)
-        if not status:
-            update.message.reply_text("Вы еще не зарегистрированы, поэтому эт решение не учитывается в статистике.",
-                                      reply_markup=markup)
-        return ConversationHandler.END
+    if not status:
+        update.message.reply_text("Вы еще не зарегистрированы, поэтому это решение не учитывается в статистике.",
+                                  reply_markup=markup)
+    return ConversationHandler.END
 
 
 def send_photo(update: Update, context: CallbackContext) -> None:
@@ -198,7 +194,7 @@ def send_photo(update: Update, context: CallbackContext) -> None:
 def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
-    Dialog = ConversationHandler(
+    practice_dialog = ConversationHandler(
         entry_points=[CommandHandler('practice', conv_begin)],
         states={
             1: [MessageHandler(Filters.text, practice)],
@@ -207,16 +203,16 @@ def main() -> None:
         fallbacks=[MessageHandler(Filters.text, start)]
     )
 
-    Dialog_theory = ConversationHandler(
+    theory_dialog = ConversationHandler(
         entry_points=[CommandHandler('theory', conv_begin)],
         states={
             1: [MessageHandler(Filters.text, theory)],
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-    # dispatcher.add_handler(CommandHandler("photo", send_photo))
-    dispatcher.add_handler(Dialog)
-    dispatcher.add_handler(Dialog_theory)
+
+    dispatcher.add_handler(practice_dialog)
+    dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
