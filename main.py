@@ -59,7 +59,11 @@ def practice(update: Update, context: CallbackContext):
         return ConversationHandler.END
     try:
         task_number = update.message.text
-        if int(task_number) < 1 or int(task_number) > 27:
+        try:
+            if int(task_number) < 1 or int(task_number) > 27:
+                update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+                return 1
+        except ValueError:
             update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
             return 1
         TASKNUM = task_number
