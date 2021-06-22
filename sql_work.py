@@ -15,6 +15,7 @@ def register(username, chat_id):
 
 
 def add_score(task_num, result, chat_id):
+    task_num = int(task_num)
     date = datetime.now().date()
     con = sqlite3.connect("users.sqlite")
     cur = con.cursor()
@@ -22,8 +23,18 @@ def add_score(task_num, result, chat_id):
     user_id = cur.execute(request).fetchall()
     if not len(user_id):
         return False
-    request = "INSERT INTO stats(user_id, task_num, date, result) VALUES({}, {}, '{}', {})".format(
-        user_id[0][0], task_num, date, result)
+    check_request = "SELECT result FROM stats WHERE user_id = '{}' AND task_num = '{}'".format(
+        user_id[0][0], task_num)
+    results = cur.execute(check_request).fetchall()
+    # print('tasknum', task_num, type(task_num))
+    # print('results', results)
+    if len(results):
+        print(results)
+        request = "UPDATE stats SET result = '{}' WHERE user_id = '{}' AND task_num = '{}'".format(
+            results[0][0] + 1, user_id, task_num)
+    else:
+        request = "INSERT INTO stats(user_id, task_num, date, result) VALUES({}, {}, '{}', {})".format(
+            user_id[0][0], task_num, date, result)
     cur.execute(request).fetchall()
     con.commit()
     return True
@@ -57,5 +68,5 @@ def get_stats(chat_id):
     print(all_results)
     return all_results
 
-
+add_score(11, 1, 1)
 get_stats('906136828')

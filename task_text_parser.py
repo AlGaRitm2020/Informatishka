@@ -4,7 +4,6 @@ from pprint import pprint
 
 def get_task_text(task):
     task = str(task)
-    pprint(task)
     result_task = ""
     begin_num_index = task.find("(")
     end_num_index = task.find(")")

@@ -48,7 +48,6 @@ def get_task_by_number(task_number):
     # formatting answer for tasks 19-21, because there are 3 answers
     if 21 >= int(task_number) >= 19:
         answer = answer.replace('1) ', '').replace('<br/>2) ', ';').replace('<br/>3) ', ';')
-    print('answer', answer)
 
     # getting excel file
     if '<a' in task_script_text and 'xls' in task_script_text:
