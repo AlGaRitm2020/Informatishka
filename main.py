@@ -22,10 +22,11 @@ logger = logging.getLogger(__name__)
 def start(update: Update, context: CallbackContext):
     reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-    update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
-Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
-Введите команду /practice, чтобы начать решать задания. \
-Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
+    update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
+                              'Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность.'
+                              'Введите команду /practice, чтобы начать решать задания.'
+                              'Чтобы остановить любой диалог нажмите /stop',
+                              reply_markup=markup)
 
 
 def register(update: Update, context: CallbackContext):
@@ -197,12 +198,6 @@ def send_photo(update: Update, context: CallbackContext) -> None:
 def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
-
-    dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("reg", register))
-    dispatcher.add_handler(CommandHandler("stats", stats))
-    dispatcher.add_handler(CommandHandler("send", send_photo))
-    dispatcher.add_handler(CommandHandler("start", start))
     Dialog = ConversationHandler(
         entry_points=[CommandHandler('practice', conv_begin)],
         states={
@@ -223,6 +218,12 @@ def main() -> None:
     dispatcher.add_handler(Dialog)
     dispatcher.add_handler(Dialog_theory)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("reg", register))
+    dispatcher.add_handler(CommandHandler("stats", stats))
+    dispatcher.add_handler(CommandHandler("send", send_photo))
+
 
     updater.start_polling()
 
