@@ -64,7 +64,8 @@ def practice(update: Update, context: CallbackContext):
                 update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
                 return 1
         except ValueError:
-            update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+            "if task_number isn't int"
+            update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
             return 1
         TASKNUM = task_number
         task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
