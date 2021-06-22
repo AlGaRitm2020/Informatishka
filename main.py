@@ -2,6 +2,7 @@ import logging
 
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
@@ -150,8 +151,10 @@ def theory(update, context):
         id = int(update.message.text)
         reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-        update.message.reply_text('По этой теме можешь почитать теорию по ссылке:\
-{}'.format(themes_list[id - 1]))
+        update.message.reply_text(f'По этой теме можешь почитать теорию по ссылке:\n'
+                                  f'{themes_list[id - 1]}\n'
+                                  f'Или посмотреть видео:\n'
+                                  f'{get_theory_video(themes_list[id - 1])}')
         update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory',
                                   reply_markup=markup)
         return ConversationHandler.END
