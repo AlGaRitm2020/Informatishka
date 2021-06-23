@@ -108,9 +108,10 @@ def stats(update, context):
     if not result:
         update.message.reply_text("Вы не можете смотреть свою статистику, не зарегистрировавшись", reply_markup=markup)
         return
-    for item in result:
+    for task_number, answers in result.items():
         update.message.reply_text(
-            "На задаче {} у вас {} успешных решений за последнюю неделю.".format(item, result[item]), reply_markup=markup)
+            f"На задаче {task_number} у вас {answers[0]} успешных решений из {answers[1]}",
+            reply_markup=markup)
 
 
 def theory(update, context):

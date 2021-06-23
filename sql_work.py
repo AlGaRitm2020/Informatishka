@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime, timedelta
 
 def register(username, chat_id):
     con = sqlite3.connect("users.sqlite")
@@ -16,7 +15,6 @@ def register(username, chat_id):
 
 def add_score(task_num, result, chat_id):
     task_num = int(task_num)
-    date = datetime.now().date()
     con = sqlite3.connect("users.sqlite")
     cur = con.cursor()
     request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
@@ -26,45 +24,30 @@ def add_score(task_num, result, chat_id):
     check_request = "SELECT right_answers, all_answers FROM stats WHERE user_id = '{}' AND task_num = '{}'".format(
         user_id[0][0], task_num)
     results = cur.execute(check_request).fetchall()[0]
-    print(results)
     if len(results):
         request = "UPDATE stats SET right_answers = '{}', all_answers = '{}' WHERE user_id = '{}' AND task_num = '{}'".format(
             results[0] + result, results[1] + 1, user_id[0][0], task_num)
     else:
-        request = "INSERT INTO stats(user_id, task_num, date, right_answers, all_answers) VALUES({}, {}, '{}', {}, {})".format(
-            user_id[0][0], task_num, date, result, 1)
+        request = "INSERT INTO stats(user_id, task_num, right_answers, all_answers) VALUES({}, {}, '{}', {}, {})".format(
+            user_id[0][0], task_num, result, 1)
     cur.execute(request)
     con.commit()
     return True
 
 
 def get_stats(chat_id):
-    dlt = timedelta(days=7)
-    date_now = datetime.now().date()
+
     con = sqlite3.connect("users.sqlite")
     cur = con.cursor()
-    request = "SELECT task_num, result FROM stats\
+    request = "SELECT task_num, right_answers, all_answers FROM stats\
 \nWHERE user_id in (SELECT id FROM users\
 \nWHERE chat_id = '{}')".format(str(chat_id))
     result = cur.execute(request).fetchall()
-    print(result)
     if not len(result):
         return False
-    # li = []
-    # for item in result:
-    #     date_list = item[3].split('-')
-    #     date = datetime(year=int(date_list[0]), month=int(date_list[1]), day=int(date_list[2])).date()
-    #     if date_now + dlt >= date:
-    #         li.append(item)
-    #     print(date)
-    # print(li)
-    # all_results = {}
-    # for item in :
-    #     if item[2] not in all_results:
-    #         all_results[item[2]] = 0
-    #     all_results[item[2]] += item[4]
-    # print(all_results)
-    # return all_results
+    count_of_answers_dict = {}
+    for task_number, right_answers, all_answers in result:
+        count_of_answers_dict[str(task_number)] = (right_answers, all_answers)
+    return count_of_answers_dict
 
-# add_score(11, 1, 1)
-# get_stats('1830477841')
+print(get_stats('1830477841'))
