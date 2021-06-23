@@ -107,9 +107,20 @@ def stats(update, context):
                                   reply_markup=markup)
         return
     for task_number, answers in result.items():
+        correctness = int(answers[0] / answers[1] * 100)
+        if correctness > 90:
+            reply = 'Отличный результат. Продолжай в том же духе.'
+        elif correctness > 75:
+            reply = 'Хороший результат. У тебя все получиться!'
+        elif correctness > 50:
+            reply = 'Есть, над чем работать, но в целом неплохо'
+        else:
+            reply = 'Рекомендую тебе почитать теорию по этой задаче'
+
         update.message.reply_text(
             f"На задаче {task_number} у вас {answers[0]} успешных решений из {answers[1]}"
-            f" Правильность: {int(answers[0] / answers[1] * 100)}%",
+            f" Правильность: {correctness}%\n"
+            f"{reply}",
             reply_markup=markup)
 
 
