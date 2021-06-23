@@ -26,16 +26,15 @@ def add_score(task_num, result, chat_id):
     check_request = "SELECT result FROM stats WHERE user_id = '{}' AND task_num = '{}'".format(
         user_id[0][0], task_num)
     results = cur.execute(check_request).fetchall()
-    # print('tasknum', task_num, type(task_num))
-    # print('results', results)
+
     if len(results):
-        print(results)
+        print(results[0][0] + 1)
         request = "UPDATE stats SET result = '{}' WHERE user_id = '{}' AND task_num = '{}'".format(
-            results[0][0] + 1, user_id, task_num)
+            results[0][0] + result, user_id[0][0], task_num)
     else:
         request = "INSERT INTO stats(user_id, task_num, date, result) VALUES({}, {}, '{}', {})".format(
             user_id[0][0], task_num, date, result)
-    cur.execute(request).fetchall()
+    cur.execute(request)
     con.commit()
     return True
 

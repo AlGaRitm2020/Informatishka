@@ -3,7 +3,7 @@ import logging
 
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
-from theory_video import get_theory_video
+# from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
