@@ -148,7 +148,7 @@ def theory(update, context):
         update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory',
                                   reply_markup=markup,
                                   )
-        
+
         return ConversationHandler.END
     except Exception:
         reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
@@ -186,15 +186,6 @@ def check(update: Update, context: CallbackContext):
     return ConversationHandler.END
 
 
-def send_photo(update: Update, context: CallbackContext) -> None:
-    bytestring = get_photo("60.gif")
-    with open('temp_task_files/task.png', 'wb') as imagefile:
-        imagefile.write(bytestring)
-    file = open("temp_task_files/task.png", "rb")
-    update.message.reply_photo(file)
-    update.message.reply_text("(№ 3652) (С.В. Логинова) Логическая функция F задаётся выражением (x ∧ y) ∨ (¬x ∧ ¬z).")
-
-
 def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
@@ -202,7 +193,6 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("reg", register))
     dispatcher.add_handler(CommandHandler("stats", stats))
-    dispatcher.add_handler(CommandHandler("send", send_photo))
     practice_dialog = ConversationHandler(
         entry_points=[CommandHandler('practice', conv_begin)],
         states={
