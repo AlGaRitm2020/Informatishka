@@ -23,17 +23,16 @@ def add_score(task_num, result, chat_id):
     user_id = cur.execute(request).fetchall()
     if not len(user_id):
         return False
-    check_request = "SELECT result FROM stats WHERE user_id = '{}' AND task_num = '{}'".format(
+    check_request = "SELECT right_answers, all_answers FROM stats WHERE user_id = '{}' AND task_num = '{}'".format(
         user_id[0][0], task_num)
-    results = cur.execute(check_request).fetchall()
-
+    results = cur.execute(check_request).fetchall()[0]
+    print(results)
     if len(results):
-        print(results[0][0] + 1)
-        request = "UPDATE stats SET result = '{}' WHERE user_id = '{}' AND task_num = '{}'".format(
-            results[0][0] + result, user_id[0][0], task_num)
+        request = "UPDATE stats SET right_answers = '{}', all_answers = '{}' WHERE user_id = '{}' AND task_num = '{}'".format(
+            results[0] + result, results[1] + 1, user_id[0][0], task_num)
     else:
-        request = "INSERT INTO stats(user_id, task_num, date, result) VALUES({}, {}, '{}', {})".format(
-            user_id[0][0], task_num, date, result)
+        request = "INSERT INTO stats(user_id, task_num, date, right_answers, all_answers) VALUES({}, {}, '{}', {}, {})".format(
+            user_id[0][0], task_num, date, result, 1)
     cur.execute(request)
     con.commit()
     return True
@@ -44,28 +43,28 @@ def get_stats(chat_id):
     date_now = datetime.now().date()
     con = sqlite3.connect("users.sqlite")
     cur = con.cursor()
-    request = "SELECT * FROM stats\
+    request = "SELECT task_num, result FROM stats\
 \nWHERE user_id in (SELECT id FROM users\
 \nWHERE chat_id = '{}')".format(str(chat_id))
-    print(request)
     result = cur.execute(request).fetchall()
+    print(result)
     if not len(result):
         return False
-    li = []
-    for item in result:
-        date_list = item[3].split('-')
-        date = datetime(year=int(date_list[0]), month=int(date_list[1]), day=int(date_list[2])).date()
-        if date_now + dlt >= date:
-            li.append(item)
-        print(date)
-    print(li)
-    all_results = {}
-    for item in li:
-        if item[2] not in all_results:
-            all_results[item[2]] = 0
-        all_results[item[2]] += item[4]
-    print(all_results)
-    return all_results
+    # li = []
+    # for item in result:
+    #     date_list = item[3].split('-')
+    #     date = datetime(year=int(date_list[0]), month=int(date_list[1]), day=int(date_list[2])).date()
+    #     if date_now + dlt >= date:
+    #         li.append(item)
+    #     print(date)
+    # print(li)
+    # all_results = {}
+    # for item in :
+    #     if item[2] not in all_results:
+    #         all_results[item[2]] = 0
+    #     all_results[item[2]] += item[4]
+    # print(all_results)
+    # return all_results
 
-add_score(11, 1, 1)
-get_stats('906136828')
+# add_score(11, 1, 1)
+# get_stats('1830477841')
