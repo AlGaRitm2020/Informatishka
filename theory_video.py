@@ -5,6 +5,7 @@ def get_theory_video(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     youtube_link = soup.find('iframe')['src']
+    youtube_link = youtube_link.replace('embed', 'watch')
     return youtube_link
 
 if __name__ == '__main__':
