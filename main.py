@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def start(update: Update, context: CallbackContext):
-    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
                               'Выбери номер задания, я выдам тебе задачу.'
@@ -33,23 +33,13 @@ def start(update: Update, context: CallbackContext):
     sql_work.register(update.message.from_user.name, update.message.chat_id)
 
 
-def register(update: Update, context: CallbackContext):
-    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-    result = sql_work.register(update.message.from_user.name, update.message.chat_id)
-    if not result:
-        update.message.reply_text("Вы уже зарегистрированы", reply_markup=markup)
-    else:
-        update.message.reply_text("Вы успешно зарегистрировались.", reply_markup=markup)
-
-
 def conv_begin(update: Update, context: CallbackContext):
     update.message.reply_text("Выбирете номер задания от 1 до 27")
     return 1
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
-    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет! Напиши /start, чтобы начать работу', reply_markup=markup)
 
@@ -57,7 +47,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def practice(update: Update, context: CallbackContext):
     global TASK_NUMBER
     if update.message.text == '/stop':
-        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(
             'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
@@ -109,7 +99,7 @@ def practice(update: Update, context: CallbackContext):
 
 
 def stats(update, context):
-    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
@@ -124,7 +114,7 @@ def stats(update, context):
 
 def theory(update, context):
     if update.message.text == '/stop':
-        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(
             'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
@@ -149,7 +139,7 @@ def theory(update, context):
         with open('data/theory_links.json', 'r') as file:
             theory_links = json.load(file)
 
-        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
@@ -162,7 +152,7 @@ def theory(update, context):
 
         return ConversationHandler.END
     except Exception:
-        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text('Что-то пошло не так, попробуйте еще раз', reply_markup=markup)
         return 1
@@ -171,7 +161,7 @@ def theory(update, context):
 def check(update: Update, context: CallbackContext):
     global TASK_NUMBER
     if update.message.text == '/stop':
-        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(
             'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
@@ -186,7 +176,7 @@ def check(update: Update, context: CallbackContext):
 
     user_answer = update.message.text
     user_answer.lstrip().rstrip()
-    reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     if str(ANSWER) == str(user_answer):
         update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
@@ -226,7 +216,6 @@ def main() -> None:
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("reg", register))
     dispatcher.add_handler(CommandHandler("stats", stats))
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
