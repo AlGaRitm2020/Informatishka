@@ -1,8 +1,9 @@
 import json
 import logging
 
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, \
+    Filters, CallbackContext, ConversationHandler
 from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
@@ -15,7 +16,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 ANSWER = ""
-TASKNUM = 0
+TASK_NUMBER = 0
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +24,8 @@ def start(update: Update, context: CallbackContext):
     reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
-                              'Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность.'
+                              'Выбери номер задания, я выдам тебе задачу.'
+                              ' Введи ответ и я проверю его правильность.'
                               'Введите команду /practice, чтобы начать решать задания.'
                               'Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
@@ -51,14 +53,17 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def practice(update: Update, context: CallbackContext):
-    global TASKNUM
+    global TASK_NUMBER
     if update.message.text == '/stop':
         reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-        update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
-Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
-Введите команду /practice, чтобы начать решать задания. \
-Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
+        update.message.reply_text(
+            'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
+            'Выбери номер задания, я выдам тебе задачу.'
+            ' Введи ответ и я проверю его правильность.'
+            'Введите команду /practice, чтобы начать решать задания.'
+            'Чтобы остановить любой диалог нажмите /stop',
+            reply_markup=markup)
         return ConversationHandler.END
     try:
         task_number = update.message.text
@@ -70,7 +75,7 @@ def practice(update: Update, context: CallbackContext):
             "if task_number isn't int"
             update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
             return 1
-        TASKNUM = task_number
+        TASK_NUMBER = task_number
         task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
 
         global ANSWER
@@ -78,21 +83,21 @@ def practice(update: Update, context: CallbackContext):
         print('Answer:', ANSWER)
         update.message.reply_text(task)
         if img_adr:
-            bytestring = get_photo(img_adr)
-            with open('temp_task_files/task.png', 'wb') as imagefile:
-                imagefile.write(bytestring)
+            byte_string = get_photo(img_adr)
+            with open('temp_task_files/task.png', 'wb') as image:
+                image.write(byte_string)
             file = open("temp_task_files/task.png", "rb")
             update.message.reply_photo(file)
         if xls_adr:
-            bytestring = get_excel(xls_adr)
-            with open('temp_task_files/file.xlsx', 'wb') as imagefile:
-                imagefile.write(bytestring)
+            byte_string = get_excel(xls_adr)
+            with open('temp_task_files/file.xlsx', 'wb') as xls:
+                xls.write(byte_string)
             file = open("temp_task_files/file.xlsx", "rb")
             update.message.reply_document(file)
         if doc_adr:
-            bytestring = get_word(doc_adr)
-            with open('temp_task_files/file.docx', 'wb') as imagefile:
-                imagefile.write(bytestring)
+            byte_string = get_word(doc_adr)
+            with open('temp_task_files/file.docx', 'wb') as docx:
+                docx.write(byte_string)
             file = open("temp_task_files/file.docx", "rb")
             update.message.reply_document(file)
         return 2
@@ -106,7 +111,8 @@ def stats(update, context):
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
-        update.message.reply_text("Вы не можете смотреть свою статистику, не зарегистрировавшись", reply_markup=markup)
+        update.message.reply_text("Вы не можете смотреть свою статистику, не зарегистрировавшись",
+                                  reply_markup=markup)
         return
     for task_number, answers in result.items():
         update.message.reply_text(
@@ -118,10 +124,13 @@ def theory(update, context):
     if update.message.text == '/stop':
         reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-        update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
-        Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
-        Введите команду /practice, чтобы начать решать задания. \
-        Чтобы смотреть теорию, напишите /theory', reply_markup=markup)
+        update.message.reply_text(
+            'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
+            'Выбери номер задания, я выдам тебе задачу.'
+            ' Введи ответ и я проверю его правильность.'
+            'Введите команду /practice, чтобы начать решать задания.'
+            'Чтобы остановить любой диалог нажмите /stop',
+            reply_markup=markup)
         return ConversationHandler.END
     try:
 
@@ -145,9 +154,9 @@ def theory(update, context):
                                   f'{get_theory_video(theory_links[task_number])}\n'
                                   f'Или почитать теорию на сайте:\n'
                                   f'{theory_links[task_number]}')
-        update.message.reply_text('Чтобы решать задания введи /practice. Чтобы продолжить читать теорию введи /theory',
-                                  reply_markup=markup,
-                                  )
+        update.message.reply_text('Чтобы решать задания введи /practice.'
+                                  ' Чтобы продолжить читать теорию введи /theory',
+                                  reply_markup=markup)
 
         return ConversationHandler.END
     except Exception:
@@ -158,12 +167,17 @@ def theory(update, context):
 
 
 def check(update: Update, context: CallbackContext):
-    global TASKNUM
+    global TASK_NUMBER
     if update.message.text == '/stop':
-        update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике. \
-    Выбери номер задания, я выдам тебе задачу. Введи ответ и я проверю его правильность. \
-    Введите команду /practice, чтобы начать решать задания. \
-    Чтобы смотреть теорию, напишите /theory')
+        reply_keyboard = [['/practice', '/theory'], ['/reg', '/stats']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        update.message.reply_text(
+            'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
+            'Выбери номер задания, я выдам тебе задачу.'
+            ' Введи ответ и я проверю его правильность.'
+            'Введите команду /practice, чтобы начать решать задания.'
+            'Чтобы остановить любой диалог нажмите /stop',
+            reply_markup=markup)
         return ConversationHandler.END
     global ANSWER
     ANSWER.lstrip().rstrip()
@@ -174,14 +188,15 @@ def check(update: Update, context: CallbackContext):
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     if str(ANSWER) == str(user_answer):
         update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
-        status = sql_work.add_score(TASKNUM, 1, update.message.chat_id)
+        status = sql_work.add_score(TASK_NUMBER, 1, update.message.chat_id)
     else:
         update.message.reply_text(f'Ваш ответ неверен. Ответ: {ANSWER}. '
                                   f'Чтобы решать дальше напшите /practice',
                                   reply_markup=markup)
-        status = sql_work.add_score(TASKNUM, 0, update.message.chat_id)
+        status = sql_work.add_score(TASK_NUMBER, 0, update.message.chat_id)
     if not status:
-        update.message.reply_text("Вы еще не зарегистрированы, поэтому это решение не учитывается в статистике.",
+        update.message.reply_text("Вы еще не зарегистрированы, поэтому это решение не учитывается "
+                                  "в статистике.",
                                   reply_markup=markup)
     return ConversationHandler.END
 
@@ -213,8 +228,6 @@ def main() -> None:
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
-
-
 
     updater.start_polling()
 

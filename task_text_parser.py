@@ -1,5 +1,4 @@
 import html
-from pprint import pprint
 
 
 def get_task_text(task):
@@ -8,7 +7,9 @@ def get_task_text(task):
     begin_num_index = task.find("(")
     end_num_index = task.find(")")
     end_line_index = task.find(";")
-    result_task += task[begin_num_index + 4] + html.unescape(task[begin_num_index + 5:end_line_index]) + task[end_line_index + 1:end_num_index]
+    result_task += task[begin_num_index + 4] + \
+                   html.unescape(task[begin_num_index + 5:end_line_index]) + \
+                   task[end_line_index + 1:end_num_index]
     begin_num_index = task.find("changeImageFilePath") + len("changeImageFilePath") + 2
     end_num_index = task.rfind("'")
     word_changed = ""

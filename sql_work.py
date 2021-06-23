@@ -7,7 +7,8 @@ def register(username, chat_id):
     users_with_this_id = cur.execute(check_request).fetchall()
     if len(users_with_this_id):
         return False
-    insert_request = "INSERT INTO users(username, chat_id) VALUES('{}', '{}')".format(username, str(chat_id))
+    insert_request = "INSERT INTO users(username, chat_id) VALUES('{}', '{}')".\
+        format(username, str(chat_id))
     cur.execute(insert_request)
     con.commit()
     return True
@@ -21,14 +22,17 @@ def add_score(task_num, result, chat_id):
     user_id = cur.execute(request).fetchall()
     if not len(user_id):
         return False
-    check_request = "SELECT right_answers, all_answers FROM stats WHERE user_id = '{}' AND task_num = '{}'".format(
+    check_request = "SELECT right_answers, all_answers FROM stats WHERE user_id = '{}'" \
+                    " AND task_num = '{}'".format(
         user_id[0][0], task_num)
     results = cur.execute(check_request).fetchall()[0]
     if len(results):
-        request = "UPDATE stats SET right_answers = '{}', all_answers = '{}' WHERE user_id = '{}' AND task_num = '{}'".format(
+        request = "UPDATE stats SET right_answers = '{}', all_answers = '{}' WHERE user_id = '{}" \
+                  "' AND task_num = '{}'".format(
             results[0] + result, results[1] + 1, user_id[0][0], task_num)
     else:
-        request = "INSERT INTO stats(user_id, task_num, right_answers, all_answers) VALUES({}, {}, '{}', {}, {})".format(
+        request = "INSERT INTO stats(user_id, task_num, right_answers, all_answers)" \
+                  " VALUES({}, {}, '{}', {}, {})".format(
             user_id[0][0], task_num, result, 1)
     cur.execute(request)
     con.commit()

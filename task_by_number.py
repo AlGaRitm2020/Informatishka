@@ -1,4 +1,3 @@
-from pprint import pprint
 from bs4 import BeautifulSoup
 import requests
 import random
@@ -13,7 +12,8 @@ def get_task_by_number(task_number):
         categories_dict = json.load(categories)
 
     category = categories_dict[task_number]
-    url = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId={task_number}&{category}'
+    url = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewAllEgeNo&egeId=' \
+          f'{task_number}&{category}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     center = soup.find('div', class_='center')
@@ -76,8 +76,10 @@ def get_task_by_number(task_number):
     result_task = get_task_text(task_script)
     # add a hint to task 19-21, because there are 3 answers
     if 21 >= int(task_number) >= 19:
-        result_task += '\n Ответы на каждый из трех вопросов разделите точкой с запятой(;), а ответы внутри одного вопроса пробелом'
+        result_task += '\n Ответы на каждый из трех вопросов разделите точкой с запятой(;),' \
+                       ' а ответы внутри одного вопроса пробелом'
     return result_task, answer, img_address, excel_address, word_address
 
 
-get_task_by_number('19')
+if __name__ == '__main__':
+    get_task_by_number('19')
