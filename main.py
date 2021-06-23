@@ -103,12 +103,13 @@ def stats(update, context):
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
-        update.message.reply_text("Вы не можете смотреть свою статистику, не зарегистрировавшись",
+        update.message.reply_text("Вы пока не решали задачи. Если хотите попробовать: /practice",
                                   reply_markup=markup)
         return
     for task_number, answers in result.items():
         update.message.reply_text(
-            f"На задаче {task_number} у вас {answers[0]} успешных решений из {answers[1]}",
+            f"На задаче {task_number} у вас {answers[0]} успешных решений из {answers[1]}"
+            f" Правильность: {int(answers[0] / answers[1] * 100)}%",
             reply_markup=markup)
 
 
