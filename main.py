@@ -29,6 +29,8 @@ def start(update: Update, context: CallbackContext):
                               'Введите команду /practice, чтобы начать решать задания.'
                               'Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
+    # register user
+    sql_work.register(update.message.from_user.name, update.message.chat_id)
 
 
 def register(update: Update, context: CallbackContext):
