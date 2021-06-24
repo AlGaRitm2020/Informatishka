@@ -10,4 +10,4 @@ This is a Telegram-bot which can help you to pass the Unified State Exam (Russia
 - give you materials for preparations ( text and video formats)
 
 #### Start using
-https://t.me/ege_inf_help_bot
+https://t.me/informatishka_bot
