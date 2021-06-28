@@ -55,4 +55,12 @@ def get_stats(chat_id):
     return count_of_answers_dict
 
 
-print(get_stats('1830477841'))
+def get_all_users_chat_ids():
+    con = sqlite3.connect("users.sqlite")
+    cur = con.cursor()
+    request = "SELECT chat_id FROM users"
+    chat_ids = cur.execute(request).fetchall()
+    return chat_ids
+
+if __name__ == '__main__':
+    print(get_all_users_chat_ids())
