@@ -81,7 +81,7 @@ def get_task_by_number(task_number):
         byte_word = None
 
     # getting txt file
-    if '<a' in task_script_text and 'txt' in task_script_text:
+    if '<a' in task_script_text and 'txt' in task_script_text and task_number != '10':
         if task_number == '27':
 
             begin_index = task_script_text.rfind('<a') + 9
