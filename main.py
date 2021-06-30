@@ -1,5 +1,6 @@
 import json
 import logging
+from pprint import pprint
 
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
@@ -96,6 +97,43 @@ def practice(update: Update, context: CallbackContext):
     except Exception:
         update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
         return 1
+
+def get_variant(update, context):
+    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    variant = []
+    for task_number in range(1, 28):
+        if  22 > task_number > 19:
+            continue
+        task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(str(task_number))
+
+        global ANSWER
+        ANSWER = answer
+        print('Answer:', ANSWER)
+        all_task_materials = []
+        all_task_materials.append(task)
+        all_task_materials.append(answer)
+        if img_adr:
+            byte_string = get_photo(img_adr)
+            with open('temp_task_files/task.png', 'wb') as image:
+                image.write(byte_string)
+            file = open("temp_task_files/task.png", "rb")
+            all_task_materials.append(file)
+        if xls_adr:
+            byte_string = get_excel(xls_adr)
+            with open('temp_task_files/file.xlsx', 'wb') as xls:
+                xls.write(byte_string)
+            file = open("temp_task_files/file.xlsx", "rb")
+            all_task_materials.append(file)
+        if doc_adr:
+            byte_string = get_word(doc_adr)
+            with open('temp_task_files/file.docx', 'wb') as docx:
+                docx.write(byte_string)
+            file = open("temp_task_files/file.docx", "rb")
+            all_task_materials.append(file)
+        variant.append(all_task_materials)
+    pprint(variant)
+    return variant
 
 
 def stats(update, context):
@@ -229,6 +267,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("stats", stats))
+    dispatcher.add_handler(CommandHandler("variant", get_variant))
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
