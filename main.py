@@ -32,7 +32,7 @@ def start(update: Update, context: CallbackContext):
                               'Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
     # register user
-    # sql_work.register(update.message.from_user.name, update.message.chat_id)
+    sql_work.register(update.message.from_user.name, update.message.chat_id)
 
 
 def conv_begin(update: Update, context: CallbackContext):
