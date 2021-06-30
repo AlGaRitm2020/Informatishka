@@ -17,6 +17,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 ANSWER = ""
+VARIANT = []
 TASK_NUMBER = 0
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ def practice(update: Update, context: CallbackContext):
         return 1
 
 
-def get_variant(update, context):
+def get_variant():
     reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     variant = []
@@ -133,17 +134,18 @@ def get_variant(update, context):
             file = open("temp_task_files/file.docx", "rb")
             all_task_materials.append(file)
         variant.append(all_task_materials)
-    pprint(variant)
     return variant
 
 
 def send_variant(update, context):
+    global VARIANT
+    VARIANT = get_variant()
     keyboard = []
     addl = []
     for i in range(1, 28):
         if 21 <= i <= 22:
             continue
-        addl.append(InlineKeyboardButton(f'Задание {i}', callback_data=i))
+        addl.append(InlineKeyboardButton(f'{i}', callback_data=i))
         if len(addl) == 5:
             keyboard.append(addl)
             addl = []
@@ -288,7 +290,6 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("stats", stats))
-    dispatcher.add_handler(CommandHandler("variant", get_variant))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
