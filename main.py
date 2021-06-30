@@ -122,27 +122,23 @@ def get_variant():
         if img_adr:
             all_task_materials.append(img_adr)
         if xls_adr:
-            byte_string = get_excel(xls_adr)
             with open('temp_task_files/file.xlsx', 'wb') as xls:
-                xls.write(byte_string)
+                xls.write(xls_adr)
             file = open("temp_task_files/file.xlsx", "rb")
             all_task_materials.append(file)
         if doc_adr:
-            byte_string = get_word(doc_adr)
             with open('temp_task_files/file.docx', 'wb') as docx:
-                docx.write(byte_string)
+                docx.write(doc_adr)
             file = open("temp_task_files/file.docx", "rb")
             all_task_materials.append(file)
         if txt_adr_1:
-            byte_string = get_word(txt_adr_1)
             with open('temp_task_files/file.txt', 'wb') as docx:
-                docx.write(byte_string)
+                docx.write(txt_adr_1)
             file = open("temp_task_files/file.txt", "rb")
             all_task_materials.append(file)
         if txt_adr_2:
-            byte_string = get_word(txt_adr_2)
             with open('temp_task_files/file.txt', 'wb') as docx:
-                docx.write(byte_string)
+                docx.write(txt_adr_2)
             file = open("temp_task_files/file.txt", "rb")
             all_task_materials.append(file)
         variant.append(all_task_materials)
