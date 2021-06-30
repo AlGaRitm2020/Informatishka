@@ -1,6 +1,5 @@
 import json
 import logging
-from pprint import pprint
 
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
@@ -32,7 +31,7 @@ def start(update: Update, context: CallbackContext):
                               'Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
     # register user
-    # sql_work.register(update.message.from_user.name, update.message.chat_id)
+    sql_work.register(update.message.from_user.name, update.message.chat_id)
 
 
 def conv_begin(update: Update, context: CallbackContext):
@@ -73,7 +72,6 @@ def practice(update: Update, context: CallbackContext):
     task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
     global ANSWER
     ANSWER = answer
-    print('Answer:', ANSWER)
     update.message.reply_text(task)
     if img_adr:
         update.message.reply_photo(img_adr)
@@ -93,7 +91,6 @@ def practice(update: Update, context: CallbackContext):
     #     return 1
 
 
-
 def get_variant():
     reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
@@ -105,7 +102,6 @@ def get_variant():
 
         global ANSWER
         ANSWER = answer
-        print('Answer:', ANSWER)
         all_task_materials = []
         all_task_materials.append(task)
         all_task_materials.append(answer)
@@ -129,6 +125,22 @@ def get_variant():
             all_task_materials.append(file)
         variant.append(all_task_materials)
     return variant
+
+
+def buttonsHandler(update: Update, context: CallbackContext):
+    query = update.callback_query
+    keyboard = []
+    addl = []
+    for i in range(1, 28):
+        if 21 <= i <= 22:
+            continue
+        addl.append(InlineKeyboardButton(f'{i}', callback_data=i))
+        if len(addl) == 5:
+            keyboard.append(addl)
+            addl = []
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    global VARIANT
+    query.message.edit_text(VARIANT[int(query.data)][0], reply_markup=reply_markup)
 
 
 def send_variant(update, context):
@@ -284,6 +296,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("stats", stats))
+    dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
