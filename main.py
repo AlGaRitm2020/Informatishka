@@ -69,7 +69,7 @@ def practice(update: Update, context: CallbackContext):
         update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
         return 1
     TASK_NUMBER = task_number
-    task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes = get_task_by_number(task_number)
+    task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes_1, txt_bytes_2 = get_task_by_number(task_number)
     global ANSWER
     ANSWER = answer
     update.message.reply_text(task)
@@ -85,11 +85,17 @@ def practice(update: Update, context: CallbackContext):
             docx.write(doc_bytes)
         file = open("temp_task_files/file.docx", "rb")
         update.message.reply_document(file)
-    if txt_bytes:
-        with open('temp_task_files/file.txt', 'wb') as txt:
-            txt.write(txt_bytes)
-        file = open("temp_task_files/file.txt", "rb")
+    if txt_bytes_1:
+        with open('temp_task_files/A.txt', 'wb') as txt:
+            txt.write(txt_bytes_1)
+        file = open("temp_task_files/A.txt", "rb")
         update.message.reply_document(file)
+    if txt_bytes_2:
+        with open('temp_task_files/B.txt', 'wb') as txt:
+            txt.write(txt_bytes_2)
+        file = open("temp_task_files/B.txt", "rb")
+        update.message.reply_document(file)
+
     return 2
     # except Exception:
     #     update.message.reply_text('Что-то пошло не так, попробуйте еще раз')

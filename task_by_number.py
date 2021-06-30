@@ -65,6 +65,8 @@ def get_task_by_number(task_number):
     else:
         byte_excel = None
 
+
+
     # getting word file
     if '<a' in task_script_text and 'docx' in task_script_text:
         begin_index = task_script_text.find('<a') + 9
@@ -78,25 +80,40 @@ def get_task_by_number(task_number):
     else:
         byte_word = None
 
-    # getting word file
+    # getting txt file
     if '<a' in task_script_text and 'txt' in task_script_text:
+        if task_number == '27':
+
+            begin_index = task_script_text.rfind('<a') + 9
+            end_index = 0
+            for i in range(begin_index, len(task_script_text)):
+                if task_script_text[i] == '"':
+                    end_index = i
+                    break
+            txg_address_2 = task_script_text[begin_index:end_index]
+            byte_txt_2 = get_word(txg_address_2)
+        else:
+            byte_txt_2 = None
+
         begin_index = task_script_text.find('<a') + 9
         end_index = 0
         for i in range(begin_index, len(task_script_text)):
             if task_script_text[i] == '"':
                 end_index = i
                 break
-        txg_address = task_script_text[begin_index:end_index]
-        byte_txt = get_word(txg_address)
+        txg_address_1 = task_script_text[begin_index:end_index]
+        byte_txt_1 = get_word(txg_address_1)
+
     else:
-        byte_txt = None
+        byte_txt_1 = None
+        byte_txt_2 = None
 
     result_task = get_task_text(task_script)
     # add a hint to task 19-21, because there are 3 answers
     if 21 >= int(task_number) >= 19:
         result_task += '\n Ответы на каждый из трех вопросов разделите точкой с запятой(;),' \
                        ' а ответы внутри одного вопроса пробелом'
-    return result_task, answer, byte_img, byte_excel, byte_word, byte_txt
+    return result_task, answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2
 
 
 if __name__ == '__main__':
