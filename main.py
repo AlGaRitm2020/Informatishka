@@ -59,45 +59,39 @@ def practice(update: Update, context: CallbackContext):
             'Чтобы остановить любой диалог нажмите /stop',
             reply_markup=markup)
         return ConversationHandler.END
-    try:
-        task_number = update.message.text
-        try:
-            if int(task_number) < 1 or int(task_number) > 27:
-                update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
-                return 1
-        except ValueError:
-            "if task_number isn't int"
-            update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
-            return 1
-        TASK_NUMBER = task_number
-        task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
 
-        global ANSWER
-        ANSWER = answer
-        print('Answer:', ANSWER)
-        update.message.reply_text(task)
-        if img_adr:
-            byte_string = get_photo(img_adr)
-            with open('temp_task_files/task.png', 'wb') as image:
-                image.write(byte_string)
-            file = open("temp_task_files/task.png", "rb")
-            update.message.reply_photo(file)
-        if xls_adr:
-            byte_string = get_excel(xls_adr)
-            with open('temp_task_files/file.xlsx', 'wb') as xls:
-                xls.write(byte_string)
-            file = open("temp_task_files/file.xlsx", "rb")
-            update.message.reply_document(file)
-        if doc_adr:
-            byte_string = get_word(doc_adr)
-            with open('temp_task_files/file.docx', 'wb') as docx:
-                docx.write(byte_string)
-            file = open("temp_task_files/file.docx", "rb")
-            update.message.reply_document(file)
-        return 2
-    except Exception:
-        update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
+    task_number = update.message.text
+    try:
+        if int(task_number) < 1 or int(task_number) > 27:
+            update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+            return 1
+    except ValueError:
+        "if task_number isn't int"
+        update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
         return 1
+    TASK_NUMBER = task_number
+    task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(task_number)
+    global ANSWER
+    ANSWER = answer
+    print('Answer:', ANSWER)
+    update.message.reply_text(task)
+    if img_adr:
+        update.message.reply_photo(img_adr)
+    if xls_adr:
+        with open('temp_task_files/file.docx', 'wb') as xlsx:
+            xlsx.write(xls_adr)
+        file = open("temp_task_files/file.xlsx", "rb")
+        update.message.reply_document(file)
+    if doc_adr:
+        with open('temp_task_files/file.docx', 'wb') as docx:
+            docx.write(doc_adr)
+        file = open("temp_task_files/file.docx", "rb")
+        update.message.reply_document(file)
+    return 2
+    # except Exception:
+    #     update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
+    #     return 1
+
 
 
 def get_variant():

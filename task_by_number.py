@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
 import random
+
+from get_files import get_excel, get_photo, get_word
 from task_text_parser import get_task_text
 import json
 
@@ -36,8 +38,9 @@ def get_task_by_number(task_number):
                 end_index = i
                 break
         img_address = task_script_text[begin_index:end_index]
+        byte_img = get_photo(img_address)
     else:
-        img_address = None
+        byte_img = None
 
     # getting answer
     answer = str(answer.find('script'))
@@ -58,8 +61,9 @@ def get_task_by_number(task_number):
                 end_index = i
                 break
         excel_address = task_script_text[begin_index:end_index]
+        byte_excel = get_excel(excel_address)
     else:
-        excel_address = None
+        byte_excel = None
 
     # getting word file
     if '<a' in task_script_text and 'docx' in task_script_text:
@@ -70,15 +74,16 @@ def get_task_by_number(task_number):
                 end_index = i
                 break
         word_address = task_script_text[begin_index:end_index]
+        byte_word = get_word(word_address)
     else:
-        word_address = None
+        byte_word = None
 
     result_task = get_task_text(task_script)
     # add a hint to task 19-21, because there are 3 answers
     if 21 >= int(task_number) >= 19:
         result_task += '\n Ответы на каждый из трех вопросов разделите точкой с запятой(;),' \
                        ' а ответы внутри одного вопроса пробелом'
-    return result_task, answer, img_address, excel_address, word_address
+    return result_task, answer, byte_img, byte_excel, byte_word
 
 
 if __name__ == '__main__':
