@@ -2,9 +2,9 @@ import json
 import logging
 from pprint import pprint
 
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
-    Filters, CallbackContext, ConversationHandler
+    Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
 from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
@@ -31,7 +31,7 @@ def start(update: Update, context: CallbackContext):
                               'Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
     # register user
-    sql_work.register(update.message.from_user.name, update.message.chat_id)
+    # sql_work.register(update.message.from_user.name, update.message.chat_id)
 
 
 def conv_begin(update: Update, context: CallbackContext):
@@ -98,12 +98,13 @@ def practice(update: Update, context: CallbackContext):
         update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
         return 1
 
+
 def get_variant(update, context):
     reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     variant = []
     for task_number in range(1, 28):
-        if  22 > task_number > 19:
+        if 22 > task_number > 19:
             continue
         task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(str(task_number))
 
@@ -134,6 +135,20 @@ def get_variant(update, context):
         variant.append(all_task_materials)
     pprint(variant)
     return variant
+
+
+def send_variant(update, context):
+    keyboard = []
+    addl = []
+    for i in range(1, 28):
+        if 21 <= i <= 22:
+            continue
+        addl.append(InlineKeyboardButton(f'Задание {i}', callback_data=i))
+        if len(addl) == 5:
+            keyboard.append(addl)
+            addl = []
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Ваш вариант:", reply_markup=reply_markup)
 
 
 def stats(update, context):
@@ -263,11 +278,18 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-
+    full_var_dialog = ConversationHandler(
+        entry_points=[CommandHandler('full', send_variant)],
+        states={
+            1: [MessageHandler(Filters.text, start)]
+        },
+        fallbacks=[MessageHandler(Filters.text, start)]
+    )
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("stats", stats))
     dispatcher.add_handler(CommandHandler("variant", get_variant))
+    dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
