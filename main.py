@@ -1,7 +1,7 @@
 import json
 import logging
 
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
 from theory_video import get_theory_video
@@ -11,6 +11,10 @@ from task_by_number import get_task_by_number
 import sql_work
 from config import TOKEN
 
+bot = Bot(TOKEN)
+CHAT_ID = ""
+MESSAGE_ID = ""
+SECOND_ID = ""
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -103,13 +107,12 @@ def practice(update: Update, context: CallbackContext):
 
 
 def get_variant():
-    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     variant = []
     for task_number in range(1, 28):
         if 22 > task_number > 19:
+            variant.append(["какой то мусор"])
             continue
-        task, answer, img_adr, xls_adr, doc_adr = get_task_by_number(str(task_number))
+        task, answer, img_adr, xls_adr, doc_adr, txt_adr_1, txt_adr_2 = get_task_by_number(str(task_number))
 
         global ANSWER
         ANSWER = answer
@@ -117,11 +120,7 @@ def get_variant():
         all_task_materials.append(task)
         all_task_materials.append(answer)
         if img_adr:
-            byte_string = get_photo(img_adr)
-            with open('temp_task_files/task.png', 'wb') as image:
-                image.write(byte_string)
-            file = open("temp_task_files/task.png", "rb")
-            all_task_materials.append(file)
+            all_task_materials.append(img_adr)
         if xls_adr:
             byte_string = get_excel(xls_adr)
             with open('temp_task_files/file.xlsx', 'wb') as xls:
@@ -134,6 +133,18 @@ def get_variant():
                 docx.write(byte_string)
             file = open("temp_task_files/file.docx", "rb")
             all_task_materials.append(file)
+        if txt_adr_1:
+            byte_string = get_word(txt_adr_1)
+            with open('temp_task_files/file.txt', 'wb') as docx:
+                docx.write(byte_string)
+            file = open("temp_task_files/file.txt", "rb")
+            all_task_materials.append(file)
+        if txt_adr_2:
+            byte_string = get_word(txt_adr_2)
+            with open('temp_task_files/file.txt', 'wb') as docx:
+                docx.write(byte_string)
+            file = open("temp_task_files/file.txt", "rb")
+            all_task_materials.append(file)
         variant.append(all_task_materials)
     return variant
 
@@ -143,19 +154,39 @@ def buttonsHandler(update: Update, context: CallbackContext):
     keyboard = []
     addl = []
     for i in range(1, 28):
-        if 21 <= i <= 22:
+        if 19 < i < 22:
             continue
         addl.append(InlineKeyboardButton(f'{i}', callback_data=i))
         if len(addl) == 5:
             keyboard.append(addl)
             addl = []
     reply_markup = InlineKeyboardMarkup(keyboard)
+    query.data = int(query.data)
+    query.data -= 1
     global VARIANT
-    query.message.edit_text(VARIANT[int(query.data)][0], reply_markup=reply_markup)
+    global CHAT_ID
+    global MESSAGE_ID
+    global SECOND_ID
+    if MESSAGE_ID:
+        bot.delete_message(CHAT_ID, MESSAGE_ID)
+        MESSAGE_ID = ""
+    if SECOND_ID:
+        bot.delete_message(CHAT_ID, SECOND_ID)
+        SECOND_ID = ""
+    query.message.edit_text(VARIANT[query.data][0], reply_markup=reply_markup)
+    if len(VARIANT[query.data]) >= 3 and VARIANT[query.data][2]:
+        if type(VARIANT[query.data][2]) == bytes:
+            MESSAGE_ID = (bot.send_photo(CHAT_ID, VARIANT[query.data][2])).message_id
+        else:
+            MESSAGE_ID = (bot.send_document(CHAT_ID, VARIANT[query.data][2])).message_id
+    if len(VARIANT[query.data]) >= 4 and VARIANT[query.data][3]:
+        SECOND_ID = (bot.send_document(CHAT_ID, VARIANT[query.data][3])).message_id
 
 
 def send_variant(update, context):
     global VARIANT
+    global CHAT_ID
+    CHAT_ID = update.message.chat_id
     VARIANT = get_variant()
     keyboard = []
     addl = []
@@ -188,7 +219,6 @@ def stats(update, context):
             reply = 'Есть, над чем работать, но в целом неплохо'
         else:
             reply = 'Рекомендую тебе почитать теорию по этой задаче'
-
         update.message.reply_text(
             f"На задаче {task_number} у вас {answers[0]} успешных решений из {answers[1]}"
             f" Правильность: {correctness}%\n"
@@ -209,7 +239,6 @@ def theory(update, context):
             reply_markup=markup)
         return ConversationHandler.END
     try:
-
         task_number = update.message.text
         try:
             if int(task_number) < 1 or int(task_number) > 27:
@@ -219,13 +248,10 @@ def theory(update, context):
             "if task_number isn't int"
             update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
             return 1
-
         with open('data/theory_links.json', 'r') as file:
             theory_links = json.load(file)
-
         reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
                                   f'{get_theory_video(theory_links[task_number])}\n'
                                   f'Или почитать теорию на сайте:\n'
@@ -233,7 +259,6 @@ def theory(update, context):
         update.message.reply_text('Чтобы решать задания введи /practice.'
                                   ' Чтобы продолжить читать теорию введи /theory',
                                   reply_markup=markup)
-
         return ConversationHandler.END
     except Exception:
         reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
@@ -257,7 +282,6 @@ def check(update: Update, context: CallbackContext):
         return ConversationHandler.END
     global ANSWER
     ANSWER.lstrip().rstrip()
-
     user_answer = update.message.text
     user_answer.lstrip().rstrip()
     reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
@@ -280,7 +304,6 @@ def check(update: Update, context: CallbackContext):
 def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
-
     practice_dialog = ConversationHandler(
         entry_points=[CommandHandler('practice', conv_begin)],
         states={
@@ -289,7 +312,6 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-
     theory_dialog = ConversationHandler(
         entry_points=[CommandHandler('theory', conv_begin)],
         states={
@@ -312,9 +334,7 @@ def main() -> None:
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
-
     updater.start_polling()
-
     updater.idle()
 
 
