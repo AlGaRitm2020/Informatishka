@@ -1,10 +1,10 @@
 from pprint import pprint
 
-from config import DB_HOST, DB_NAME, DB_USER, DB_PASS
 import psycopg2
 
-conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host= DB_HOST)
+from get_db_config_from_url import get_db_config_from_url
 
+conn = psycopg2.connect(**get_db_config_from_url())
 cur = conn.cursor()
 
 # --- drop tables ---

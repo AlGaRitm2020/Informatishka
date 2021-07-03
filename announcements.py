@@ -1,5 +1,5 @@
 import telebot
-from config import TOKEN
+from config_old import TOKEN
 from sql_work import get_all_users_chat_ids
 
 

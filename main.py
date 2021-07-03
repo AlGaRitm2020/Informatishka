@@ -9,7 +9,18 @@ from theory_video import get_theory_video
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
 import sql_work
-from config import TOKEN
+
+# import token
+try:
+    # if deployed on Heroku
+    # DEPLOY TOKEN - env var on Heroku
+    import DEPLOY_TOKEN
+    TOKEN = DEPLOY_TOKEN
+except ImportError:
+    # else manual start
+    # from local config file
+    from config import TEST_TOKEN
+    TOKEN = TEST_TOKEN
 
 bot = Bot(TOKEN)
 CHAT_ID = ""

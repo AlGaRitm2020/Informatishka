@@ -1,9 +1,9 @@
 import psycopg2 as psql
-from config import DB_HOST, DB_NAME, DB_USER, DB_PASS
+from get_db_config_from_url import get_db_config_from_url
 
 
 def register(username, chat_id):
-    con = psql.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    con = psql.connect(**get_db_config_from_url())
     cur = con.cursor()
     check_request = "SELECT * FROM users WHERE chat_id = '{}'".format(str(chat_id))
     cur.execute(check_request)
@@ -19,7 +19,7 @@ def register(username, chat_id):
 
 def add_score(task_num, result, chat_id):
     task_num = int(task_num)
-    con = psql.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    con = psql.connect(**get_db_config_from_url())
     cur = con.cursor()
     request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
     cur.execute(request)
@@ -45,7 +45,7 @@ def add_score(task_num, result, chat_id):
 
 
 def get_stats(chat_id):
-    con = psql.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    con = psql.connect(**get_db_config_from_url())
     cur = con.cursor()
     request = "SELECT task_num, right_answers, all_answers FROM stats\
 \nWHERE user_id in (SELECT id FROM users\
@@ -61,7 +61,7 @@ def get_stats(chat_id):
 
 
 def get_all_users_chat_ids():
-    con = psql.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    con = psql.connect(**get_db_config_from_url())
     cur = con.cursor()
     request = "SELECT chat_id FROM users"
     cur.execute(request)
