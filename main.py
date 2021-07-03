@@ -12,15 +12,19 @@ import sql_work
 
 # import token
 try:
-    # if deployed on Heroku
-    # DEPLOY TOKEN - env var on Heroku
-    import DEPLOY_TOKEN
-    TOKEN = DEPLOY_TOKEN
-except ImportError:
-    # else manual start
+    # manual start
     # from local config file
     from config import TEST_TOKEN
+
     TOKEN = TEST_TOKEN
+except ModuleNotFoundError:
+    # else deployed on Heroku
+    # DEPLOY TOKEN - env var on Heroku
+    from load_env_vars import DEPLOY_TOKEN
+
+    TOKEN = DEPLOY_TOKEN
+    if not TOKEN:
+        print('Copy config.py to root directory from Telegram chat')
 
 bot = Bot(TOKEN)
 CHAT_ID = ""

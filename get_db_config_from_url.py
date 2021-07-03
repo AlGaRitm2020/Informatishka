@@ -1,7 +1,9 @@
 try:
     from config import DATABASE_URL
-except ImportError:
-    import DATABASE_URL
+except ModuleNotFoundError:
+    from load_env_vars import DATABASE_URL
+    if not DATABASE_URL:
+        print('Copy config.py to root directory from Telegram chat')
 
 
 def get_db_config_from_url():
