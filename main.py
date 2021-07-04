@@ -1,33 +1,15 @@
 import json
 import logging
-from time import time
 
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
-
-from generatior import generate_random_variant
 from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
 import sql_work
-
-# import token
-try:
-    # manual start
-    # from local config file
-    from config import TEST_TOKEN
-
-    TOKEN = TEST_TOKEN
-except ModuleNotFoundError:
-    # else deployed on Heroku
-    # DEPLOY TOKEN - env var on Heroku
-    from load_env_vars import DEPLOY_TOKEN
-
-    TOKEN = DEPLOY_TOKEN
-    if not TOKEN:
-        print('Copy config.py to root directory from Telegram chat')
+from config import TOKEN
 
 bot = Bot(TOKEN)
 CHAT_ID = ""
@@ -201,8 +183,7 @@ def send_variant(update, context):
     global VARIANT
     global CHAT_ID
     CHAT_ID = update.message.chat_id
-    VARIANT = generate_random_variant()
-
+    VARIANT = get_variant()
     keyboard = []
     addl = []
     for i in range(1, 28):

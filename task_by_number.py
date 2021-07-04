@@ -65,8 +65,6 @@ def get_task_by_number(task_number):
     else:
         byte_excel = None
 
-
-
     # getting word file
     if '<a' in task_script_text and 'docx' in task_script_text:
         begin_index = task_script_text.find('<a') + 9
