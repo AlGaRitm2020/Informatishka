@@ -1,9 +1,12 @@
 import json
 import logging
+from time import time
 
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
+
+from generatior import generate_random_variant
 from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
@@ -198,7 +201,8 @@ def send_variant(update, context):
     global VARIANT
     global CHAT_ID
     CHAT_ID = update.message.chat_id
-    VARIANT = get_variant()
+    VARIANT = generate_random_variant()
+
     keyboard = []
     addl = []
     for i in range(1, 28):

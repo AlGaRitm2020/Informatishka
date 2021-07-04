@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from bs4 import BeautifulSoup
 import requests
 import random
@@ -29,8 +31,6 @@ def generate_random_variant():
             answers.append(elem.text)
         else:
             answers.append(str(elem).split("'")[1].replace('<br/>', '\n'))
-    for i, ans in enumerate(answers):
-        print(f'{i + 1}: {ans}')
 
     byte_img_list = []
     byte_excel_list = []
@@ -54,27 +54,10 @@ def generate_random_variant():
             byte_excel_list.append(None)
             byte_word_list.append(None)
             byte_txt_list.append(None)
-        # --- making xls and docx bytes lists ---
-        elif '<a' in task_script_text and ('xls' or 'docx') in task_script_text:
-            begin_index = task_script_text.find('<a') + 9
-            end_index = 0
-            for i in range(begin_index, len(task_script_text)):
-                if task_script_text[i] == '"':
-                    end_index = i
-                    break
-            address = task_script_text[begin_index:end_index]
-            if 'xls' in task_script_text:
-                byte_excel_list.append(get_excel(address))
-                byte_word_list.append(None)
-            elif 'docx' in task_script_text:
-                byte_word_list.append(get_word(address))
-                byte_excel_list.append(None)
-
-            byte_img_list.append(None)
-            byte_txt_list.append(None)
         # --- making txt bytes list ---
-        elif '<a' in task_script_text and 'txt' in task_script_text and task_number != '10':
-            if task_number == '27':
+        elif '<a' in task_script_text and 'txt' in task_script_text and task_number != 10 - 1:
+            # task_number == 27
+            if task_number == 27 - 3:
                 begin_index_1, begin_index_2 = task_script_text.find('<a') + 9, \
                                                task_script_text.rfind('<a') + 9
                 end_index_1, end_index_2 = 0, 0
@@ -102,14 +85,89 @@ def generate_random_variant():
             byte_img_list.append(None)
             byte_word_list.append(None)
             byte_excel_list.append(None)
+        # --- making xls and docx bytes lists ---
+        elif '<a' in task_script_text and 'xls' or 'docx' in task_script_text:
+            begin_index = task_script_text.find('<a') + 9
+            end_index = 0
+            for i in range(begin_index, len(task_script_text)):
+                if task_script_text[i] == '"':
+                    end_index = i
+                    break
+            address = task_script_text[begin_index:end_index]
+            if 'xls' in task_script_text:
+                byte_excel_list.append(get_excel(address))
+                byte_word_list.append(None)
+            else:
+                byte_word_list.append(get_word(address))
+                byte_excel_list.append(None)
+
+            byte_img_list.append(None)
+            byte_txt_list.append(None)
+
         else:
             byte_img_list.append(None)
             byte_txt_list.append(None)
             byte_word_list.append(None)
             byte_excel_list.append(None)
 
+    tasks_description = []
+    for task_number in range(len(tasks_script)):
+        tasks_description.append(get_task_text(tasks_script[task_number]))
+        # add a hint to task 19-21, because there are 3 answers
+        if task_number - 1 == 19:
+            tasks_description[task_number] += '\n Ответы на каждый из трех вопросов вводите в новой' \
+                                              ' строке точкой с запятой(;), а ответы внутри одного' \
+                                              ' вопроса пробелом'
 
+    variant = []
+    task_number = 1
+    for task_description, answer, byte_img, byte_excel, byte_word, byte_txt in zip(tasks_description,
+                                                                                   answers,
+                                                                                   byte_img_list,
+                                                                                   byte_excel_list,
+                                                                                   byte_word_list,
+                                                                                   byte_txt_list):
+        if task_number == 20:
+            task_number = 22
+            variant.append(None)
+            variant.append(None)
+        if isinstance(byte_txt, tuple):
+            byte_txt_1 = byte_txt[0]
+            byte_txt_2 = byte_txt[1]
+        else:
+            byte_txt_1 = byte_txt
+            byte_txt_2 = None
+
+        task = [task_description, answer]
+
+        if byte_img:
+            task.append(byte_img)
+        if byte_excel:
+            with open(f'temp_task_files/{task_number}.xlsx', 'wb') as xls:
+                xls.write(byte_excel)
+            file = open(f"temp_task_files/{task_number}.xlsx", "rb")
+            task.append(file)
+        if byte_word:
+            with open(f'temp_task_files/{task_number}.docx', 'wb') as docx:
+                docx.write(byte_word)
+            file = open(f"temp_task_files/{task_number}.docx", "rb")
+            task.append(file)
+        if byte_txt_1:
+            with open(f"temp_task_files/{task_number}_A.txt", 'wb') as docx:
+                docx.write(byte_txt_1)
+            file = open(f"temp_task_files/{task_number}_A.txt", "rb")
+            task.append(file)
+        if byte_txt_2:
+            with open(f"temp_task_files/{task_number}_B.txt", 'wb') as docx:
+                docx.write(byte_txt_2)
+            file = open(f"temp_task_files/{task_number}_B.txt", "rb")
+            task.append(file)
+
+        variant.append(task)
+        task_number += 1
+
+    return variant
 
 
 if __name__ == '__main__':
-    generate_random_variant()
+    print(generate_random_variant()[9])
