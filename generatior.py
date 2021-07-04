@@ -137,31 +137,29 @@ def generate_random_variant():
         else:
             byte_txt_1 = byte_txt
             byte_txt_2 = None
-
-        task = [task_description, answer]
-
+        task = dict()
+        task['description'] = task_description
+        task['answer'] = answer
         if byte_img:
-            task.append(byte_img)
+            with open(f'temp_task_files/{task_number}.png', 'wb') as img:
+                img.write(byte_img)
+        task['image'] = byte_img
         if byte_excel:
             with open(f'temp_task_files/{task_number}.xlsx', 'wb') as xls:
                 xls.write(byte_excel)
-            file = open(f"temp_task_files/{task_number}.xlsx", "rb")
-            task.append(file)
+        task['excel'] = byte_excel
         if byte_word:
             with open(f'temp_task_files/{task_number}.docx', 'wb') as docx:
                 docx.write(byte_word)
-            file = open(f"temp_task_files/{task_number}.docx", "rb")
-            task.append(file)
+        task['word'] = byte_word
         if byte_txt_1:
             with open(f"temp_task_files/{task_number}_A.txt", 'wb') as docx:
                 docx.write(byte_txt_1)
-            file = open(f"temp_task_files/{task_number}_A.txt", "rb")
-            task.append(file)
+        task['txt1'] = byte_txt_1
         if byte_txt_2:
             with open(f"temp_task_files/{task_number}_B.txt", 'wb') as docx:
                 docx.write(byte_txt_2)
-            file = open(f"temp_task_files/{task_number}_B.txt", "rb")
-            task.append(file)
+        task['txt2'] = byte_txt_2
 
         variant.append(task)
         task_number += 1

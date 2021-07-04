@@ -1,20 +1,38 @@
 import json
 import logging
+from time import time
 
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
+
+from generatior import generate_random_variant
 from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
+
 import sql_work
-from config import TOKEN
+
+# import token
+try:
+    # manual start
+    # from local config file
+    from config import TEST_TOKEN
+
+    TOKEN = TEST_TOKEN
+except ModuleNotFoundError:
+    # else deployed on Heroku
+    # DEPLOY TOKEN - env var on Heroku
+    from load_env_vars import DEPLOY_TOKEN
+
+    TOKEN = DEPLOY_TOKEN
+    if not TOKEN:
+        print('Copy config.py to root directory from Telegram chat')
 
 bot = Bot(TOKEN)
 CHAT_ID = ""
-MESSAGE_ID = ""
-SECOND_ID = ""
+MESSAGE_IDS = []
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -78,7 +96,10 @@ def practice(update: Update, context: CallbackContext):
     ANSWER = answer
     update.message.reply_text(task)
     if img_bytes:
-        update.message.reply_photo(img_bytes)
+        with open('temp_task_files/task.png', 'wb') as img:
+            img.write(img_bytes)
+        file = open("temp_task_files/task.png", "rb")
+        update.message.reply_document(file)
     if xls_bytes:
         with open('temp_task_files/file.docx', 'wb') as xlsx:
             xlsx.write(xls_bytes)
@@ -106,43 +127,43 @@ def practice(update: Update, context: CallbackContext):
     #     return 1
 
 
+'''
 def get_variant():
     variant = []
     for task_number in range(1, 28):
         if 22 > task_number > 19:
             variant.append(["какой то мусор"])
             continue
-        task, answer, img_adr, xls_adr, doc_adr, txt_adr_1, txt_adr_2 = get_task_by_number(str(task_number))
+        task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes_1, txt_bytes_2 = get_task_by_number(str(task_number))
 
         global ANSWER
         ANSWER = answer
         all_task_materials = []
         all_task_materials.append(task)
         all_task_materials.append(answer)
-        if img_adr:
-            all_task_materials.append(img_adr)
-        if xls_adr:
-            with open('temp_task_files/file.xlsx', 'wb') as xls:
-                xls.write(xls_adr)
-            file = open("temp_task_files/file.xlsx", "rb")
-            all_task_materials.append(file)
-        if doc_adr:
-            with open('temp_task_files/file.docx', 'wb') as docx:
-                docx.write(doc_adr)
-            file = open("temp_task_files/file.docx", "rb")
-            all_task_materials.append(file)
-        if txt_adr_1:
-            with open('temp_task_files/file.txt', 'wb') as docx:
-                docx.write(txt_adr_1)
-            file = open("temp_task_files/file.txt", "rb")
-            all_task_materials.append(file)
-        if txt_adr_2:
-            with open('temp_task_files/file.txt', 'wb') as docx:
-                docx.write(txt_adr_2)
-            file = open("temp_task_files/file.txt", "rb")
-            all_task_materials.append(file)
+        if img_bytes:
+            all_task_materials.append(img_bytes)
+        else:
+            all_task_materials.append(None)
+        if xls_bytes:
+            all_task_materials.append(xls_bytes)
+        else:
+            all_task_materials.append(None)
+        if doc_bytes:
+            all_task_materials.append(doc_bytes)
+        else:
+            all_task_materials.append(None)
+        if txt_bytes_1:
+            all_task_materials.append(txt_bytes_1)
+        else:
+            all_task_materials.append(None)
+        if txt_bytes_2:
+            all_task_materials.append(txt_bytes_2)
+        else:
+            all_task_materials.append(None)
         variant.append(all_task_materials)
     return variant
+'''
 
 
 def buttonsHandler(update: Update, context: CallbackContext):
@@ -157,33 +178,45 @@ def buttonsHandler(update: Update, context: CallbackContext):
             keyboard.append(addl)
             addl = []
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.data = int(query.data)
-    query.data -= 1
+    task_number = int(query.data) - 1
     global VARIANT
     global CHAT_ID
-    global MESSAGE_ID
-    global SECOND_ID
-    if MESSAGE_ID:
-        bot.delete_message(CHAT_ID, MESSAGE_ID)
-        MESSAGE_ID = ""
-    if SECOND_ID:
-        bot.delete_message(CHAT_ID, SECOND_ID)
-        SECOND_ID = ""
-    query.message.edit_text(VARIANT[query.data][0], reply_markup=reply_markup)
-    if len(VARIANT[query.data]) >= 3 and VARIANT[query.data][2]:
-        if type(VARIANT[query.data][2]) == bytes:
-            MESSAGE_ID = (bot.send_photo(CHAT_ID, VARIANT[query.data][2])).message_id
-        else:
-            MESSAGE_ID = (bot.send_document(CHAT_ID, VARIANT[query.data][2])).message_id
-    if len(VARIANT[query.data]) >= 4 and VARIANT[query.data][3]:
-        SECOND_ID = (bot.send_document(CHAT_ID, VARIANT[query.data][3])).message_id
+    global MESSAGE_IDS
+    task = VARIANT[task_number]
+    img_bytes = task['image']
+    excel_bytes = task['excel']
+    word_bytes = task['word']
+    txt_bytes_1 = task['txt1']
+    txt_bytes_2 = task['txt2']
+    if not CHAT_ID:
+        return
+    for message_id in MESSAGE_IDS:
+        if message_id:
+            bot.delete_message(CHAT_ID, message_id)
+    MESSAGE_IDS = []
+    query.edit_message_text(task['description'], reply_markup=reply_markup)
+    if img_bytes:
+        MESSAGE_IDS.append(bot.send_photo(CHAT_ID, img_bytes).message_id)
+    if excel_bytes:
+        file = open(f'temp_task_files/{task_number + 1}.xlsx', 'rb')
+        MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
+    if word_bytes:
+        file = open(f'temp_task_files/{task_number + 1}.docx', 'rb')
+        MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
+    if txt_bytes_1:
+        file = open(f'temp_task_files/{task_number + 1}_A.txt', 'rb')
+        MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
+    if txt_bytes_2:
+        file = open(f'temp_task_files/{task_number + 1}_B.txt', 'rb')
+        MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
 
 
 def send_variant(update, context):
     global VARIANT
     global CHAT_ID
     CHAT_ID = update.message.chat_id
-    VARIANT = get_variant()
+    VARIANT = generate_random_variant()
+
     keyboard = []
     addl = []
     for i in range(1, 28):
