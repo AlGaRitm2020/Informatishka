@@ -54,7 +54,7 @@ def start(update: Update, context: CallbackContext):
                               'Введите команду /practice, чтобы начать решать задания.'
                               'Введите команду /theory, чтобы начать смотреть теорию по заданиям.'
                               'Введите команду /full, чтобы начать решать полный вариант.'
-                              'Чтобы остановить любой диалог нажмите /stop',
+                              'Чтобы остановить любой диалог (кроме полного варианта) нажмите /stop',
                               reply_markup=markup)
     # register user
     sql_work.register(update.message.from_user.name, update.message.chat_id)
@@ -67,7 +67,7 @@ def conv_begin(update: Update, context: CallbackContext):
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
-    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+    reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет! Напиши /start, чтобы начать работу', reply_markup=markup)
 
@@ -177,8 +177,9 @@ def buttonsHandler(update: Update, context: CallbackContext):
 
 def answerWrighter(update: Update, context: CallbackContext):
     answer = update.message.text
-    if answer[:5] == '/stop':
+    if answer[:4] == '/end':
         fullVarChecker(update, context)
+        start(update, context)
         return ConversationHandler.END
     reply_markup = create_buttons()
     global ANSWERS
@@ -228,7 +229,7 @@ def send_variant(update, context):
     CHAT_ID = update.message.chat_id
     VARIANT = generate_random_variant()
     reply_markup = create_buttons()
-    update.message.reply_text("Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /stop"
+    update.message.reply_text("Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /end. "
                               "Ваш вариант:", reply_markup=reply_markup)
     return 1
 
@@ -362,17 +363,15 @@ def main() -> None:
     )
 
     dispatcher.add_handler(CommandHandler("stop", start))
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("stats", stats_begin))
-    dispatcher.add_handler(CommandHandler("all_tasks", stats))
-
     dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(specific_task_dialog)
-
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("stats", stats_begin))
+    dispatcher.add_handler(CommandHandler("all_tasks", stats))
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
     updater.start_polling()
     updater.idle()
