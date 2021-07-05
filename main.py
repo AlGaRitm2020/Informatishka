@@ -212,7 +212,7 @@ def fullVarChecker(update: Update, context: CallbackContext):
             continue
         all += 1
         correct_answer = VARIANT[number]['answer']
-        update.message.reply_text(f'Ваш ответ: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
+        update.message.reply_text(f'Ваш ответ на задачу {str(number + 1)}: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
         user_answer = user_answer.lower()
         correct_answer = correct_answer.lower()
         user_answer = user_answer.replace('\n', ';')
@@ -363,13 +363,13 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("stats", stats))
     dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("stats", stats))
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
     updater.start_polling()
     updater.idle()
