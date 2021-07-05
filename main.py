@@ -212,12 +212,18 @@ def fullVarChecker(update: Update, context: CallbackContext):
             continue
         all += 1
         correct_answer = VARIANT[number]['answer']
-        user_answer = user_answer.lower().lstrip().rstrip()
-        correct_answer = correct_answer.lower().lstrip().rstrip()
         update.message.reply_text(f'Ваш ответ: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
+        user_answer = user_answer.lower()
+        correct_answer = correct_answer.lower()
+        user_answer = user_answer.replace('\n', ';')
+        correct_answer = correct_answer.replace('\n', ';')
+        user_answer = user_answer.replace(' ', '')
+        correct_answer = correct_answer.replace(' ', '')
         if user_answer == correct_answer:
-            print(number, 'НЫАААААААААА')
             solved += 1
+        else:
+            print(user_answer)
+            print(correct_answer)
         sql_work.add_score(number + 1, int(user_answer == correct_answer), update.message.chat_id)
     update.message.reply_text(f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
     ANSWERS = [None] * 27
