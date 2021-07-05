@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-def get_task_stats_diagram(task_number, right_answers, all_answers):
+def get_task_stats_diagram(task_number, right_answers, all_answers, result):
     wrong_answers = all_answers - right_answers
     labels = [f'Верный ответ: {right_answers}', f'Неверный ответ: {wrong_answers}']
     values = [right_answers, wrong_answers]
@@ -19,6 +19,7 @@ def get_task_stats_diagram(task_number, right_answers, all_answers):
     # Make figure and axes
     fig, ax = plt.subplots(1, 1)
     ax.set_title(f"Статистика по задаче {task_number}", fontsize=20)
+    ax.set_xlabel(result, fontsize=12)
 
     # A standard pie plot
     patches, texts, autotexts = ax.pie(values,

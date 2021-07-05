@@ -7,6 +7,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
 
 from generatior import generate_random_variant
+from task_diagram import get_task_stats_diagram
 from theory_video import get_theory_video
 
 from get_files import get_photo, get_excel, get_word
@@ -236,23 +237,23 @@ def stats(update, context):
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
         update.message.reply_text("Вы пока не решали задачи. Если хотите попробовать: /practice",
+
                                   reply_markup=markup)
+
         return
     for task_number, answers in result.items():
         correctness = int(answers[0] / answers[1] * 100)
         if correctness > 90:
-            reply = 'Отличный результат. Продолжай в том же духе.'
+            result = 'Отличный результат. Продолжай в том же духе.'
         elif correctness > 75:
-            reply = 'Хороший результат. У тебя все получиться!'
+            result = 'Хороший результат. У тебя все получиться!'
         elif correctness > 50:
-            reply = 'Есть, над чем работать, но в целом неплохо'
+            result = 'Есть, над чем работать, но в целом неплохо'
         else:
-            reply = 'Рекомендую тебе почитать теорию по этой задаче'
-        update.message.reply_text(
-            f"На задаче {task_number} у вас {answers[0]} успешных решений из {answers[1]}"
-            f" Правильность: {correctness}%\n"
-            f"{reply}",
-            reply_markup=markup)
+            result = 'Рекомендую тебе почитать теорию по этой задаче'
+
+        stat_diagram = get_task_stats_diagram(task_number, answers[0], answers[1], result)
+        update.message.reply_photo(stat_diagram, reply_markup=markup)
 
 
 def theory(update, context):
