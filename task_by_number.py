@@ -9,6 +9,8 @@ import json
 
 def get_task_by_number(task_number):
     """This function return task, answer and extra files like images, excel, word"""
+    if 20 <= int(task_number) <= 21:
+        task_number = '19'
     # get dict from json
     with open("data/categories.json", "r") as categories:
         categories_dict = json.load(categories)
@@ -19,7 +21,9 @@ def get_task_by_number(task_number):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     center = soup.find('div', class_='center')
+
     tasks_count = int(str(center.findAll('p')[1])[20:22])
+
     tasks_table = center.find('table', class_='vartopic')
     random_task = random.randint(0, tasks_count - 1)
 
@@ -115,4 +119,4 @@ def get_task_by_number(task_number):
 
 
 if __name__ == '__main__':
-    get_task_by_number('19')
+    get_task_by_number('20')
