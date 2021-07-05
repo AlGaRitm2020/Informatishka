@@ -27,7 +27,10 @@ def generate_random_variant():
         if elem.text:
             answers.append(elem.text)
         else:
-            answers.append(str(elem).split("'")[1].replace('<br/>', '\n'))
+            answers.append(str(elem).split("'")[1].replace('<br/>', ' '))
+        if i == 18:
+            answers[-1] = answers[-1].replace('\r', '')
+            answers[-1] = answers[-1].replace('\t', '')
 
     byte_img_list = []
     byte_excel_list = []
@@ -111,9 +114,9 @@ def generate_random_variant():
     for task_number in range(len(tasks_script)):
         tasks_description.append(get_task_text(tasks_script[task_number]))
         # add a hint to task 19-21, because there are 3 answers
-        if task_number - 1 == 19:
+        if task_number + 1 == 19:
             tasks_description[task_number] += '\n Ответы на каждый из трех вопросов вводите в новой' \
-                                              ' строке точкой с запятой(;), а ответы внутри одного' \
+                                              ' строке, а ответы внутри одного' \
                                               ' вопроса пробелом'
 
     variant = []

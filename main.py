@@ -233,32 +233,15 @@ def send_variant(update, context):
     return 1
 
 
-def stats_begin(update, context):
-    reply_keyboard = [['/all_tasks', '/specific_task'], ['/activity', '/stop']]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-    update.message.reply_text(
-        'Выбери какую статистику ты хочешь посмотреть',
-        reply_markup=markup)
-
-
 def stats(update, context):
     reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    result = sql_work.get_stats(update.message.chat_id)
+    if not result:
+        update.message.reply_text("Вы пока не решали задачи. Если хотите попробовать: /practice",
+                                  reply_markup=markup)
 
-    try:
-        task_number = int(update.message.text)
-        result = sql_work.get_stats(update.message.chat_id, task_number=task_number)
-        if not result:
-            update.message.reply_text(f"Вы пока не решали задачу {task_number}. Если хотите попробовать: /practice",
-                                      reply_markup=markup)
-            return ConversationHandler.END
-    except Exception:
-        result = sql_work.get_stats(update.message.chat_id)
-        if not result:
-            update.message.reply_text("Вы пока не решали задачи. Если хотите попробовать: /practice",
-                                      reply_markup=markup)
-
-            return ConversationHandler.END
+        return
     for task_number, answers in result.items():
         correctness = int(answers[0] / answers[1] * 100)
         if correctness > 90:
@@ -272,7 +255,6 @@ def stats(update, context):
 
         stat_diagram = get_task_stats_diagram(task_number, answers[0], answers[1], result)
         update.message.reply_photo(stat_diagram, reply_markup=markup)
-    return ConversationHandler.END
 
 
 def theory(update, context):
@@ -368,7 +350,6 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-
     full_var_dialog = ConversationHandler(
         entry_points=[CommandHandler('full', send_variant)],
         states={
@@ -376,23 +357,13 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-    specific_task_dialog = ConversationHandler(
-        entry_points=[CommandHandler('specific_task', conv_begin)],
-        states={
-            1: [MessageHandler(Filters.text, stats)],
-        },
-        fallbacks=[MessageHandler(Filters.text, start)]
-    )
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("stats", stats_begin))
-    dispatcher.add_handler(CommandHandler("all_tasks", stats))
-
+    dispatcher.add_handler(CommandHandler("stats", stats))
     dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
-    dispatcher.add_handler(specific_task_dialog)
     dispatcher.add_handler(MessageHandler(Filters.text, help_command))
     updater.start_polling()
     updater.idle()
