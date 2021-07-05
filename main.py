@@ -188,6 +188,7 @@ def answerWrighter(update: Update, context: CallbackContext):
         update.message.reply_text("Сначала выберите задание", reply_markup=reply_markup)
         return 1
     ANSWERS[CURRENT_TASK] = answer
+    CURRENT_TASK = -1
     update.message.reply_text("Ваш ответ записан", reply_markup=reply_markup)
     return 1
 
