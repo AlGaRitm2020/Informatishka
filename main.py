@@ -46,16 +46,19 @@ logger = logging.getLogger(__name__)
 
 
 def start(update: Update, context: CallbackContext):
-    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+    reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
                               'Выбери номер задания, я выдам тебе задачу.'
                               ' Введи ответ и я проверю его правильность.'
                               'Введите команду /practice, чтобы начать решать задания.'
+                              'Введите команду /theory, чтобы начать смотреть теорию по заданиям.'
+                              'Введите команду /full, чтобы начать решать полный вариант.'
                               'Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
     # register user
     sql_work.register(update.message.from_user.name, update.message.chat_id)
+    return ConversationHandler.END
 
 
 def conv_begin(update: Update, context: CallbackContext):
@@ -71,18 +74,6 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def practice(update: Update, context: CallbackContext):
     global TASK_NUMBER
-    if update.message.text == '/stop':
-        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
-        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-        update.message.reply_text(
-            'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
-            'Выбери номер задания, я выдам тебе задачу.'
-            ' Введи ответ и я проверю его правильность.'
-            'Введите команду /practice, чтобы начать решать задания.'
-            'Чтобы остановить любой диалог нажмите /stop',
-            reply_markup=markup)
-        return ConversationHandler.END
-
     task_number = update.message.text
     try:
         if int(task_number) < 1 or int(task_number) > 27:
@@ -151,6 +142,8 @@ def buttonsHandler(update: Update, context: CallbackContext):
     global MESSAGE_IDS
     global CURRENT_TASK
     if CURRENT_TASK == task_number:
+        return
+    if not VARIANT:
         return
     task = VARIANT[task_number]
     img_bytes = task['image']
@@ -235,12 +228,13 @@ def send_variant(update, context):
     CHAT_ID = update.message.chat_id
     VARIANT = generate_random_variant()
     reply_markup = create_buttons()
-    update.message.reply_text("Ваш вариант:", reply_markup=reply_markup)
+    update.message.reply_text("Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /stop"
+                              "Ваш вариант:", reply_markup=reply_markup)
     return 1
 
 
 def stats(update, context):
-    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+    reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
@@ -264,17 +258,6 @@ def stats(update, context):
 
 
 def theory(update, context):
-    if update.message.text == '/stop':
-        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
-        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-        update.message.reply_text(
-            'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
-            'Выбери номер задания, я выдам тебе задачу.'
-            ' Введи ответ и я проверю его правильность.'
-            'Введите команду /practice, чтобы начать решать задания.'
-            'Чтобы остановить любой диалог нажмите /stop',
-            reply_markup=markup)
-        return ConversationHandler.END
     try:
         task_number = update.message.text
         try:
@@ -287,7 +270,7 @@ def theory(update, context):
             return 1
         with open('data/theory_links.json', 'r') as file:
             theory_links = json.load(file)
-        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+        reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
                                   f'{get_theory_video(theory_links[task_number])}\n'
@@ -298,7 +281,7 @@ def theory(update, context):
                                   reply_markup=markup)
         return ConversationHandler.END
     except Exception:
-        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+        reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text('Что-то пошло не так, попробуйте еще раз', reply_markup=markup)
         return 1
@@ -306,17 +289,6 @@ def theory(update, context):
 
 def check(update: Update, context: CallbackContext):
     global TASK_NUMBER
-    if update.message.text == '/stop':
-        reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
-        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-        update.message.reply_text(
-            'Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
-            'Выбери номер задания, я выдам тебе задачу.'
-            ' Введи ответ и я проверю его правильность.'
-            'Введите команду /practice, чтобы начать решать задания.'
-            'Чтобы остановить любой диалог нажмите /stop',
-            reply_markup=markup)
-        return ConversationHandler.END
     global ANSWER
     ANSWER.lstrip().rstrip()
     user_answer = update.message.text
@@ -363,6 +335,7 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
+    dispatcher.add_handler(CommandHandler("stop", start))
     dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
