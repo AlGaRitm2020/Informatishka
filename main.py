@@ -1,7 +1,6 @@
 import json
 import logging
 from time import time
-
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
@@ -34,12 +33,14 @@ except ModuleNotFoundError:
 bot = Bot(TOKEN)
 CHAT_ID = ""
 MESSAGE_IDS = []
+CURRENT_TASK = -1
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 ANSWER = ""
 VARIANT = []
+ANSWERS = [None] * 27
 TASK_NUMBER = 0
 logger = logging.getLogger(__name__)
 
@@ -128,47 +129,7 @@ def practice(update: Update, context: CallbackContext):
     #     return 1
 
 
-'''
-def get_variant():
-    variant = []
-    for task_number in range(1, 28):
-        if 22 > task_number > 19:
-            variant.append(["какой то мусор"])
-            continue
-        task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes_1, txt_bytes_2 = get_task_by_number(str(task_number))
-
-        global ANSWER
-        ANSWER = answer
-        all_task_materials = []
-        all_task_materials.append(task)
-        all_task_materials.append(answer)
-        if img_bytes:
-            all_task_materials.append(img_bytes)
-        else:
-            all_task_materials.append(None)
-        if xls_bytes:
-            all_task_materials.append(xls_bytes)
-        else:
-            all_task_materials.append(None)
-        if doc_bytes:
-            all_task_materials.append(doc_bytes)
-        else:
-            all_task_materials.append(None)
-        if txt_bytes_1:
-            all_task_materials.append(txt_bytes_1)
-        else:
-            all_task_materials.append(None)
-        if txt_bytes_2:
-            all_task_materials.append(txt_bytes_2)
-        else:
-            all_task_materials.append(None)
-        variant.append(all_task_materials)
-    return variant
-'''
-
-
-def buttonsHandler(update: Update, context: CallbackContext):
-    query = update.callback_query
+def create_buttons():
     keyboard = []
     addl = []
     for i in range(1, 28):
@@ -178,11 +139,19 @@ def buttonsHandler(update: Update, context: CallbackContext):
         if len(addl) == 5:
             keyboard.append(addl)
             addl = []
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(keyboard)
+
+
+def buttonsHandler(update: Update, context: CallbackContext):
+    query = update.callback_query
+    reply_markup = create_buttons()
     task_number = int(query.data) - 1
     global VARIANT
     global CHAT_ID
     global MESSAGE_IDS
+    global CURRENT_TASK
+    if CURRENT_TASK == task_number:
+        return
     task = VARIANT[task_number]
     img_bytes = task['image']
     excel_bytes = task['excel']
@@ -191,6 +160,7 @@ def buttonsHandler(update: Update, context: CallbackContext):
     txt_bytes_2 = task['txt2']
     if not CHAT_ID:
         return
+    CURRENT_TASK = task_number
     for message_id in MESSAGE_IDS:
         if message_id:
             bot.delete_message(CHAT_ID, message_id)
@@ -212,23 +182,55 @@ def buttonsHandler(update: Update, context: CallbackContext):
         MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
 
 
+def answerWrighter(update: Update, context: CallbackContext):
+    answer = update.message.text
+    if answer[:5] == '/stop':
+        fullVarChecker(update, context)
+        return ConversationHandler.END
+    reply_markup = create_buttons()
+    global ANSWERS
+    global CURRENT_TASK
+    if CURRENT_TASK == -1:
+        update.message.reply_text("Сначала выберите задание", reply_markup=reply_markup)
+        return 1
+    ANSWERS[CURRENT_TASK] = answer
+    update.message.reply_text("Ваш ответ записан", reply_markup=reply_markup)
+    return 1
+
+
+def fullVarChecker(update: Update, context: CallbackContext):
+    import sql_work
+    global ANSWERS
+    global VARIANT
+    solved = 0
+    all = 0
+    for number in range(27):
+        if not VARIANT[number]:
+            continue
+        user_answer = ANSWERS[number]
+        if not user_answer:
+            continue
+        all += 1
+        correct_answer = VARIANT[number]['answer']
+        user_answer = user_answer.lower().lstrip().rstrip()
+        correct_answer = correct_answer.lower().lstrip().rstrip()
+        update.message.reply_text(f'Ваш ответ: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
+        if user_answer == correct_answer:
+            print(number, 'НЫАААААААААА')
+            solved += 1
+        sql_work.add_score(number + 1, int(user_answer == correct_answer), update.message.chat_id)
+    update.message.reply_text(f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
+    ANSWERS = [None] * 27
+
+
 def send_variant(update, context):
     global VARIANT
     global CHAT_ID
     CHAT_ID = update.message.chat_id
     VARIANT = generate_random_variant()
-
-    keyboard = []
-    addl = []
-    for i in range(1, 28):
-        if 21 <= i <= 22:
-            continue
-        addl.append(InlineKeyboardButton(f'{i}', callback_data=i))
-        if len(addl) == 5:
-            keyboard.append(addl)
-            addl = []
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = create_buttons()
     update.message.reply_text("Ваш вариант:", reply_markup=reply_markup)
+    return 1
 
 
 def stats(update, context):
@@ -237,7 +239,6 @@ def stats(update, context):
     result = sql_work.get_stats(update.message.chat_id)
     if not result:
         update.message.reply_text("Вы пока не решали задачи. Если хотите попробовать: /practice",
-
                                   reply_markup=markup)
 
         return
@@ -352,7 +353,7 @@ def main() -> None:
     full_var_dialog = ConversationHandler(
         entry_points=[CommandHandler('full', send_variant)],
         states={
-            1: [MessageHandler(Filters.text, start)]
+            1: [MessageHandler(Filters.text, answerWrighter)],
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )

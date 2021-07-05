@@ -24,9 +24,6 @@ def generate_random_variant():
     answer_td_list = answer_table.findAll('td', class_='answer')
     answers = []
     for i, elem in enumerate(answer_td_list):
-        if i + 1 == 20:
-            answers.append(None)
-            answers.append(None)
         if elem.text:
             answers.append(elem.text)
         else:
