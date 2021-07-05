@@ -34,6 +34,7 @@ cur.execute("INSERT INTO users (username, chat_id) VALUES ('@albert_gareev', '12
 cur.execute("DELETE FROM stats;")
 cur.execute("DELETE FROM users WHERE id = 4;")
 """
+cur.execute("UPDATE stats  SET (right_answers, all_answers) =  (12, 20) WHERE user_id = 8;")
 
 # --- select data from users ---
 cur.execute("SELECT * FROM users;")
