@@ -33,8 +33,9 @@ cur.execute("INSERT INTO users (username, chat_id) VALUES ('@albert_gareev', '12
 """
 cur.execute("DELETE FROM stats;")
 cur.execute("DELETE FROM users WHERE id = 4;")
-"""
+# """
 cur.execute("UPDATE stats  SET (right_answers, all_answers) =  (12, 20) WHERE user_id = 8;")
+# cur.execute("INSERT INTO stats (task_num, user_id) VALUES (3, 8);")
 
 # --- select data from users ---
 cur.execute("SELECT * FROM users;")
@@ -42,7 +43,7 @@ print('users', 'id, username, chat_id', sep='\n')
 pprint(cur.fetchall())
 
 # --- select data from stats ---
-cur.execute("SELECT * FROM stats;")
+cur.execute("SELECT * FROM stats WHERE user_id = 8;")
 print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
 pprint(cur.fetchall())
 

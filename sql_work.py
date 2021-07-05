@@ -49,7 +49,7 @@ def get_stats(chat_id):
     cur = con.cursor()
     request = "SELECT task_num, right_answers, all_answers FROM stats\
 \nWHERE user_id in (SELECT id FROM users\
-\nWHERE chat_id = '{}')".format(str(chat_id))
+\nWHERE chat_id = '{}') ORDER BY task_num".format(str(chat_id))
     cur.execute(request)
     result = cur.fetchall()
     if not len(result):
@@ -70,4 +70,4 @@ def get_all_users_chat_ids():
 
 
 if __name__ == '__main__':
-    print(get_all_users_chat_ids())
+    print(get_stats('1830477841'))
