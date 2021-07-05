@@ -44,12 +44,17 @@ def add_score(task_num, result, chat_id):
     return True
 
 
-def get_stats(chat_id):
+def get_stats(chat_id, task_number=0):
     con = psql.connect(**get_db_config_from_url())
     cur = con.cursor()
-    request = "SELECT task_num, right_answers, all_answers FROM stats\
-\nWHERE user_id in (SELECT id FROM users\
-\nWHERE chat_id = '{}') ORDER BY task_num".format(str(chat_id))
+    if not task_number:
+        request = "SELECT task_num, right_answers, all_answers FROM stats\
+        \nWHERE user_id in (SELECT id FROM users\
+        \nWHERE chat_id = '{}') ORDER BY task_num".format(str(chat_id))
+    else:
+        request = "SELECT task_num, right_answers, all_answers FROM stats\
+                \nWHERE user_id in (SELECT id FROM users\
+                \nWHERE chat_id = '{}') AND task_num = {} ORDER BY task_num".format(str(chat_id), task_number)
     cur.execute(request)
     result = cur.fetchall()
     if not len(result):
