@@ -8,7 +8,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, \
 from Markups import Markups
 from generatior import generate_random_variant
 from task_diagram import get_task_stats_diagram
-from theory_video import get_theory_video
+
 
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
@@ -173,7 +173,8 @@ def buttonsHandler(update: Update, context: CallbackContext):
             bot.delete_message(CHAT_ID, message_id)
     MESSAGE_IDS = []
     query.edit_message_text(task['description'], reply_markup=reply_markup)
-    update.message.reply_text(reply_markup=ReplyKeyboardMarkup())
+    markup = ReplyKeyboardMarkup(Markups.variant, one_time_keyboard=True)
+    update.message.reply_text(reply_markup=markup)
     if img_bytes:
         MESSAGE_IDS.append(bot.send_photo(CHAT_ID, img_bytes).message_id)
     if excel_bytes:
