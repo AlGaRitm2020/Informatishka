@@ -5,6 +5,7 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKe
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
 
+from Markups import Markups
 from generatior import generate_random_variant
 from task_diagram import get_task_stats_diagram
 from theory_video import get_theory_video
@@ -46,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 
 def start(update: Update, context: CallbackContext):
-    reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
+    reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
                               'Выбери номер задания, я выдам тебе задачу.'
@@ -63,13 +64,20 @@ def start(update: Update, context: CallbackContext):
 
 def conv_begin(update: Update, context: CallbackContext):
     update.message.reply_text("Выбирете номер задания от 1 до 27")
+
     return 1
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
-    reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
+    reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет! Напиши /start, чтобы начать работу', reply_markup=markup)
+
+def text_handler(update: Update, context: CallbackContext) -> None:
+    message = update.message.text
+    if message == 'Решить задачу':
+        conv_begin(update, context)
+        practice(update, context)
 
 
 def practice(update: Update, context: CallbackContext):
@@ -225,6 +233,7 @@ def fullVarChecker(update: Update, context: CallbackContext):
 
 
 def send_variant(update, context):
+    print('full')
     global VARIANT
     global CHAT_ID
     CHAT_ID = update.message.chat_id
@@ -236,7 +245,7 @@ def send_variant(update, context):
 
 
 def stats_begin(update, context):
-    reply_keyboard = [['/all_tasks', '/specific_task'], ['/activity', '/stop']]
+    reply_keyboard = Markups.stats
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text(
         'Выбери какую статистику ты хочешь посмотреть',
@@ -244,7 +253,7 @@ def stats_begin(update, context):
 
 
 def stats(update, context):
-    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+    reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
     try:
@@ -290,7 +299,7 @@ def theory(update, context):
             return 1
         with open('data/theory_links.json', 'r') as file:
             theory_links = json.load(file)
-        reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
+        reply_keyboard = Markups.start
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
                                   f'{get_theory_video(theory_links[task_number])}\n'
@@ -301,7 +310,7 @@ def theory(update, context):
                                   reply_markup=markup)
         return ConversationHandler.END
     except Exception:
-        reply_keyboard = [['/practice', '/theory', '/full'], ['/stats', '/stop']]
+        reply_keyboard = Markups.start
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text('Что-то пошло не так, попробуйте еще раз', reply_markup=markup)
         return 1
@@ -313,7 +322,7 @@ def check(update: Update, context: CallbackContext):
     ANSWER.lstrip().rstrip()
     user_answer = update.message.text
     user_answer.lstrip().rstrip()
-    reply_keyboard = [['/practice', '/theory'], ['/stats', '/stop']]
+    reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     if str(ANSWER) == str(user_answer):
         update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
@@ -349,7 +358,7 @@ def main() -> None:
         fallbacks=[MessageHandler(Filters.text, start)]
     )
     full_var_dialog = ConversationHandler(
-        entry_points=[CommandHandler('full', send_variant)],
+        entry_points=[MessageHandler( Filters.regex('Получить целы'), send_variant)],
         states={
             1: [MessageHandler(Filters.text, answerWrighter)],
         },
@@ -373,7 +382,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("stats", stats_begin))
     dispatcher.add_handler(CommandHandler("all_tasks", stats))
-    dispatcher.add_handler(MessageHandler(Filters.text, help_command))
+    dispatcher.add_handler(MessageHandler(Filters.text, text_handler))
     updater.start_polling()
     updater.idle()
 
