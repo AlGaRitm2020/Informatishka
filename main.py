@@ -147,7 +147,6 @@ def buttonsHandler(update: Update, context: CallbackContext):
     query = update.callback_query
     reply_markup = create_buttons()
     if query.data == Markups.variant[0][0]:
-        print('adsfasdf')
         fullVarChecker(update, context)
         start(update, context)
         return ConversationHandler.END
@@ -174,6 +173,7 @@ def buttonsHandler(update: Update, context: CallbackContext):
             bot.delete_message(CHAT_ID, message_id)
     MESSAGE_IDS = []
     query.edit_message_text(task['description'], reply_markup=reply_markup)
+    update.message.reply_text(reply_markup=ReplyKeyboardMarkup())
     if img_bytes:
         MESSAGE_IDS.append(bot.send_photo(CHAT_ID, img_bytes).message_id)
     if excel_bytes:
@@ -194,7 +194,7 @@ def buttonsHandler(update: Update, context: CallbackContext):
 
 def answerWrighter(update: Update, context: CallbackContext):
     answer = update.message.text
-    if answer[:4] == '\end':
+    if answer[:4] == '/end':
         fullVarChecker(update, context)
         start(update, context)
         return ConversationHandler.END
@@ -301,6 +301,9 @@ def stats(update, context):
     return ConversationHandler.END
 
 
+
+
+
 def theory(update, context):
     try:
         task_number = update.message.text
@@ -314,10 +317,12 @@ def theory(update, context):
             return 1
         with open('data/theory_links.json', 'r') as file:
             theory_links = json.load(file)
+        with open('data/videos_links.json', 'r') as file:
+            videos_links = json.load(file)
         reply_keyboard = Markups.start
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
-                                  f'{get_theory_video(theory_links[task_number])}\n'
+                                  f'{videos_links[task_number]}\n'
                                   f'Или почитать теорию на сайте:\n'
                                   f'{theory_links[task_number]}', reply_markup=markup)
 
