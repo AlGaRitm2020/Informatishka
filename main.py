@@ -50,16 +50,17 @@ def start(update: Update, context: CallbackContext):
     reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
-                              'Выбери номер задания, я выдам тебе задачу.'
-                              ' Введи ответ и я проверю его правильность.'
-                              'Введите команду /practice, чтобы начать решать задания.'
-                              'Введите команду /theory, чтобы начать смотреть теорию по заданиям.'
-                              'Введите команду /full, чтобы начать решать полный вариант.'
+                              'Я умею выдавать задачи и проверять их правильность. '
+                              'Ты также можешь почитать материалы или посмотреть видео'
+                              ' о том как правильно решается любая задача'
+                              'Следи за своим прогрессом с помощью раздела статистика.'
+                              'Желаю тебе успешной подготовки.'
+
                               'Чтобы остановить любой диалог (кроме полного варианта) нажмите /stop',
                               reply_markup=markup)
     # register user
     sql_work.register(update.message.from_user.name, update.message.chat_id)
-    return ConversationHandler.END
+
 
 
 def conv_begin(update: Update, context: CallbackContext):
@@ -71,14 +72,13 @@ def conv_begin(update: Update, context: CallbackContext):
 def help_command(update: Update, context: CallbackContext) -> None:
     reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-    update.message.reply_text('Привет! Напиши /start, чтобы начать работу', reply_markup=markup)
+    update.message.reply_text('Напиши /start, чтобы начать работу', reply_markup=markup)
 
-def text_handler(update: Update, context: CallbackContext) -> None:
-    message = update.message.text
-    if message == 'Решить задачу':
-        conv_begin(update, context)
-        practice(update, context)
 
+
+def stop(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text('Чтобы восстановить работу нажми /start')
+    return ConversationHandler.END
 
 def practice(update: Update, context: CallbackContext):
     global TASK_NUMBER
@@ -92,7 +92,8 @@ def practice(update: Update, context: CallbackContext):
         update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
         return 1
     TASK_NUMBER = task_number
-    task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes_1, txt_bytes_2 = get_task_by_number(task_number)
+    task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes_1, txt_bytes_2 = get_task_by_number(
+        task_number)
     global ANSWER
     ANSWER = answer
     update.message.reply_text(task)
@@ -138,12 +139,18 @@ def create_buttons():
         if len(addl) == 5:
             keyboard.append(addl)
             addl = []
+    keyboard.append([InlineKeyboardButton(f'{Markups.variant[0][0]}', callback_data=Markups.variant[0][0])])
     return InlineKeyboardMarkup(keyboard)
 
 
 def buttonsHandler(update: Update, context: CallbackContext):
     query = update.callback_query
     reply_markup = create_buttons()
+    if query.data == Markups.variant[0][0]:
+        print('adsfasdf')
+        fullVarChecker(update, context)
+        start(update, context)
+        return ConversationHandler.END
     task_number = int(query.data) - 1
     global VARIANT
     global CHAT_ID
@@ -183,9 +190,11 @@ def buttonsHandler(update: Update, context: CallbackContext):
         MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
 
 
+
+
 def answerWrighter(update: Update, context: CallbackContext):
     answer = update.message.text
-    if answer[:4] == '/end':
+    if answer[:4] == '\end':
         fullVarChecker(update, context)
         start(update, context)
         return ConversationHandler.END
@@ -215,7 +224,8 @@ def fullVarChecker(update: Update, context: CallbackContext):
             continue
         all += 1
         correct_answer = VARIANT[number]['answer']
-        update.message.reply_text(f'Ваш ответ на задачу {str(number + 1)}: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
+        update.message.reply_text(
+            f'Ваш ответ на задачу {str(number + 1)}: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
         user_answer = user_answer.lower()
         correct_answer = correct_answer.lower()
         user_answer = user_answer.replace('\n', ';')
@@ -228,7 +238,10 @@ def fullVarChecker(update: Update, context: CallbackContext):
             print(user_answer)
             print(correct_answer)
         sql_work.add_score(number + 1, int(user_answer == correct_answer), update.message.chat_id)
-    update.message.reply_text(f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
+
+
+    update.message.reply_text(
+        f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
     ANSWERS = [None] * 27
 
 
@@ -239,8 +252,9 @@ def send_variant(update, context):
     CHAT_ID = update.message.chat_id
     VARIANT = generate_random_variant()
     reply_markup = create_buttons()
-    update.message.reply_text("Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /end. "
-                              "Ваш вариант:", reply_markup=reply_markup)
+    update.message.reply_text(
+        "Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /end. "
+        "Ваш вариант:", reply_markup=reply_markup)
     return 1
 
 
@@ -260,8 +274,9 @@ def stats(update, context):
         task_number = int(update.message.text)
         result = sql_work.get_stats(update.message.chat_id, task_number=task_number)
         if not result:
-            update.message.reply_text(f"Вы пока не решали задачу {task_number}. Если хотите попробовать: /practice",
-                                      reply_markup=markup)
+            update.message.reply_text(
+                f"Вы пока не решали задачу {task_number}. Если хотите попробовать: /practice",
+                reply_markup=markup)
             return ConversationHandler.END
     except Exception:
         result = sql_work.get_stats(update.message.chat_id)
@@ -304,10 +319,8 @@ def theory(update, context):
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
                                   f'{get_theory_video(theory_links[task_number])}\n'
                                   f'Или почитать теорию на сайте:\n'
-                                  f'{theory_links[task_number]}')
-        update.message.reply_text('Чтобы решать задания введи /practice.'
-                                  ' Чтобы продолжить читать теорию введи /theory',
-                                  reply_markup=markup)
+                                  f'{theory_links[task_number]}', reply_markup=markup)
+
         return ConversationHandler.END
     except Exception:
         reply_keyboard = Markups.start
@@ -328,8 +341,7 @@ def check(update: Update, context: CallbackContext):
         update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
         status = sql_work.add_score(TASK_NUMBER, 1, update.message.chat_id)
     else:
-        update.message.reply_text(f'Ваш ответ неверен. Ответ: {ANSWER}. '
-                                  f'Чтобы решать дальше напшите /practice',
+        update.message.reply_text(f'Ваш ответ неверен. Ответ: {ANSWER}. ',
                                   reply_markup=markup)
         status = sql_work.add_score(TASK_NUMBER, 0, update.message.chat_id)
     if not status:
@@ -372,7 +384,7 @@ def main() -> None:
         fallbacks=[MessageHandler(Filters.text, start)]
     )
 
-    dispatcher.add_handler(CommandHandler("stop", start))
+    dispatcher.add_handler(CommandHandler("stop", stop))
     dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
     dispatcher.add_handler(practice_dialog)
@@ -382,7 +394,6 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(MessageHandler(Filters.regex(Markups.start[1][0]), stats_begin))
     dispatcher.add_handler(MessageHandler(Filters.regex(Markups.stats[0][0]), stats))
-    dispatcher.add_handler(MessageHandler(Filters.text, text_handler))
     updater.start_polling()
     updater.idle()
 
