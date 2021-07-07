@@ -96,6 +96,7 @@ def practice(update: Update, context: CallbackContext):
         task_number)
     global ANSWER
     ANSWER = answer
+    print('Answer =', ANSWER)
     update.message.reply_text(task)
     if img_bytes:
         with open('temp_task_files/task.png', 'wb') as img:
@@ -225,6 +226,7 @@ def fullVarChecker(update: Update, context: CallbackContext):
             continue
         all += 1
         correct_answer = VARIANT[number]['answer']
+
         update.message.reply_text(
             f'Ваш ответ на задачу {str(number + 1)}: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
         user_answer = user_answer.lower()
@@ -240,10 +242,10 @@ def fullVarChecker(update: Update, context: CallbackContext):
             print(correct_answer)
         sql_work.add_score(number + 1, int(user_answer == correct_answer), update.message.chat_id)
 
-
-    update.message.reply_text(
+        print(update.message.text)
+        update.message.reply_text(
         f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
-    ANSWERS = [None] * 27
+        ANSWERS = [None] * 27
 
 
 def send_variant(update, context):
@@ -379,6 +381,7 @@ def main() -> None:
         entry_points=[MessageHandler(Filters.regex(Markups.start[0][2]), send_variant)],
         states={
             1: [MessageHandler(Filters.text, answerWrighter)],
+            2: [MessageHandler(Filters.text, fullVarChecker)],
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )

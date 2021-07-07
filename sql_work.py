@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import psycopg2 as psql
 from get_db_config_from_url import get_db_config_from_url
 
@@ -32,9 +34,15 @@ def add_score(task_num, result, chat_id):
     cur.execute(check_request)
     results = cur.fetchall()
     if len(results):
+        print('right')
         request = "UPDATE stats SET right_answers = '{}', all_answers = '{}' WHERE user_id = '{}" \
                   "' AND task_num = '{}'".format(
             results[0][0] + result, results[0][1] + 1, user_id[0][0], task_num)
+        cur.execute("SELECT * FROM activity WHERE user_id = '{}' " \
+                    " AND date = '{}'").format(user_id[0][0], datetime.date.today())
+        if not cur.fetchall():
+            print('none')
+            cur.execute("INSERT INTO activity (user_id, date) VALUES ({}, '{}');".format(user_id[0][0], datetime.date.today()))
     else:
         request = "INSERT INTO stats(user_id, task_num, right_answers, all_answers)" \
                   " VALUES({}, {}, '{}', {})".format(
