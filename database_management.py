@@ -6,7 +6,7 @@ from get_db_config_from_url import get_db_config_from_url
 
 conn = psycopg2.connect(**get_db_config_from_url())
 cur = conn.cursor()
-
+print('conn')
 # --- drop tables ---
 """ 
 cur.execute('DROP TABLE stats;')
@@ -36,6 +36,7 @@ cur.execute("INSERT INTO users (username, chat_id) VALUES ('@albert_gareev', '12
 cur.execute("DELETE FROM stats;")
 cur.execute("DELETE FROM users WHERE id = 4;")
 # """
+# cur.execute("DELETE FROM activity;")
 # cur.execute("UPDATE stats  SET (right_answers, all_answers) =  (12, 20) WHERE user_id = 8;")
 # cur.execute("INSERT INTO stats (task_num, user_id) VALUES (3, 8);")
 
