@@ -188,6 +188,7 @@ def buttonsHandler(update: Update, context: CallbackContext):
 def answerWrighter(update: Update, context: CallbackContext):
     answer = update.message.text
     if answer[:5] == '/stop':
+        print(1)
         fullVarChecker(update, context)
         start(update, context)
         return ConversationHandler.END

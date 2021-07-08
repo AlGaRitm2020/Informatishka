@@ -16,8 +16,8 @@ def get_user_activity_diagram(dates_and_answers_stats):
     answers = [i[1] for i in dates_and_answers_stats]
     plt.bar(dates, answers)
     plt.savefig('activity.png')
-    with open('activity.png', mode='rb') as img:
-        byte_img = img.read()
+    img = open('activity.png', mode='rb')
+    byte_img = img.read()
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'activity.png')
     os.remove(path)
     plt.close()
@@ -47,8 +47,8 @@ def get_task_stats_diagram(task_number, right_answers, all_answers, result):
 
     # getting bytes from image
     plt.savefig('task_stats.png')
-    with open('task_stats.png', mode='rb') as img:
-        byte_img = img.read()
+    img = open('task_stats.png', mode='rb')
+    byte_img = img.read()
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'task_stats.png')
     os.remove(path)
     plt.close()
