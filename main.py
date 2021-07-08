@@ -1,14 +1,13 @@
 import json
 import logging
 from time import time
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Bot, Message
 from telegram.ext import Updater, CommandHandler, MessageHandler, \
     Filters, CallbackContext, ConversationHandler, InlineQueryHandler, CallbackQueryHandler
 
 from Markups import Markups
 from generatior import generate_random_variant
 from task_diagram import get_task_stats_diagram
-
 
 from get_files import get_photo, get_excel, get_word
 from task_by_number import get_task_by_number
@@ -48,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 def start(update: Update, context: CallbackContext):
     reply_keyboard = Markups.start
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
                               'Я умею выдавать задачи и проверять их правильность. '
                               'Ты также можешь почитать материалы или посмотреть видео'
@@ -56,29 +55,27 @@ def start(update: Update, context: CallbackContext):
                               'Следи за своим прогрессом с помощью раздела статистика.'
                               'Желаю тебе успешной подготовки.'
 
-                              'Чтобы остановить любой диалог (кроме полного варианта) нажмите /stop',
+                              'Чтобы остановить любой диалог ажмите /stop',
                               reply_markup=markup)
     # register user
     sql_work.register(update.message.from_user.name, update.message.chat_id)
 
 
-
 def conv_begin(update: Update, context: CallbackContext):
     update.message.reply_text("Выбирете номер задания от 1 до 27")
-
     return 1
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
     reply_keyboard = Markups.start
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     update.message.reply_text('Напиши /start, чтобы начать работу', reply_markup=markup)
-
 
 
 def stop(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Чтобы восстановить работу нажми /start')
     return ConversationHandler.END
+
 
 def practice(update: Update, context: CallbackContext):
     global TASK_NUMBER
@@ -145,15 +142,11 @@ def create_buttons():
 
 
 def buttonsHandler(update: Update, context: CallbackContext):
+    global CHAT_ID
     query = update.callback_query
     reply_markup = create_buttons()
-    if query.data == Markups.variant[0][0]:
-        fullVarChecker(update, context)
-        start(update, context)
-        return ConversationHandler.END
     task_number = int(query.data) - 1
     global VARIANT
-    global CHAT_ID
     global MESSAGE_IDS
     global CURRENT_TASK
     if CURRENT_TASK == task_number:
@@ -174,9 +167,8 @@ def buttonsHandler(update: Update, context: CallbackContext):
             bot.delete_message(CHAT_ID, message_id)
     MESSAGE_IDS = []
     query.edit_message_text(task['description'] + "\n \n Чтобы закончить решать и посмотреть результаты по этому "
-                                                  "варианту напишите /end. ", reply_markup=reply_markup)
-    markup = ReplyKeyboardMarkup(Markups.variant, one_time_keyboard=True)
-    update.message.reply_text(reply_markup=markup)
+                                                  "варианту напишите /stop. ", reply_markup=reply_markup)
+    # markup = ReplyKeyboardMarkup(Markups.variant, one_time_keyboard=True)
     if img_bytes:
         MESSAGE_IDS.append(bot.send_photo(CHAT_ID, img_bytes).message_id)
     if excel_bytes:
@@ -193,11 +185,9 @@ def buttonsHandler(update: Update, context: CallbackContext):
         MESSAGE_IDS.append(bot.send_document(CHAT_ID, file).message_id)
 
 
-
-
 def answerWrighter(update: Update, context: CallbackContext):
     answer = update.message.text
-    if answer[:4] == '/end':
+    if answer[:5] == '/stop':
         fullVarChecker(update, context)
         start(update, context)
         return ConversationHandler.END
@@ -216,6 +206,7 @@ def answerWrighter(update: Update, context: CallbackContext):
 def fullVarChecker(update: Update, context: CallbackContext):
     import sql_work
     global ANSWERS
+    global CHAT_ID
     global VARIANT
     solved = 0
     all = 0
@@ -241,11 +232,11 @@ def fullVarChecker(update: Update, context: CallbackContext):
         else:
             print(user_answer)
             print(correct_answer)
-        sql_work.add_score(number + 1, int(user_answer == correct_answer), update.message.chat_id)
+        sql_work.add_score(number + 1, int(user_answer == correct_answer), str(CHAT_ID))
 
         print(update.message.text)
         update.message.reply_text(
-        f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
+            f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
         ANSWERS = [None] * 27
 
 
@@ -257,7 +248,7 @@ def send_variant(update, context):
     VARIANT = generate_random_variant()
     reply_markup = create_buttons()
     update.message.reply_text(
-        "Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /end. "
+        "Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /stop. "
         "Ваш вариант:", reply_markup=reply_markup)
     return 1
 
@@ -305,7 +296,12 @@ def stats(update, context):
     return ConversationHandler.END
 
 
-
+def activity(update: Update, context: CallbackContext):
+    activity_stats = sql_work.get_activity(update.message.chat_id)
+    from task_diagram import get_user_activity_diagram
+    diagram = get_user_activity_diagram(activity_stats)
+    markup = Markups.start
+    update.message.reply_photo(diagram, reply_markup=markup)
 
 
 def theory(update, context):
@@ -324,7 +320,7 @@ def theory(update, context):
         with open('data/videos_links.json', 'r') as file:
             videos_links = json.load(file)
         reply_keyboard = Markups.start
-        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
         update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
                                   f'{videos_links[task_number]}\n'
                                   f'Или почитать теорию на сайте:\n'
@@ -333,7 +329,7 @@ def theory(update, context):
         return ConversationHandler.END
     except Exception:
         reply_keyboard = Markups.start
-        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
         update.message.reply_text('Что-то пошло не так, попробуйте еще раз', reply_markup=markup)
         return 1
 
@@ -345,7 +341,7 @@ def check(update: Update, context: CallbackContext):
     user_answer = update.message.text
     user_answer.lstrip().rstrip()
     reply_keyboard = Markups.start
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     if str(ANSWER) == str(user_answer):
         update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
         status = sql_work.add_score(TASK_NUMBER, 1, update.message.chat_id)
@@ -393,10 +389,9 @@ def main() -> None:
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
-
-    dispatcher.add_handler(CommandHandler("stop", stop))
     dispatcher.add_handler(CallbackQueryHandler(buttonsHandler))
     dispatcher.add_handler(full_var_dialog)
+    dispatcher.add_handler(CommandHandler("stop", stop))
     dispatcher.add_handler(practice_dialog)
     dispatcher.add_handler(theory_dialog)
     dispatcher.add_handler(specific_task_dialog)
@@ -404,6 +399,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(MessageHandler(Filters.regex(Markups.start[1][0]), stats_begin))
     dispatcher.add_handler(MessageHandler(Filters.regex(Markups.stats[0][0]), stats))
+    dispatcher.add_handler(MessageHandler(Filters.regex(Markups.stats[1][0]), activity))
     updater.start_polling()
     updater.idle()
 

@@ -46,10 +46,13 @@ def add_score(task_num, result, chat_id):
 
         # adding activity date for user
         if not right_answers:
-            cur.execute("INSERT INTO activity (user_id, date, right_answers) VALUES ({}, '{}', {});".format(user_id[0][0], datetime.date.today(), 1))
+            cur.execute(
+                "INSERT INTO activity (user_id, date, right_answers) VALUES ({}, '{}', {});".format(user_id[0][0],
+                                                                                                    datetime.date.today(),
+                                                                                                    1))
         else:
             cur.execute("UPDATE activity SET right_answers = '{}' WHERE user_id = '{}" \
-                      "' AND date = '{}'".format(
+                        "' AND date = '{}'".format(
                 right_answers[0][0] + 1, user_id[0][0], datetime.date.today()))
 
     else:
@@ -59,6 +62,28 @@ def add_score(task_num, result, chat_id):
     cur.execute(request)
     con.commit()
     return True
+
+
+def get_activity(chat_id):
+    from datetime import datetime, timedelta
+    dlt = timedelta(days=7)
+    date_now = datetime.now().date()
+    con = psql.connect(**get_db_config_from_url())
+    cur = con.cursor()
+    request = "SELECT date, right_answers FROM activity\
+    \nWHERE user_id in (SELECT id FROM users\
+    \nWHERE chat_id = '{}')".format(str(chat_id))
+    cur.execute(request)
+    result = cur.fetchall()
+    if not len(result):
+        return False
+    nice_dick = []
+    for item in result:
+        date = item[0]
+        if date_now + dlt >= date:
+            nice_dick.append(item)
+        print(date)
+    return nice_dick
 
 
 def get_stats(chat_id, task_number=0):
@@ -92,4 +117,4 @@ def get_all_users_chat_ids():
 
 
 if __name__ == '__main__':
-    print(get_stats('1830477841'))
+    print(get_activity('1830477841'))

@@ -11,6 +11,19 @@ import matplotlib.pyplot as plt
 import os
 
 
+def get_user_activity_diagram(dates_and_answers_stats):
+    dates = [str(i[0]) for i in dates_and_answers_stats]
+    answers = [i[1] for i in dates_and_answers_stats]
+    plt.bar(dates, answers)
+    plt.savefig('activity.png')
+    with open('activity.png', mode='rb') as img:
+        byte_img = img.read()
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'activity.png')
+    os.remove(path)
+    plt.close()
+    return byte_img
+
+
 def get_task_stats_diagram(task_number, right_answers, all_answers, result):
     wrong_answers = all_answers - right_answers
     labels = [f'Верный ответ: {right_answers}', f'Неверный ответ: {wrong_answers}']
@@ -44,4 +57,6 @@ def get_task_stats_diagram(task_number, right_answers, all_answers, result):
 
 
 if __name__ == '__main__':
-    print(get_task_stats_diagram(1, 1, 1))
+    from sql_work import get_activity
+
+    print(get_user_activity_diagram(get_activity('1830477841')))
