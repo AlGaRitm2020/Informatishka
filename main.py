@@ -140,7 +140,7 @@ def create_buttons():
         if len(addl) == 5:
             keyboard.append(addl)
             addl = []
-    keyboard.append([InlineKeyboardButton(f'{Markups.variant[0][0]}', callback_data=Markups.variant[0][0])])
+
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -173,7 +173,8 @@ def buttonsHandler(update: Update, context: CallbackContext):
         if message_id:
             bot.delete_message(CHAT_ID, message_id)
     MESSAGE_IDS = []
-    query.edit_message_text(task['description'], reply_markup=reply_markup)
+    query.edit_message_text(task['description'] + "\n \n Чтобы закончить решать и посмотреть результаты по этому "
+                                                  "варианту напишите /end. ", reply_markup=reply_markup)
     markup = ReplyKeyboardMarkup(Markups.variant, one_time_keyboard=True)
     update.message.reply_text(reply_markup=markup)
     if img_bytes:
