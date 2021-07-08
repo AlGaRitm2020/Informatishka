@@ -302,7 +302,7 @@ def activity(update: Update, context: CallbackContext):
     from task_diagram import get_user_activity_diagram
     diagram = get_user_activity_diagram(activity_stats)
     markup = Markups.start
-    update.message.reply_photo(diagram, reply_markup=markup)
+    update.message.reply_photo(diagram)
 
 
 def theory(update, context):
