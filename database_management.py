@@ -18,7 +18,7 @@ cur.execute('DROP TABLE users;')
 cur.execute("create table users(id serial primary key, username VARCHAR, chat_id  VARCHAR unique);")
 cur.execute("create table stats(id serial primary key, user_id INTEGER references users, task_num INTEGER, right_answers INTEGER, all_answers INTEGER);")
 """
-# cur.execute("create table activity(id serial primary key, user_id INTEGER references users, date DATE);")
+# cur.execute("create table activity(id serial primary key, user_id INTEGER references users, date DATE, right_answers INTEGER);")
 
 # --- insert old users ---
 """

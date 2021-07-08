@@ -40,12 +40,18 @@ def add_score(task_num, result, chat_id):
             results[0][0] + result, results[0][1] + 1, user_id[0][0], task_num)
 
         # checking if this date for this user isn't empty
-        cur.execute("SELECT * FROM activity WHERE user_id = {} "
+        cur.execute("SELECT right_answers FROM activity WHERE user_id = {} "
                     " AND date = '{}';".format(user_id[0][0], datetime.date.today()))
+        right_answers = cur.fetchall()
 
         # adding activity date for user
-        if not cur.fetchall():
-            cur.execute("INSERT INTO activity (user_id, date) VALUES ({}, '{}');".format(user_id[0][0], datetime.date.today()))
+        if not right_answers:
+            cur.execute("INSERT INTO activity (user_id, date, right_answers) VALUES ({}, '{}', {});".format(user_id[0][0], datetime.date.today(), 1))
+        else:
+            cur.execute("UPDATE activity SET right_answers = '{}' WHERE user_id = '{}" \
+                      "' AND date = '{}'".format(
+                right_answers[0][0] + 1, user_id[0][0], datetime.date.today()))
+
     else:
         request = "INSERT INTO stats(user_id, task_num, right_answers, all_answers)" \
                   " VALUES({}, {}, '{}', {})".format(
