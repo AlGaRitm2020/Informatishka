@@ -301,8 +301,8 @@ def activity(update: Update, context: CallbackContext):
     activity_stats = sql_work.get_activity(update.message.chat_id)
     from task_diagram import get_user_activity_diagram
     diagram = get_user_activity_diagram(activity_stats)
-    markup = Markups.start
-    update.message.reply_photo(diagram)
+    markup = ReplyKeyboardMarkup(Markups.start, one_time_keyboard=False)
+    update.message.reply_photo(diagram, reply_markup=markup)
 
 
 def theory(update, context):
