@@ -10,13 +10,24 @@ autolabeling the percentage, offsetting a slice and adding a shadow.
 import matplotlib.pyplot as plt
 import os
 
+def reformat_to_dd_mm_yyyy(date: str) -> str:
+    yyyy_mm_dd_list = date.split('-')
+    dd_mm_yyyy_list = [yyyy_mm_dd_list[2], yyyy_mm_dd_list[1], yyyy_mm_dd_list[0]]
+    dd_mm_yyy_str = '.'.join(dd_mm_yyyy_list)
+    return dd_mm_yyy_str
 
 def get_user_activity_diagram(dates_and_answers_stats):
-    dates = [str(i[0]) for i in dates_and_answers_stats]
+    dates = [reformat_to_dd_mm_yyyy(str(i[0])) for i in dates_and_answers_stats]
     answers = [i[1] for i in dates_and_answers_stats]
-    plt.bar(dates, answers)
+    fig, ax = plt.subplots()
+
+    ax.set_title(f"Статистика по активности", fontsize=20)
+    ax.set_xlabel('Дата')
+    ax.set_ylabel('Решено задач')
+    ax.bar(dates, answers)
     plt.savefig('activity.png')
     img = open('activity.png', mode='rb')
+    # plt.show()
     byte_img = img.read()
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'activity.png')
     os.remove(path)
@@ -57,6 +68,27 @@ def get_task_stats_diagram(task_number, right_answers, all_answers, result):
 
 
 if __name__ == '__main__':
-    from sql_work import get_activity
+    import numpy as np
+    np.random.seed(19680801)
 
-    print(get_user_activity_diagram(get_activity('1830477841')))
+    # Example data
+    people = ('Tom', 'Dick', 'Harry', 'Slim', 'Jim')
+    y_pos = np.arange(len(people))
+    performance = 3 + 10 * np.random.rand(len(people))
+    error = np.random.rand(len(people))
+
+    fig, ax = plt.subplots()
+
+    hbars = ax.barh(y_pos, performance, xerr=error, align='center')
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(people)
+    ax.invert_yaxis()  # labels read top-to-bottom
+    ax.set_xlabel('Performance')
+    ax.set_title('How fast do you want to go today?')
+
+    # Label with specially formatted floats
+    ax.bar_label(hbars, fmt='%.2f')
+    ax.set_xlim(right=15)  # adjust xlim to fit labels
+
+    plt.show()
+    get_user_activity_diagram([['12',12], ['10', 10]])

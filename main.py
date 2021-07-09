@@ -94,7 +94,7 @@ def practice(update: Update, context: CallbackContext):
     global ANSWER
     ANSWER = answer
     print('Answer =', ANSWER)
-    update.message.reply_text(task)
+    update.message.reply_text(f'Задание № {task_number}\n' + task)
     if img_bytes:
         with open('temp_task_files/task.png', 'wb') as img:
             img.write(img_bytes)
@@ -120,7 +120,7 @@ def practice(update: Update, context: CallbackContext):
             txt.write(txt_bytes_2)
         file = open("temp_task_files/B.txt", "rb")
         update.message.reply_document(file)
-
+    update.message.reply_text('✍️ Напишите ответ на задание. Если ответов несколько, укажите их через пробел')
     return 2
     # except Exception:
     #     update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
@@ -344,10 +344,10 @@ def check(update: Update, context: CallbackContext):
     reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     if str(ANSWER) == str(user_answer):
-        update.message.reply_text(f'Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
+        update.message.reply_text(f'✅ Вы аблолютно правы. Ответ: {user_answer}', reply_markup=markup)
         status = sql_work.add_score(TASK_NUMBER, 1, update.message.chat_id)
     else:
-        update.message.reply_text(f'Ваш ответ неверен. Ответ: {ANSWER}. ',
+        update.message.reply_text(f'🚫 Ваш ответ неверен. Ответ: {ANSWER}. ',
                                   reply_markup=markup)
         status = sql_work.add_score(TASK_NUMBER, 0, update.message.chat_id)
     if not status:

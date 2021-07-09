@@ -72,7 +72,7 @@ def get_activity(chat_id):
     cur = con.cursor()
     request = "SELECT date, right_answers FROM activity\
     \nWHERE user_id in (SELECT id FROM users\
-    \nWHERE chat_id = '{}')".format(str(chat_id))
+    \nWHERE chat_id = '{}') ORDER BY date".format(str(chat_id))
     cur.execute(request)
     result = cur.fetchall()
     if not len(result):
