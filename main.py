@@ -311,9 +311,11 @@ def stats(update, context):
 
 def activity(update: Update, context: CallbackContext):
     activity_stats = sql_work.get_activity(update.message.chat_id)
+    markup = ReplyKeyboardMarkup(Markups.start, one_time_keyboard=False)
+    if not activity_stats:
+        update.message.reply_text("Вы еще не решаи=ли задачи", reply_markup=markup)
     from task_diagram import get_user_activity_diagram
     diagram = get_user_activity_diagram(activity_stats)
-    markup = ReplyKeyboardMarkup(Markups.start, one_time_keyboard=False)
     update.message.reply_photo(diagram, reply_markup=markup)
 
 
