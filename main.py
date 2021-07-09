@@ -373,7 +373,8 @@ def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
     practice_dialog = ConversationHandler(
-        entry_points=[MessageHandler(Filters.regex(Markups.start[0][0]), conv_begin)],
+        entry_points=[MessageHandler(Filters.regex(Markups.start[0][0]), conv_begin),
+                      CommandHandler('practice', conv_begin)],
         states={
             1: [MessageHandler(Filters.text, practice)],
             2: [MessageHandler(Filters.text, check)],
@@ -381,14 +382,16 @@ def main() -> None:
         fallbacks=[MessageHandler(Filters.text, start)]
     )
     theory_dialog = ConversationHandler(
-        entry_points=[MessageHandler(Filters.regex(Markups.start[0][1]), conv_begin)],
+        entry_points=[MessageHandler(Filters.regex(Markups.start[0][1]), conv_begin),
+                      CommandHandler('theory', conv_begin)],
         states={
             1: [MessageHandler(Filters.text, theory)],
         },
         fallbacks=[MessageHandler(Filters.text, start)]
     )
     full_var_dialog = ConversationHandler(
-        entry_points=[MessageHandler(Filters.regex(Markups.start[0][2]), send_variant)],
+        entry_points=[MessageHandler(Filters.regex(Markups.start[0][2]), send_variant),
+                      CommandHandler('full', send_variant)],
         states={
             1: [MessageHandler(Filters.text, answerWrighter)],
             2: [MessageHandler(Filters.text, fullVarChecker)],
