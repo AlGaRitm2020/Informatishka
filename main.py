@@ -48,14 +48,13 @@ logger = logging.getLogger(__name__)
 def start(update: Update, context: CallbackContext):
     reply_keyboard = Markups.start
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
-    update.message.reply_text('Привет, я бот Информатишка. Я помогу тебе в сдаче ЕГЭ по информатике.'
-                              'Я умею выдавать задачи и проверять их правильность. '
-                              'Ты также можешь почитать материалы или посмотреть видео'
-                              ' о том как правильно решается любая задача'
-                              'Следи за своим прогрессом с помощью раздела статистика.'
-                              'Желаю тебе успешной подготовки.'
-
-                              'Чтобы остановить любой диалог ажмите /stop',
+    update.message.reply_text('Привет, я бот Информатишка, который поможет тебе сдать ЕГЭ по информатике. \n'
+                              'Я умею: \n '
+                              '📄 Выдавать задачи и проверять их правильность \n '
+                              '📚 Отправлять материалы и видео по задачам \n'
+                              '📈 Отслеживать статистику по задачам и активности \n'
+                              '👌 Желаю тебе успешной подготовки.\n'
+                              '⛔ Чтобы остановить любой диалог нажмите /stop',
                               reply_markup=markup)
     # register user
     sql_work.register(update.message.from_user.name, update.message.chat_id)
@@ -82,11 +81,11 @@ def practice(update: Update, context: CallbackContext):
     task_number = update.message.text
     try:
         if int(task_number) < 1 or int(task_number) > 27:
-            update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+            update.message.reply_text("⚠ Номер задания от 1 до 27, попробуй еще раз")
             return 1
     except ValueError:
         "if task_number isn't int"
-        update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
+        update.message.reply_text("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
         return 1
     TASK_NUMBER = task_number
     task, answer, img_bytes, xls_bytes, doc_bytes, txt_bytes_1, txt_bytes_2 = get_task_by_number(
@@ -99,7 +98,7 @@ def practice(update: Update, context: CallbackContext):
         with open('temp_task_files/task.png', 'wb') as img:
             img.write(img_bytes)
         file = open("temp_task_files/task.png", "rb")
-        update.message.reply_document(file)
+        update.message.reply_photo(file)
     if xls_bytes:
         with open('temp_task_files/file.docx', 'wb') as xlsx:
             xlsx.write(xls_bytes)
@@ -120,7 +119,12 @@ def practice(update: Update, context: CallbackContext):
             txt.write(txt_bytes_2)
         file = open("temp_task_files/B.txt", "rb")
         update.message.reply_document(file)
-    update.message.reply_text('✍️ Напишите ответ на задание. Если ответов несколько, укажите их через пробел')
+    if 21 >= int(task_number) >= 19:
+        update.message.reply_text(
+            '✍️ Напишите ответ на задание. Ответы на каждый из трех вопросов разделите точкой с запятой(;), а ответы внутри одного вопроса пробелом')
+    else:
+        print(task_number)
+        update.message.reply_text('✍️ Напишите ответ на задание. Если ответов несколько, укажите их через пробел')
     return 2
     # except Exception:
     #     update.message.reply_text('Что-то пошло не так, попробуйте еще раз')
@@ -196,11 +200,11 @@ def answerWrighter(update: Update, context: CallbackContext):
     global ANSWERS
     global CURRENT_TASK
     if CURRENT_TASK == -1:
-        update.message.reply_text("Сначала выберите задание", reply_markup=reply_markup)
+        update.message.reply_text("⚠ Сначала выберите задание", reply_markup=reply_markup)
         return 1
     ANSWERS[CURRENT_TASK] = answer
     CURRENT_TASK = -1
-    update.message.reply_text("Ваш ответ записан", reply_markup=reply_markup)
+    update.message.reply_text("💾 Ваш ответ сохранен", reply_markup=reply_markup)
     return 1
 
 
@@ -211,6 +215,8 @@ def fullVarChecker(update: Update, context: CallbackContext):
     global VARIANT
     solved = 0
     all = 0
+    update.message.reply_text(
+        f'🔬 Результаты: ')
     for number in range(27):
         if not VARIANT[number]:
             continue
@@ -221,7 +227,7 @@ def fullVarChecker(update: Update, context: CallbackContext):
         correct_answer = VARIANT[number]['answer']
 
         update.message.reply_text(
-            f'Ваш ответ на задачу {str(number + 1)}: {str(user_answer)} ; Правильный ответ: {str(correct_answer)}')
+            f'Задача {str(number + 1)}. Ваш ответ: {str(user_answer)}. Правильный ответ: {str(correct_answer)}')
         user_answer = user_answer.lower()
         correct_answer = correct_answer.lower()
         user_answer = user_answer.replace('\n', ';')
@@ -236,8 +242,12 @@ def fullVarChecker(update: Update, context: CallbackContext):
         sql_work.add_score(number + 1, int(user_answer == correct_answer), str(CHAT_ID))
 
         print(update.message.text)
+
+        with open('data/scale_marks.json', 'r') as file:
+            scale_marks = json.load(file)
         update.message.reply_text(
-            f'В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}')
+            f'ℹ В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}\n'
+            f'🟢 *Итоговый балл: {scale_marks[str(solved)]}/100*', parse_mode='MarkdownV2')
         ANSWERS = [None] * 27
 
 
@@ -246,11 +256,13 @@ def send_variant(update, context):
     global VARIANT
     global CHAT_ID
     CHAT_ID = update.message.chat_id
+    update.message.reply_text('⏳ Подождите, вариант генерируется')
     VARIANT = generate_random_variant()
     reply_markup = create_buttons()
     update.message.reply_text(
-        "Чтобы закончить решать и посмотреть результаты по этмоу варианту напишите /stop. "
-        "Ваш вариант:", reply_markup=reply_markup)
+        "🎉 Вариант успешно сгенерирован \n"
+        "Чтобы закончить решать и посмотреть результаты по этому варианту напишите /stop. \n",
+        reply_markup=reply_markup)
     return 1
 
 
@@ -310,11 +322,11 @@ def theory(update, context):
         task_number = update.message.text
         try:
             if int(task_number) < 1 or int(task_number) > 27:
-                update.message.reply_text("Номер задания от 1 до 27, попробуй еще раз")
+                update.message.reply_text("⚠ Номер задания от 1 до 27, попробуй еще раз")
                 return 1
         except ValueError:
             "if task_number isn't int"
-            update.message.reply_text("Номер задания - целое число от 1 до 27, попробуй еще раз")
+            update.message.reply_text("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
             return 1
         with open('data/theory_links.json', 'r') as file:
             theory_links = json.load(file)
@@ -322,11 +334,11 @@ def theory(update, context):
             videos_links = json.load(file)
         reply_keyboard = Markups.start
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
-        update.message.reply_text(f'По этой теме можешь посмотреть видео:\n'
+        update.message.reply_text(f'Задача №{str(task_number)}\n'
+                                  f'🎬 По этой теме можешь посмотреть видео:\n'
                                   f'{videos_links[task_number]}\n'
-                                  f'Или почитать теорию на сайте:\n'
+                                  f'📕 Или почитать теорию на сайте:\n'
                                   f'{theory_links[task_number]}', reply_markup=markup)
-
         return ConversationHandler.END
     except Exception:
         reply_keyboard = Markups.start

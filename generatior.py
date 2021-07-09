@@ -10,7 +10,6 @@ from task_text_parser import get_task_text
 
 def generate_random_variant():
     VAR_ID = random.randint(1, 5000)
-    VAR_ID = 20
     URL = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewVar&answers=on&varId={VAR_ID}'
     response = requests.get(URL)
     soup = BeautifulSoup(response.text, 'html.parser')

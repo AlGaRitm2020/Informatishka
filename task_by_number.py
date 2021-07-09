@@ -111,10 +111,6 @@ def get_task_by_number(task_number):
         byte_txt_2 = None
 
     result_task = get_task_text(task_script)
-    # add a hint to task 19-21, because there are 3 answers
-    if 21 >= int(task_number) >= 19:
-        result_task += '\n Ответы на каждый из трех вопросов разделите точкой с запятой(;),' \
-                       ' а ответы внутри одного вопроса пробелом'
     return result_task, answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2
 
 
