@@ -6,6 +6,7 @@ from keyboards.default import main_captions, stat_captions
 from keyboards.inline import variant_task_buttons
 
 
+# --- Main Menu Handlers
 @dp.message_handler(text=main_captions[0])
 async def solve_tasks(message: Message):
     await message.answer(f'Вы нажали на команду решать задачи', reply_markup=ReplyKeyboardRemove())
@@ -19,7 +20,11 @@ async def generate_variant(message: Message):
 @dp.message_handler(text=main_captions[3])
 async def statistics_page(message: Message):
     await message.answer(f'Вы перешли в раздел статистика', reply_markup=stat_menu)
+# ---
 
+
+# --- Statistics Menu Handlers
 @dp.message_handler(text=stat_captions[3])
 async def back_to_home(message: Message):
     await message.answer(f'Вы вернулись на главную страницу', reply_markup=main_menu)
+# ---
