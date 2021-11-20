@@ -36,6 +36,9 @@ variant_task_buttons = InlineKeyboardMarkup(
             InlineKeyboardButton(text='25', callback_data='25'),
             InlineKeyboardButton(text='26', callback_data='26'),
             InlineKeyboardButton(text='27', callback_data='27'),
+        ],
+        [
+            InlineKeyboardButton(text='Завершить решение варианта', callback_data='break')
         ]
     ]
 
