@@ -1,15 +1,17 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-menu = ReplyKeyboardMarkup(
+main_captions = ["🗒 Решать задачи", "📖 Изучать теорию", "📝 Решить целый вариант", "📊 Посмотреть статисктику", "/stop"]
+
+main_menu = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="🗒 Решать задачи"),
-            KeyboardButton(text="📖 Изучать теорию"),
-            KeyboardButton(text="📝 Решить целый вариант")
+            KeyboardButton(text=main_captions[0]),
+            KeyboardButton(text=main_captions[1]),
+            KeyboardButton(text=main_captions[2])
         ],
 [
-            KeyboardButton(text="📊 Посмотреть статисктику"),
-            KeyboardButton(text="/stop")
+            KeyboardButton(text=main_captions[3]),
+            KeyboardButton(text=main_captions[4])
 
         ]],
     resize_keyboard=True
