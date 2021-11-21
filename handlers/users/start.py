@@ -1,6 +1,6 @@
 from aiogram import types
+from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.filters.builtin import CommandStart
-from aiogram.dispatcher.filters import Command, Text
 from keyboards.default import main_menu, main_captions
 from loader import dp
 
