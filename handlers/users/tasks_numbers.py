@@ -1,5 +1,7 @@
 from aiogram.types import CallbackQuery
 import logging
+
+from keyboards.default import main_menu
 from loader import dp
 
 
@@ -11,5 +13,6 @@ async def enter_task_number(call: CallbackQuery):
 
     if callback_data == 'break':
         await call.message.answer(f'Вы завершили решение варианта')
+        await call.message.edit_reply_markup(reply_markup=None)
     else:
         await call.message.answer(f'Вы выбрали задачу под номером {callback_data}')
