@@ -1,3 +1,4 @@
-from . import task_by_number
-from . import text_processing
-from . import get_files
+# from . import task_by_number
+from .get_files import get_photo
+from .get_files import get_word
+from .get_files import get_excel
