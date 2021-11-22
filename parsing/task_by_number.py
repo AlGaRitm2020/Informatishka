@@ -3,11 +3,8 @@ import requests
 import random
 
 import json
-from get_files.get_photo import get_photo
-from get_files.get_excel import get_excel
-from get_files.get_word import get_word
-
-from task_text_parser import get_task_text
+from . import get_files
+from .task_text_parser import get_task_text
 import asyncio
 
 
@@ -16,7 +13,7 @@ async def get_task_by_number(task_number):
     if 20 <= int(task_number) <= 21:
         task_number = '19'
     # get dict from json
-    with open("../data/practice/categories.json", "r") as categories:
+    with open("data/practice/categories.json", "r") as categories:
         categories_dict = json.load(categories)
 
     category = categories_dict[task_number]
@@ -46,7 +43,7 @@ async def get_task_by_number(task_number):
                 end_index = i
                 break
         img_address = task_script_text[begin_index:end_index]
-        byte_img = get_photo(img_address)
+        byte_img = get_files.get_photo(img_address)
     else:
         byte_img = None
 
@@ -69,7 +66,7 @@ async def get_task_by_number(task_number):
                 end_index = i
                 break
         excel_address = task_script_text[begin_index:end_index]
-        byte_excel = get_excel(excel_address)
+        byte_excel = get_files.get_excel(excel_address)
     else:
         byte_excel = None
 
@@ -82,7 +79,7 @@ async def get_task_by_number(task_number):
                 end_index = i
                 break
         word_address = task_script_text[begin_index:end_index]
-        byte_word = get_word(word_address)
+        byte_word = get_files.get_word(word_address)
     else:
         byte_word = None
 
@@ -97,7 +94,7 @@ async def get_task_by_number(task_number):
                     end_index = i
                     break
             txg_address_2 = task_script_text[begin_index:end_index]
-            byte_txt_2 = get_word(txg_address_2)
+            byte_txt_2 = get_files.get_word(txg_address_2)
         else:
             byte_txt_2 = None
 
@@ -108,7 +105,7 @@ async def get_task_by_number(task_number):
                 end_index = i
                 break
         txg_address_1 = task_script_text[begin_index:end_index]
-        byte_txt_1 = get_word(txg_address_1)
+        byte_txt_1 = get_files.get_word(txg_address_1)
 
     else:
         byte_txt_1 = None
