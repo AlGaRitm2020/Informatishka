@@ -32,28 +32,28 @@ async def enter_number(message: Message, state: FSMContext):
         with open('data/temp_task_files/task.png', 'wb') as img:
             img.write(byte_img)
         img = open("data/temp_task_files/task.png", "rb")
-        await message.reply_photo(img)
+        await message.answer_photo(img)
 
     if byte_excel:
         with open(f'data/temp_task_files/{task_number}_task.xlsx', 'wb') as xlsx:
             xlsx.write(byte_excel)
         excel_file = open(f"data/temp_task_files/{task_number}_task.xlsx", "rb")
-        await message.reply_document(excel_file)
+        await message.answer_document(excel_file)
     if byte_word:
         with open(f'data/temp_task_files/{task_number}_task.docx', 'wb') as docx:
             docx.write(byte_word)
         doc_file = open(f"data/temp_task_files/{task_number}_task.docx", "rb")
-        await message.reply_document(doc_file)
+        await message.answer_document(doc_file)
     if byte_txt_1:
         with open(f'data/temp_task_files/{task_number}_A_task.txt', 'wb') as txt:
             txt.write(byte_txt_1)
         txt1_file = open(f"data/temp_task_files/{task_number}_A_task.txt", "rb")
-        await message.reply_document(txt1_file)
+        await message.answer_document(txt1_file)
     if byte_txt_2:
         with open(f'data/temp_task_files/{task_number}_B_task.txt', 'wb') as txt:
             txt.write(byte_txt_2)
         txt2_file = open(f"data/temp_task_files/{task_number}_B_task.txt", "rb")
-        await message.reply_document(txt2_file)
+        await message.answer_document(txt2_file)
 
     if 21 >= int(task_number) >= 19:
         await message.answer(
@@ -72,7 +72,13 @@ async def enter_answer(message: Message, state: FSMContext):
     right_answer = data.get('right_answer')
 
     answer = message.text
+    answer.strip()
+
     await state.update_data(answer=int(answer))
 
-    await message.answer(f'Ваш ответ на задачу {str(task_number)}: {answer}', reply_markup=main_menu)
-    await state.reset_state(with_data=False)
+    if answer == right_answer:
+        await message.answer(f'✅ Вы аблолютно правы. Ответ: {answer}', reply_markup=main_menu)
+    else:
+        await message.answer(f'🚫 Ваш ответ неверен. Ответ: {right_answer}. ',
+                             reply_markup=main_menu)
+    await state.finish()
