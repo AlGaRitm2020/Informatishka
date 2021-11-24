@@ -1,4 +1,4 @@
-# from . import task_by_number
-from .get_files import get_photo
-from .get_files import get_word
-from .get_files import get_excel
+from .task_by_number import get_task_by_number
+from . import get_files
+from .generator import generate_random_variant
+from . import task_text_parser

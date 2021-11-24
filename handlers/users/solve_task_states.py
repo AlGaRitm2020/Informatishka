@@ -4,20 +4,28 @@ import logging
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 
-from keyboards.default import main_menu
+import keyboards
 from loader import dp
-from parsing.task_by_number import get_task_by_number
-from states import SolveTask
+import parsing
+import states
 
 
-@dp.message_handler(state=SolveTask.enter_number)
+@dp.message_handler(state=states.SolveTask.enter_number)
 async def enter_number(message: Message, state: FSMContext):
     # another variant to get state
     # state = dp.current_state(chat=message.chat.id, user=message.from_user.id)
+    try:
+        task_number = message.text
+        if int(task_number) < 1 or int(task_number) > 27:
+            raise ValueError
 
-    task_number = message.text
-    # print(get_task_by_number(task_number))
-    coroutine_task = asyncio.create_task(get_task_by_number(task_number))
+
+    except ValueError:
+        "if task_number isn't int"
+        await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
+        await states.SolveTask.enter_number.set()
+
+    coroutine_task = asyncio.create_task(parsing.get_task_by_number(task_number))
     await asyncio.gather(coroutine_task)
 
     task_text, right_answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2 = coroutine_task.result()
@@ -26,7 +34,10 @@ async def enter_number(message: Message, state: FSMContext):
                             task_text=task_text,
                             right_answer=right_answer)
 
-    await message.answer(f'Задание № {task_number}\n' + task_text)
+    if task_number not in '192021':
+        await message.answer(f'Задание № {task_number}\n' + task_text)
+    else:
+        await message.answer(f'Задания № 19, 20, 21\n' + task_text)
 
     if byte_img:
         with open('data/temp_task_files/task.png', 'wb') as img:
@@ -61,10 +72,10 @@ async def enter_number(message: Message, state: FSMContext):
             'а ответы внутри одного вопроса пробелом')
     else:
         await message.answer('✍️ Напишите ответ на задание. Если ответов несколько, укажите их через пробел')
-    await SolveTask.next()
+    await states.SolveTask.next()
 
 
-@dp.message_handler(state=SolveTask.enter_answer)
+@dp.message_handler(state=states.SolveTask.enter_answer)
 async def enter_answer(message: Message, state: FSMContext):
     # getting task data from state vars
     data = await state.get_data()
@@ -74,11 +85,11 @@ async def enter_answer(message: Message, state: FSMContext):
     answer = message.text
     answer.strip()
 
-    await state.update_data(answer=int(answer))
+    await state.update_data(answer=answer)
 
     if answer == right_answer:
-        await message.answer(f'✅ Вы аблолютно правы. Ответ: {answer}', reply_markup=main_menu)
+        await message.answer(f'✅ Вы аблолютно правы. Ответ: {answer}', reply_markup=keyboards.default.main_menu)
     else:
         await message.answer(f'🚫 Ваш ответ неверен. Ответ: {right_answer}. ',
-                             reply_markup=main_menu)
+                             reply_markup=keyboards.default.main_menu)
     await state.finish()
