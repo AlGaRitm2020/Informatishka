@@ -3,8 +3,10 @@ from pprint import pprint
 from bs4 import BeautifulSoup
 import requests
 import random
-import get_files
 
+from parsing.task_text_parser import get_task_text
+from . import get_files
+from . import task_text_parser
 # from . import *
 # from task_text_parser import get_task_text
 
@@ -111,7 +113,7 @@ async def generate_random_variant(var_num):
 
     tasks_description = []
     for task_number in range(len(tasks_script)):
-        tasks_description.append(get_task_text(tasks_script[task_number]))
+        tasks_description.append(await get_task_text(tasks_script[task_number]))
         # add a hint to task 19-21, because there are 3 answers
         if task_number + 1 == 19:
             tasks_description[task_number] += '\n Ответы на каждый из трех вопросов вводите в новой' \
@@ -140,23 +142,23 @@ async def generate_random_variant(var_num):
         task['description'] = task_description
         task['answer'] = answer
         if byte_img:
-            with open(f'temp_task_files/{task_number}.png', 'wb') as img:
+            with open(f'data/temp_task_files/{task_number}.png', 'wb') as img:
                 img.write(byte_img)
         task['image'] = byte_img
         if byte_excel:
-            with open(f'temp_task_files/{task_number}.xlsx', 'wb') as xls:
+            with open(f'data/temp_task_files/{task_number}.xlsx', 'wb') as xls:
                 xls.write(byte_excel)
         task['excel'] = byte_excel
         if byte_word:
-            with open(f'temp_task_files/{task_number}.docx', 'wb') as docx:
+            with open(f'data/temp_task_files/{task_number}.docx', 'wb') as docx:
                 docx.write(byte_word)
         task['word'] = byte_word
         if byte_txt_1:
-            with open(f"temp_task_files/{task_number}_A.txt", 'wb') as docx:
+            with open(f"data/temp_task_files/{task_number}_A.txt", 'wb') as docx:
                 docx.write(byte_txt_1)
         task['txt1'] = byte_txt_1
         if byte_txt_2:
-            with open(f"temp_task_files/{task_number}_B.txt", 'wb') as docx:
+            with open(f"data/temp_task_files/{task_number}_B.txt", 'wb') as docx:
                 docx.write(byte_txt_2)
         task['txt2'] = byte_txt_2
 

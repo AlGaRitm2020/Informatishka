@@ -28,18 +28,11 @@ async def theory(message: Message):
 
 @dp.message_handler(text=keyboards.default.main_captions[2], state=None)
 async def generate_variant(message: Message, state: FSMContext):
-    await message.answer('⏳ Подождите, вариант генерируется')
-    variant = parsing.generate_random_variant()
+    await message.answer('Выбирете номер варианта (натуральное число):', reply_markup=keyboards.default.skip_menu)
 
+    print('fasdf')
+    await states.FullVariant.send_variant.set()
 
-
-    await message.answer(
-        "🎉 Вариант успешно сгенерирован \n",
-        reply_markup=keyboards.inline.variant_task_buttons)
-
-    await states.FullVariant.enter_answer.set()
-    state = dp.get_current().current_state()
-    await state.update_data(variant=variant)
 
 
 @dp.message_handler(text=keyboards.default.main_captions[3])
