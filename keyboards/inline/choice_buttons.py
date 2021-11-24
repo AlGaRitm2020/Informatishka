@@ -27,7 +27,7 @@ variant_task_buttons = InlineKeyboardMarkup(
             InlineKeyboardButton(text='16', callback_data='16'),
             InlineKeyboardButton(text='17', callback_data='17'),
             InlineKeyboardButton(text='18', callback_data='18'),
-            InlineKeyboardButton(text='19', callback_data='19'),
+            InlineKeyboardButton(text='19, 20, 21', callback_data='19'),
             InlineKeyboardButton(text='22', callback_data='22'),
         ],
         [
