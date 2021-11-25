@@ -1,8 +1,10 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 
+import diagrams
 import keyboards
 import states
+import utils
 from loader import dp
 
 
@@ -13,7 +15,27 @@ async def enter_number(message: Message, state: FSMContext):
         if int(task_number) < 1 or int(task_number) > 27:
             raise ValueError
 
-        await message.answer(f'Статистика по задаче {task_number}', reply_markup=keyboards.default.main_menu)
+        one_task_stats = await utils.db_api.get_stats(message.chat.id, task_number=task_number)
+        if not one_task_stats:
+            await message.answer(
+                f"Вы пока не решали задачу {task_number}.",
+                reply_markup=keyboards.default.main_menu)
+            await state.finish()
+
+        for task_number, answers in one_task_stats.items():
+            correctness = int(answers[0] / answers[1] * 100)
+            if correctness > 90:
+                result = 'Отличный результат. Продолжай в том же духе.'
+            elif correctness > 75:
+                result = 'Хороший результат. У тебя все получиться!'
+            elif correctness > 50:
+                result = 'Есть, над чем работать, но в целом неплохо'
+            else:
+                result = 'Рекомендую тебе почитать теорию по этой задаче'
+
+            stat_diagram = await diagrams.get_task_stats_diagram(task_number, answers[0], answers[1], result)
+            await message.answer_photo(stat_diagram, reply_markup=keyboards.default.main_menu)
+
         await state.finish()
 
     except ValueError:

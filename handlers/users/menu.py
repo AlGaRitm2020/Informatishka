@@ -10,6 +10,7 @@ from aiogram.dispatcher.filters import Command
 import states
 import parsing
 import keyboards
+import diagrams
 
 
 # --- Main Menu Handlers
@@ -74,22 +75,19 @@ async def get_all_tasks_stats(message: Message):
             result = 'Есть, над чем работать, но в целом неплохо'
         else:
             result = 'Рекомендую тебе почитать теорию по этой задаче'
-        await message.answer(str(correctness) +  result)
-        # stat_diagram = get_task_stats_diagram(task_number, answers[0], answers[1], result)
-        # update.message.reply_photo(stat_diagram, reply_markup=markup)
+
+        stat_diagram = await diagrams.get_task_stats_diagram(task_number, answers[0], answers[1], result)
+        await message.answer_photo(stat_diagram, reply_markup=keyboards.default.main_menu)
 
 
 @dp.message_handler(text=keyboards.default.stat_captions[2])
 async def get_activity_stats(message: Message):
     activity_stats = await utils.db_api.repo.get_activity(message.chat.id)
-    await message.answer(f'Статистика активности', reply_markup=keyboards.default.main_menu)
 
-    """
     if not activity_stats:
         await message.answer("Вы еще не решаи=ли задачи", reply_markup=keyboards.default.main_menu)
-    diagram = get_user_activity_diagram(activity_stats)
+    diagram = await diagrams.get_user_activity_diagram(activity_stats)
     await message.answer_photo(diagram, reply_markup=keyboards.default.main_menu)
-    """
 
 
 # ---

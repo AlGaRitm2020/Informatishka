@@ -3,3 +3,4 @@ environs~=8.0.0
 requests~=2.26.0
 beautifulsoup4~=4.10.0
 psycopg2-binary==2.9.1
+matplotlib~=3.5.0
