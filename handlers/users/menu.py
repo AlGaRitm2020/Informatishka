@@ -48,6 +48,13 @@ async def statistics_page(message: Message):
 async def back_to_home(message: Message):
     await message.answer(f'Вы вернулись на главную страницу', reply_markup=keyboards.default.main_menu)
 
+@dp.message_handler(text=keyboards.default.stat_captions[1])
+async def back_to_home(message: Message):
+
+    await message.answer(f'Введите номер задачи (от 1 до 27), чтобы посмотреть ее статистику',
+                         reply_markup=keyboards.default.back_menu)
+
+    await states.SpecificTaskStats.enter_number.set()
 
 # ---
 
