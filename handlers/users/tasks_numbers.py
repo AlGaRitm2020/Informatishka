@@ -1,3 +1,5 @@
+import json
+
 import aiogram
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, message, ParseMode
@@ -11,26 +13,43 @@ from loader import dp, bot
 
 @dp.callback_query_handler(state=states.FullVariant.enter_answer)
 async def enter_task_number(call: CallbackQuery, state: FSMContext):
-    if call.data != 'break':
-        task_number = str(int(call.data) - 1)
-        logging.info(f"call = {task_number}")
-    await call.answer(cache_time=1)
     data = await state.get_data()
-    task_data = data.get('variant')[int(task_number)]
-    task_data['description'] = task_data['description'].replace('"', "")
-    message_ids = data.get('message_ids')
+    if call.data == 'break':
+        reply_message = '🔬 Результаты: \n'
+        solved, all = 0, len(data['answers'])
+        for task_number, answers in data['answers'].items():
+            reply_message += f'Задача {task_number}. Ваш ответ: {answers[0]}. Правильный ответ: {answers[1]} \n'
+            user_answer = answers[0].lower().replace('\n', ';').replace(' ', '')
+            correct_answer = answers[1].lower().replace('\n', ';').replace(' ', '')
+            if user_answer == correct_answer:
+                solved += 1
+        await call.message.answer(reply_message)
 
-    for message_id in message_ids:
-        try:
-            await bot.delete_message(call.message.chat.id, message_id)
-        except Exception:
-            logging.info('Message to delete not found')
-    message_ids = []
+        scale_marks = json.load(open('data/practice/scale_marks.json', 'r'))
 
-    if task_number == 'break':
-        await call.message.answer(f'Вы завершили решение варианта')
+        await call.message.answer(
+            f'ℹ В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}\n'
+            f'🟢 *Итоговый балл: {scale_marks[str(solved)]}/100*', parse_mode=ParseMode.MARKDOWN_V2)
+
         await call.message.edit_reply_markup(reply_markup=None)
+
+        await state.reset_state(with_data=False)
     else:
+        task_number = call.data
+        logging.info(f"call = {task_number}")
+        await call.answer(cache_time=1)
+
+        task_data = data.get('variant')[int(task_number) - 1]
+        task_data['description'] = task_data['description'].replace('"', "")
+        message_ids = data.get('message_ids')
+
+        for message_id in message_ids:
+            try:
+                await bot.delete_message(call.message.chat.id, message_id)
+            except Exception:
+                logging.info('Message to delete not found')
+        message_ids = []
+
         await call.message.edit_text(f'Вы выбрали задачу под номером {task_number}\n'
                                      f'{task_data["description"]}', reply_markup=keyboards.inline.variant_task_buttons,
                                      parse_mode=ParseMode.MARKDOWN)
@@ -56,7 +75,6 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             message_obj = await call.message.answer_document(task_data['word'])
             message_ids.append(message_obj.message_id)
 
-
         if task_data['txt1']:
             with open(f'data/temp_task_files/{task_number}_A_task.txt', 'wb') as txt:
                 txt.write(task_data['txt1'])
@@ -77,8 +95,9 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
                 'а ответы внутри одного вопроса пробелом')
             message_ids.append(message_obj.message_id)
         else:
-            message_obj = await call.message.answer('✍️ Напишите ответ на задание. Если ответов несколько, укажите их через пробел')
+            message_obj = await call.message.answer(
+                '✍️ Напишите ответ на задание. Если ответов несколько, укажите их через пробел')
             message_ids.append(message_obj.message_id)
 
-    await state.update_data(message_ids=message_ids,
-                            current_task=int(task_number) + 1)
+        await state.update_data(message_ids=message_ids,
+                                current_task=task_number)
