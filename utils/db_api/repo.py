@@ -22,10 +22,13 @@ async def register(username, chat_id):
     return True
 
 
-def add_score(task_num, result, chat_id):
+async def add_score(task_num, result, chat_id):
     task_num = int(task_num)
-    # db_settings = await
-    con = psql.connect(**get_db_config_from_url())
+
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
     cur = con.cursor()
     request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
     cur.execute(request)
@@ -38,7 +41,6 @@ def add_score(task_num, result, chat_id):
     cur.execute(check_request)
     results = cur.fetchall()
     if len(results):
-        print('right')
         request = "UPDATE stats SET right_answers = '{}', all_answers = '{}' WHERE user_id = '{}" \
                   "' AND task_num = '{}'".format(
             results[0][0] + result, results[0][1] + 1, user_id[0][0], task_num)
@@ -68,11 +70,14 @@ def add_score(task_num, result, chat_id):
     return True
 
 
-def get_activity(chat_id):
+async def get_activity(chat_id):
     from datetime import datetime, timedelta
     dlt = timedelta(days=7)
     date_now = datetime.now().date()
-    con = psql.connect(**get_db_config_from_url())
+
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+    con = psql.connect(**db_settings.result())
     cur = con.cursor()
     request = "SELECT date, right_answers FROM activity\
     \nWHERE user_id in (SELECT id FROM users\
@@ -81,17 +86,20 @@ def get_activity(chat_id):
     result = cur.fetchall()
     if not len(result):
         return False
-    nice_dick = []
+    items = []
     for item in result:
         date = item[0]
         if date_now + dlt >= date:
-            nice_dick.append(item)
+            items.append(item)
         print(date)
-    return nice_dick
+    return items
 
 
-def get_stats(chat_id, task_number=0):
-    con = psql.connect(**get_db_config_from_url())
+async def get_stats(chat_id, task_number=0):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
     cur = con.cursor()
     if not task_number:
         request = "SELECT task_num, right_answers, all_answers FROM stats\
@@ -111,8 +119,11 @@ def get_stats(chat_id, task_number=0):
     return count_of_answers_dict
 
 
-def get_all_users_chat_ids():
-    con = psql.connect(**get_db_config_from_url())
+async def get_all_users_chat_ids():
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
     cur = con.cursor()
     request = "SELECT chat_id FROM users"
     cur.execute(request)
