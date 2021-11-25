@@ -34,7 +34,8 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
 
         await call.message.answer(
             f'ℹ В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}\n'
-            f'🟢 *Итоговый балл: {scale_marks[str(solved)]}/100*', parse_mode=ParseMode.MARKDOWN_V2)
+            f'🟢 *Итоговый балл: {scale_marks[str(solved)]}/100*', parse_mode=ParseMode.MARKDOWN_V2,
+        reply_markup=keyboards.default.main_menu)
 
         await call.message.edit_reply_markup(reply_markup=None)
 
