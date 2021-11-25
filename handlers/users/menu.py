@@ -1,8 +1,9 @@
 from aiogram.dispatcher import FSMContext
 
+import utils
 from handlers.users.full_variant_states import send_variant
 from loader import dp
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove, ParseMode
 
 from aiogram.dispatcher.filters import Command
 
@@ -34,7 +35,6 @@ async def generate_variant(message: Message, state: FSMContext):
     await states.FullVariant.send_variant.set()
 
 
-
 @dp.message_handler(text=keyboards.default.main_captions[3])
 async def statistics_page(message: Message):
     await message.answer(f'Вы перешли в раздел статистика', reply_markup=keyboards.default.stat_menu)
@@ -48,13 +48,49 @@ async def statistics_page(message: Message):
 async def back_to_home(message: Message):
     await message.answer(f'Вы вернулись на главную страницу', reply_markup=keyboards.default.main_menu)
 
-@dp.message_handler(text=keyboards.default.stat_captions[1])
-async def back_to_home(message: Message):
 
+@dp.message_handler(text=keyboards.default.stat_captions[1])
+async def get_specific_task_stats(message: Message):
     await message.answer(f'Введите номер задачи (от 1 до 27), чтобы посмотреть ее статистику',
                          reply_markup=keyboards.default.back_menu)
 
     await states.SpecificTaskStats.enter_number.set()
+
+
+@dp.message_handler(text=keyboards.default.stat_captions[0])
+async def get_all_tasks_stats(message: Message):
+    all_task_stats = await utils.db_api.get_stats(message.chat.id)
+    if not all_task_stats:
+        await message.answer("Вы пока не решали задачи",
+                             reply_markup=keyboards.default.main_menu)
+
+    for task_number, answers in all_task_stats.items():
+        correctness = int(answers[0] / answers[1] * 100)
+        if correctness > 90:
+            result = 'Отличный результат. Продолжай в том же духе.'
+        elif correctness > 75:
+            result = 'Хороший результат. У тебя все получиться!'
+        elif correctness > 50:
+            result = 'Есть, над чем работать, но в целом неплохо'
+        else:
+            result = 'Рекомендую тебе почитать теорию по этой задаче'
+        await message.answer(str(correctness) +  result)
+        # stat_diagram = get_task_stats_diagram(task_number, answers[0], answers[1], result)
+        # update.message.reply_photo(stat_diagram, reply_markup=markup)
+
+
+@dp.message_handler(text=keyboards.default.stat_captions[2])
+async def get_activity_stats(message: Message):
+    activity_stats = await utils.db_api.repo.get_activity(message.chat.id)
+    await message.answer(f'Статистика активности', reply_markup=keyboards.default.main_menu)
+
+    """
+    if not activity_stats:
+        await message.answer("Вы еще не решаи=ли задачи", reply_markup=keyboards.default.main_menu)
+    diagram = get_user_activity_diagram(activity_stats)
+    await message.answer_photo(diagram, reply_markup=keyboards.default.main_menu)
+    """
+
 
 # ---
 
