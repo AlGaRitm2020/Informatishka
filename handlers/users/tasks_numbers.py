@@ -9,7 +9,7 @@ import keyboards
 import states
 from keyboards.default import main_menu
 from loader import dp, bot
-
+import utils
 
 @dp.callback_query_handler(state=states.FullVariant.enter_answer)
 async def enter_task_number(call: CallbackQuery, state: FSMContext):
@@ -23,7 +23,12 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             correct_answer = answers[1].lower().replace('\n', ';').replace(' ', '')
             if user_answer == correct_answer:
                 solved += 1
+
+            await utils.db_api.add_score(int(task_number), int(user_answer == correct_answer), call.message.chat.id)
+
         await call.message.answer(reply_message)
+
+
 
         scale_marks = json.load(open('data/practice/scale_marks.json', 'r'))
 
