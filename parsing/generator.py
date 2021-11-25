@@ -1,3 +1,4 @@
+import asyncio
 from pprint import pprint
 
 from bs4 import BeautifulSoup
@@ -169,4 +170,5 @@ async def generate_random_variant(var_num):
 
 
 if __name__ == '__main__':
-    print(generate_random_variant()[9])
+
+    asyncio.run(generate_random_variant(1))

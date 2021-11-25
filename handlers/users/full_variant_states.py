@@ -24,7 +24,7 @@ async def send_variant(message: Message, state: FSMContext):
 
         variant = await parsing.generate_random_variant(var_number)
         # putting variant to state storage
-        await state.update_data(variant=variant)
+        await state.update_data(variant=variant, message_ids=[], current_task=0)
 
         await message.answer(f"🎉 Вариант №{var_number} успешно сгенерирован \n",
                              reply_markup=ReplyKeyboardRemove())
@@ -45,15 +45,15 @@ async def send_variant(message: Message, state: FSMContext):
 async def enter_answer(message: Message, state: FSMContext):
     # getting task data from state vars
     answer = message.text
-    # answer.strip()
+    answer.strip()
 
     data = await state.get_data()
-    #variant = data.get('variant')
+    variant = data.get('variant')
 
 
 
 
-    # await state.update_data(answer=answer)
+    await state.update_data(answer=answer)
 
     await message.answer(f'Ваш ответ сохранен')
     await state.finish()
