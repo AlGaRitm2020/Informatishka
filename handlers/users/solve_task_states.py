@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, ParseMode
 
 import keyboards
 from loader import dp
@@ -35,9 +35,9 @@ async def enter_number(message: Message, state: FSMContext):
                             right_answer=right_answer)
 
     if task_number not in '192021':
-        await message.answer(f'Задание № {task_number}\n' + task_text)
+        await message.answer(f'Задание № {task_number}\n' + task_text, parse_mode=ParseMode.MARKDOWN)
     else:
-        await message.answer(f'Задания № 19, 20, 21\n' + task_text)
+        await message.answer(f'Задания № 19, 20, 21\n' + task_text, parse_mode=ParseMode.MARKDOWN)
 
     if byte_img:
         with open('data/temp_task_files/task.png', 'wb') as img:
