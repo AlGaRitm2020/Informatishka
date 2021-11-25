@@ -91,7 +91,6 @@ async def get_activity(chat_id):
         date = item[0]
         if date_now + dlt >= date:
             items.append(item)
-        print(date)
     return items
 
 
