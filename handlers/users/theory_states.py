@@ -17,7 +17,7 @@ async def enter_number(message: Message, state: FSMContext):
             raise ValueError
 
         theory_links = json.load(open('data/theory/theory_links.json', 'r'))
-        videos_links = json.load(open('data/theory/videos_links.json', 'r') )
+        videos_links = json.load(open('data/theory/videos_links.json', 'r'))
 
         await message.answer(f'Задача №{str(task_number)}\n'
                              f'🎬 По этой теме можешь посмотреть видео:\n'
