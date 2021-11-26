@@ -13,12 +13,13 @@ from loader import dp, bot
 
 @dp.message_handler(state=states.FullVariant.send_variant)
 async def send_variant(message: Message, state: FSMContext):
+
     var_number = message.text
     try:
         if var_number == keyboards.default.skip_captions[0]:
             # random variant
             var_number = random.randint(1, 5000)
-        elif int(var_number) < 0:
+        elif int(var_number) < 0 or int(var_number) > 10000:
             raise ValueError
 
         variant = await parsing.generate_random_variant(var_number)
@@ -39,7 +40,7 @@ async def send_variant(message: Message, state: FSMContext):
         await states.FullVariant.next()
     except ValueError:
         # if variant number not valid
-        await message.answer("⚠ Номер варианта - целое число от 1")
+        await message.answer("⚠ Номер варианта - целое число от 1 до 10000")
         await states.FullVariant.send_variant.set()
 
 
@@ -55,7 +56,7 @@ async def enter_answer(message: Message, state: FSMContext):
     main_message_id = data.get('main_message_id')
     current_task = data.get('current_task')
     print(data['current_task'])
-    data['answers'][data['current_task']] = answer, variant[int(current_task) + 1]['answer']
+    data['answers'][data['current_task']] = answer, variant[int(current_task) - 1]['answer']
 
     for message_id in message_ids:
         try:

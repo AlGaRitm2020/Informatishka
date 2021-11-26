@@ -30,9 +30,8 @@ async def theory(message: Message):
 
 @dp.message_handler(text=keyboards.default.main_captions[2], state=None)
 async def generate_variant(message: Message, state: FSMContext):
-    await message.answer('Выбирете номер варианта (натуральное число):', reply_markup=keyboards.default.skip_menu)
+    await message.answer('Выбирете номер варианта (натуральное число до 10000):', reply_markup=keyboards.default.skip_menu)
 
-    print('fasdf')
     await states.FullVariant.send_variant.set()
 
 
@@ -85,7 +84,7 @@ async def get_activity_stats(message: Message):
     activity_stats = await utils.db_api.repo.get_activity(message.chat.id)
 
     if not activity_stats:
-        await message.answer("Вы еще не решаи=ли задачи", reply_markup=keyboards.default.main_menu)
+        await message.answer("Вы еще не решали задачи", reply_markup=keyboards.default.main_menu)
     diagram = await diagrams.get_user_activity_diagram(activity_stats)
     await message.answer_photo(diagram, reply_markup=keyboards.default.main_menu)
 

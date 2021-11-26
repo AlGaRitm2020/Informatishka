@@ -6,7 +6,7 @@ async def reformat_to_dd_mm_yyyy(date: str) -> str:
     yyyy_mm_dd_list = date.split('-')
     dd_mm_yyyy_list = [yyyy_mm_dd_list[2], yyyy_mm_dd_list[1], yyyy_mm_dd_list[0]]
     dd_mm_yyy_str = '.'.join(dd_mm_yyyy_list)
-    return dd_mm_yyy_str
+    return dd_mm_yyy_str[:-5]
 
 
 async def get_user_activity_diagram(dates_and_answers_stats):
