@@ -11,6 +11,7 @@ from keyboards.default import main_menu
 from loader import dp, bot
 import utils
 
+
 @dp.callback_query_handler(state=states.FullVariant.enter_answer)
 async def enter_task_number(call: CallbackQuery, state: FSMContext):
     data = await state.get_data()
@@ -28,14 +29,12 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
 
         await call.message.answer(reply_message)
 
-
-
         scale_marks = json.load(open('data/practice/scale_marks.json', 'r'))
 
         await call.message.answer(
             f'ℹ В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}\n'
             f'🟢 *Итоговый балл: {scale_marks[str(solved)]}/100*', parse_mode=ParseMode.MARKDOWN_V2,
-        reply_markup=keyboards.default.main_menu)
+            reply_markup=keyboards.default.main_menu)
 
         await call.message.edit_reply_markup(reply_markup=None)
 
@@ -46,7 +45,8 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
         await call.answer(cache_time=1)
 
         task_data = data.get('variant')[int(task_number) - 1]
-        task_data['description'] = task_data['description'].replace('"', "")
+        task_data['description'] = task_data['description'].replace('"', "")\
+            .replace(')', '\)').replace('(', '\(').replace('.', '\.').replace('-', '\-').replace('=', '\=')
         message_ids = data.get('message_ids')
 
         for message_id in message_ids:
