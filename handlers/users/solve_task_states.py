@@ -25,16 +25,16 @@ async def enter_number(message: Message, state: FSMContext):
         await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
         await states.SolveTask.enter_number.set()
 
-    coroutine_task = asyncio.create_task(parsing.get_task_by_number(task_number))
-    await asyncio.gather(coroutine_task)
+    result = await parsing.get_task_by_number(task_number)
 
-    task_text, right_answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2 = coroutine_task.result()
+
+    task_text, right_answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2 = result
 
     await state.update_data(task_number=task_number,
                             task_text=task_text,
                             right_answer=right_answer)
 
-    if task_number not in '192021':
+    if int(task_number) > 21 or int(task_number) < 19:
         await message.answer(f'Задание № {task_number}\n' + task_text, parse_mode=ParseMode.MARKDOWN)
     else:
         await message.answer(f'Задания № 19, 20, 21\n' + task_text, parse_mode=ParseMode.MARKDOWN)
