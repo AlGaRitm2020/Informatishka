@@ -15,8 +15,8 @@ async def register(username, chat_id):
     users_with_this_id = cur.fetchall()
     if len(users_with_this_id):
         return False
-    insert_request = "INSERT INTO users(username, chat_id) VALUES('{}', '{}')". \
-        format(username, str(chat_id))
+    insert_request = "INSERT INTO users(username, chat_id, register_date) VALUES('{}', '{}', '{}')". \
+        format(username, str(chat_id), datetime.date.today())
     cur.execute(insert_request)
     con.commit()
     return True
@@ -24,7 +24,6 @@ async def register(username, chat_id):
 
 async def add_score(task_num, result, chat_id):
     task_num = int(task_num)
-    chat_id = '1830477841'
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
@@ -72,7 +71,6 @@ async def add_score(task_num, result, chat_id):
 
 
 async def get_activity(chat_id):
-    chat_id = '1830477841'
     from datetime import datetime, timedelta
     dlt = timedelta(days=7)
     date_now = datetime.now().date()
@@ -99,7 +97,6 @@ async def get_activity(chat_id):
 async def get_stats(chat_id, task_number=0):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
-    chat_id = '1830477841'
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
     if not task_number:
