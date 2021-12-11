@@ -36,7 +36,7 @@ async def send_variant(message: Message, state: FSMContext):
 
         # putting variant to state storage
         await state.update_data(variant=variant, message_ids=[], current_task=0,
-                                main_message_id=main_message_id, answers=dict())
+                                main_message_id=main_message_id, answers=dict(), last_time=None, time_dict=dict())
         await states.FullVariant.next()
     except ValueError:
         # if variant number not valid

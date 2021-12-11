@@ -5,6 +5,7 @@ import asyncio
 import datetime
 from utils.db_api import get_db_config_from_url
 
+
 async def db_management():
     settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(settings)
@@ -61,6 +62,7 @@ async def db_management():
     conn.commit()
     cur.close()
     conn.close()
+
 
 if __name__ == '__main__':
     asyncio.run(db_management())

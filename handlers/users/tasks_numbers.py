@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 import aiogram
@@ -10,16 +11,40 @@ import states
 from keyboards.default import main_menu
 from loader import dp, bot
 import utils
-
+from time import time
 
 @dp.callback_query_handler(state=states.FullVariant.enter_answer)
 async def enter_task_number(call: CallbackQuery, state: FSMContext):
     data = await state.get_data()
+
+    # adding time info about last task
+    last_task = data.get('current_task')
+    if last_task != 0:
+        last_time = data.get('last_time')
+        delta_time = time() - last_time
+        logging.info(f"Task: {last_task}, time: {delta_time}")
+        time_dict = data.get('time_dict')
+
+        if time_dict.get(last_task):
+
+            time_dict[last_task] += delta_time
+        else:
+            time_dict[last_task] = delta_time
+        print(time_dict)
+    else:
+        time_dict = dict()
+
+
+
+
+
     if call.data == 'break':
         reply_message = '🔬 Результаты: \n'
         solved, all = 0, len(data['answers'])
         for task_number, answers in data['answers'].items():
-            reply_message += f'Задача {task_number}. Ваш ответ: {answers[0]}. Правильный ответ: {answers[1]} \n'
+            reply_message += f'Задача {task_number}. Ваш ответ: {answers[0]}. Правильный ответ: {answers[1]} \n' \
+                             f'Ваше время: {str(int(time_dict[task_number])// 60)}мин' \
+                             f' {str(int(time_dict[task_number])% 60)}c \n'
             user_answer = answers[0].lower().replace('\n', ';').replace(' ', '')
             correct_answer = answers[1].lower().replace('\n', ';').replace(' ', '')
             if user_answer == correct_answer:
@@ -33,6 +58,7 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
 
         await call.message.answer(
             f'ℹ В этом варианте у вас решено правильно {str(solved)} задач из {str(all)}\n'
+            f'⏱ Вы потратили на решение {int(sum(time_dict.values()))// 60}м {int(sum(time_dict.values()))% 60}c\n'
             f'🟢 *Итоговый балл: {scale_marks[str(solved)]}/100*', parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=keyboards.default.main_menu)
 
@@ -40,6 +66,9 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
 
         await state.reset_state(with_data=False)
     else:
+
+
+
         task_number = call.data
         logging.info(f"call = {task_number}")
         await call.answer(cache_time=1)
@@ -106,4 +135,6 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             message_ids.append(message_obj.message_id)
 
         await state.update_data(message_ids=message_ids,
-                                current_task=task_number)
+                                current_task=task_number,
+                                time_dict=time_dict,
+                                last_time=time())
