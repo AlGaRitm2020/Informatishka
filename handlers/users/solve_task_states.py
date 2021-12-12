@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ParseMode
 
 import keyboards
+import utils
 from loader import dp
 import parsing
 import states
@@ -92,4 +93,6 @@ async def enter_answer(message: Message, state: FSMContext):
     else:
         await message.answer(f'🚫 Ваш ответ неверен. Ответ: {right_answer}. ',
                              reply_markup=keyboards.default.main_menu)
+
+    await utils.db_api.add_score(int(task_number), int(answer == right_answer), message.chat.id)
     await state.finish()

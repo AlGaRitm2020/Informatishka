@@ -1,5 +1,7 @@
 import datetime
 import asyncio
+import logging
+
 import psycopg2 as psql
 from . import get_db_config_from_url
 
@@ -33,6 +35,7 @@ async def add_score(task_num, result, chat_id):
     cur.execute(request)
     user_id = cur.fetchall()
     if not len(user_id):
+        print('user isn"t exist')
         return False
     check_request = "SELECT right_answers, all_answers FROM stats WHERE user_id = '{}'" \
                     " AND task_num = '{}'".format(
