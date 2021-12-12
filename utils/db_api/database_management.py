@@ -40,7 +40,7 @@ async def db_management():
     cur.execute("DELETE FROM stats;")
     cur.execute("DELETE FROM users WHERE id = 4;")
     """
-    # cur.execute("DELETE FROM activity WHERE right_answers = 1;")
+    # cur.execute("DELETE FROM stats WHERE user_id = 6;")
     # cur.execute("UPDATE stats  SET (right_answers, all_answers) =  (12, 20) WHERE user_id = 8;")
     # cur.execute("INSERT INTO stats (task_num, user_id) VALUES (3, 8);")
     # cur.execute("alter table users add column register_date DATE default '11.27.2021';")
@@ -50,12 +50,12 @@ async def db_management():
     pprint(cur.fetchall())
 
     # --- select data from stats ---
-    cur.execute("SELECT * FROM stats WHERE user_id = 23;")
+    cur.execute("SELECT user_id, task_num, right_answers, all_answers FROM stats WHERE user_id = 6;")
     print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
     pprint(cur.fetchall())
 
     # --- select data from users ---
-    cur.execute("SELECT * FROM activity;")
+    cur.execute("SELECT user_id, date FROM activity;")
     print('id', 'user_id, date', sep='\n')
     pprint(cur.fetchall())
 
