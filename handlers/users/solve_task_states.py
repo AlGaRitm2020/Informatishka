@@ -35,6 +35,7 @@ async def enter_number(message: Message, state: FSMContext):
                             task_text=task_text,
                             right_answer=right_answer)
 
+    task_text = task_text.replace('"', "")
     if int(task_number) > 21 or int(task_number) < 19:
         await message.answer(f'Задание № {task_number}\n' + task_text, parse_mode=ParseMode.MARKDOWN)
     else:

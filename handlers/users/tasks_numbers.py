@@ -75,7 +75,7 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
 
         task_data = data.get('variant')[int(task_number) - 1]
         task_data['description'] = task_data['description'].replace('"', "")\
-            .replace(')', '\)').replace('(', '\(').replace('.', '\.').replace('-', '\-').replace('=', '\=')
+            .replace(')', ')').replace('(', '(').replace('.', '.').replace('-', '-').replace('=', '=')
         message_ids = data.get('message_ids')
 
         for message_id in message_ids:
