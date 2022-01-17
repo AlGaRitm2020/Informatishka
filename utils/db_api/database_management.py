@@ -33,6 +33,7 @@ async def db_management():
     cur.execute("INSERT INTO users (username, chat_id) VALUES ('@YulLog19', '1244102957');")
     cur.execute("INSERT INTO users (username, chat_id) VALUES ('@albert_gareev', '1283628271');")
     """
+    # cur.execute("INSERT INTO users (username, chat_id) VALUES ('@insanet2', '1283628271');")
     # print(type(datetime.date.today()))
     # cur.execute("INSERT INTO activity (user_id, date, right_answers) VALUES (8, '{}', 7);".format('2021-07-07'))
     # --- delete data from tables ---
@@ -50,7 +51,7 @@ async def db_management():
     pprint(cur.fetchall())
 
     # --- select data from stats ---
-    cur.execute("SELECT user_id, task_num, right_answers, all_answers FROM stats WHERE user_id = 6;")
+    cur.execute("SELECT user_id, task_num, right_answers, all_answers FROM stats")
     print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
     pprint(cur.fetchall())
 

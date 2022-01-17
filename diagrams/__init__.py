@@ -10,6 +10,7 @@ autolabeling the percentage, offsetting a slice and adding a shadow.
 import matplotlib.pyplot as plt
 import os
 from .task_stats import get_task_stats_diagram
+from .time import get_time_stats_diagram
 from .activity import get_user_activity_diagram
 
 
