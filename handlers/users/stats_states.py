@@ -47,3 +47,4 @@ async def enter_number(message: Message, state: FSMContext):
         "if task_number isn't int"
         await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
         await states.SpecificTaskStats.enter_number.set()
+# fasdgdfsgsdfgdsfg
