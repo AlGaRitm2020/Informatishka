@@ -40,8 +40,9 @@ async def statistics_page(message: Message):
     await message.answer(f'Вы перешли в раздел статистика', reply_markup=keyboards.default.stat_menu)
 
 @dp.message_handler(text=keyboards.default.main_captions[4])
-async def statistics_page(message: Message):
+async def feedback_page(message: Message):
     await message.answer(f'Напишите отзыв', reply_markup=keyboards.default.back_menu)
+    await states.Feedback.write_feedback.set()
 # ---
 
 
