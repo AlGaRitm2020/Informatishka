@@ -73,6 +73,27 @@ async def add_score(task_num, result, chat_id):
     return True
 
 
+async def add_feedback(feedback, chat_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+    
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+
+    request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
+    cur.execute(request)
+    user_id = cur.fetchall()
+
+    if not len(user_id):
+        print('user isn"t exist')
+        return False
+
+    request = "INSERT INTO feedbacks(user_id, feedback, date) VALUES({}, '{}', '{}')".format(user_id[0][0], feedback, datetime.date.today())
+    cur.execute(request)
+    con.commit()
+    return True
+
+
 async def get_activity(chat_id):
     from datetime import datetime, timedelta
     dlt = timedelta(days=7)

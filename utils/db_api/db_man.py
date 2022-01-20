@@ -36,7 +36,7 @@ async def db_management():
     cur.execute("create table stats(id serial primary key, user_id INTEGER references users, task_num INTEGER, right_answers INTEGER, all_answers INTEGER);")
     """
     # cur.execute("create table activity(id serial primary key, user_id INTEGER references users, date DATE, right_answers INTEGER);")
-    cur.execute("create table feedbacks(id serial primary key, user_id INTEGER references users, date DATE, feedback VARCHAR);")
+    #cur.execute("create table feedbacks(id serial primary key, user_id INTEGER references users, date DATE, feedback VARCHAR);")
 
     # --- insert old users ---
     """
@@ -63,16 +63,22 @@ async def db_management():
     cur.execute("SELECT * FROM users;")
     print('users', 'id, username, chat_id, register_date', sep='\n')
     pprint(cur.fetchall())
-
+    """
     # --- select data from stats ---
     cur.execute("SELECT user_id, task_num, right_answers, all_answers FROM stats")
     print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
     pprint(cur.fetchall())
-
+"""
     # --- select data from users ---
     cur.execute("SELECT user_id, date FROM activity;")
     print('id', 'user_id, date', sep='\n')
     pprint(cur.fetchall())
+
+    # --- select data from feedback---
+    cur.execute("SELECT user_id, date, feedback FROM feedbacks;")
+    print('user_id, date, feedbacks', sep='\n')
+    pprint(cur.fetchall())
+
 
     conn.commit()
     cur.close()
