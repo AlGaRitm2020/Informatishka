@@ -33,12 +33,14 @@ async def enter_number(message: Message, state: FSMContext):
             else:
                 result = 'Рекомендую тебе почитать теорию по этой задаче'
 
-            #stat_diagram = await diagrams.get_task_stats_diagram(task_number, answers[0], answers[1], result)
+            stat_diagram = await diagrams.get_task_stats_diagram(task_number, answers[0], answers[1], result)
+            """
             min_time = 347
             max_time = 507
             avg_time = 304
             recomend_time = 300
-            stat_diagram = await diagrams.get_time_stats_diagram(task_number, min_time, max_time, avg_time, recomend_time)
+            stat_diagram = await diagrams.get_time_stats_diagram(task_number, min_time, max_time, avg_time, recomend_time)"""
+
             await message.answer_photo(stat_diagram, reply_markup=keyboards.default.main_menu)
 
         await state.finish()
