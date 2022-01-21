@@ -60,6 +60,14 @@ async def get_specific_task_stats(message: Message):
     await states.SpecificTaskStats.enter_number.set()
 
 
+@dp.message_handler(text=keyboards.default.stat_captions[4])
+async def get_specific_task_stats(message: Message):
+    await message.answer(f'Введите номер задачи (от 1 до 27), чтобы посмотреть ее статистику',
+                         reply_markup=keyboards.default.back_menu)
+
+    await states.TimeStats.enter_number.set()
+
+
 @dp.message_handler(text=keyboards.default.stat_captions[0])
 async def get_all_tasks_stats(message: Message):
     all_task_stats = await utils.db_api.get_stats(message.chat.id)

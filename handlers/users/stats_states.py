@@ -50,3 +50,33 @@ async def enter_number(message: Message, state: FSMContext):
         await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
         await states.SpecificTaskStats.enter_number.set()
 # fasdgdfsgsdfgdsfg
+
+
+@dp.message_handler(state=states.TimeStats.enter_number)
+async def enter_number(message: Message, state: FSMContext):
+    task_number = message.text
+    try:
+        if int(task_number) < 1 or int(task_number) > 27:
+            raise ValueError
+
+        one_task_stats = await utils.db_api.get_stats(message.chat.id, task_number=task_number)
+        if not one_task_stats:
+            await message.answer(
+                f"Вы пока не решали задачу {task_number}.",
+                reply_markup=keyboards.default.main_menu)
+            await state.finish()
+
+            
+        min_time = 347
+        max_time = 507
+        avg_time = 304
+        recomend_time = 300
+        stat_diagram = await diagrams.get_time_stats_diagram(task_number, min_time, max_time, avg_time, recomend_time)
+        await message.answer_photo(stat_diagram, reply_markup=keyboards.default.main_menu)
+
+        await state.finish()
+
+    except ValueError:
+        "if task_number isn't int"
+        await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
+        await states.TimeStats.enter_number.set()

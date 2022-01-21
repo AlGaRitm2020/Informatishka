@@ -1,6 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-stat_captions = ['📎 По всем задачам', '📌 По конкретной задаче', '↗ Активность', '⬅ Назад']
+stat_captions = ['📎 По всем задачам', '📌 По конкретной задаче', '↗ Активность', '⬅ Назад', '⌛ Время решения задач']
 
 stat_menu = ReplyKeyboardMarkup(
     keyboard=[
@@ -10,6 +10,8 @@ stat_menu = ReplyKeyboardMarkup(
         ],
 [
             KeyboardButton(text=stat_captions[2]),
+            KeyboardButton(text=stat_captions[4]),
+
             KeyboardButton(text=stat_captions[3])
 
         ]],
