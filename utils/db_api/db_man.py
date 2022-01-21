@@ -29,7 +29,7 @@ async def db_management():
     cur.execute('DROP TABLE stats;')
     cur.execute('DROP TABLE users;') 
     """
-    # cur.execute('DROP TABLE activity;')
+    # cur.execute('DROP TABLE time;')
     # --- create tables ---
     """
     cur.execute("create table users(id serial primary key, username VARCHAR, chat_id  VARCHAR unique);")
@@ -37,7 +37,7 @@ async def db_management():
     """
     # cur.execute("create table activity(id serial primary key, user_id INTEGER references users, date DATE, right_answers INTEGER);")
     #cur.execute("create table feedbacks(id serial primary key, user_id INTEGER references users, date DATE, feedback VARCHAR);")
-
+    #cur.execute("create table time(id serial primary key, user_id INTEGER references users, task_num INTEGER, max_time INTEGER, min_time INTEGER, sum_time INTEGER, count INTEGER);") 
     # --- insert old users ---
     """
     cur.execute("INSERT INTO users (username, chat_id) VALUES ('@Joyin1211', '906136828');")
@@ -77,6 +77,12 @@ async def db_management():
     # --- select data from feedback---
     cur.execute("SELECT user_id, date, feedback FROM feedbacks;")
     print('user_id, date, feedbacks', sep='\n')
+    pprint(cur.fetchall())
+
+
+    # --- select data from stats ---
+    cur.execute("SELECT * FROM time")
+    #print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
     pprint(cur.fetchall())
 
 

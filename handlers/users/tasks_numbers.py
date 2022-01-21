@@ -51,6 +51,9 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
                 solved += 1
 
             await utils.db_api.add_score(int(task_number), int(user_answer == correct_answer), call.message.chat.id)
+            await utils.db_api.add_time(int(task_number), int(time_dict[task_number]), call.message.chat.id)
+
+
 
         await call.message.answer(reply_message)
 

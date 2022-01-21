@@ -73,6 +73,50 @@ async def add_score(task_num, result, chat_id):
     return True
 
 
+async def add_time(task_num, time, chat_id):
+    task_num = int(task_num)
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
+    cur.execute(request)
+    user_id = cur.fetchall()
+    if not len(user_id):
+        print('user isn"t exist')
+        return False
+    check_request = "SELECT max_time, min_time, sum_time, count FROM time WHERE user_id = '{}'" \
+                    " AND task_num = '{}'".format(
+        user_id[0][0], task_num)
+    cur.execute(check_request)
+    results = cur.fetchall()
+    print(results)
+    if len(results):
+        max_time, min_time, sum_time, count = results[0]
+        if time > max_time:
+            max_time = time
+        if time < min_time:
+            min_time = time
+        count += 1
+        sum_time += time
+        request = "UPDATE time SET max_time= '{}', min_time= '{}', sum_time= '{}', count = '{}' WHERE user_id = '{}" \
+                  "' AND task_num = '{}'".format(
+            max_time, min_time, sum_time, count, user_id[0][0], task_num)
+
+
+
+    else:
+        request = "INSERT INTO time(user_id, max_time, min_time, sum_time, count)" \
+                  " VALUES({}, {}, '{}', {}, {})".format(
+            user_id[0][0], time, time, time, 1)
+    cur.execute(request)
+    con.commit()
+    return True
+
+
+
+
 async def add_feedback(feedback, chat_id):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
