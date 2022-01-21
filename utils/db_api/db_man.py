@@ -55,6 +55,12 @@ async def db_management():
     cur.execute("DELETE FROM stats;")
     cur.execute("DELETE FROM users WHERE id = 4;")
     """
+    #cur.execute("DELETE FROM stats WHERE user_id =3;")
+    #cur.execute("DELETE FROM activity WHERE user_id =3;")
+
+    
+    #cur.execute("DELETE FROM users WHERE id = 3;")
+    
     # cur.execute("DELETE FROM stats WHERE user_id = 6;")
     # cur.execute("UPDATE stats  SET (right_answers, all_answers) =  (12, 20) WHERE user_id = 8;")
     # cur.execute("INSERT INTO stats (task_num, user_id) VALUES (3, 8);")

@@ -28,6 +28,7 @@ async def show_feedbacks(message: Message, state: FSMContext):
         
         
         feedbacks = await utils.db_api.get_feedbacks()
+        print(feedbacks)
         reply_message = "Список всех отзывов\n\n"
         for feedback, date, username in feedbacks:
             reply_message += f"Дата:{date.day}.{date.month}.{date.year}\n" \

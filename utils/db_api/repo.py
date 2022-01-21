@@ -169,7 +169,7 @@ async def get_feedbacks():
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
     request = "SELECT feedbacks.feedback, feedbacks.date, users.username  FROM feedbacks, users\
-            \nWHERE users.id in (SELECT user_id FROM feedbacks) ORDER BY feedbacks.date;"
+            \nWHERE users.id = feedbacks.user_id ORDER BY feedbacks.date;"
     cur.execute(request)
     result = cur.fetchall()
     return result
