@@ -162,6 +162,19 @@ async def get_activity(chat_id):
     return items
 
 
+async def get_feedbacks():
+
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    request = "SELECT feedbacks.feedback, feedbacks.date, users.username  FROM feedbacks, users\
+            \nWHERE users.id in (SELECT user_id FROM feedbacks) ORDER BY feedbacks.date;"
+    cur.execute(request)
+    result = cur.fetchall()
+    return result
+
+
 async def get_stats(chat_id, task_number=0):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)

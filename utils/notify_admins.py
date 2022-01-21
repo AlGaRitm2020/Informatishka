@@ -6,7 +6,7 @@ from data.config import ADMINS
 import keyboards
 
 async def on_startup_notify(dp: Dispatcher):
-    for admin in ADMINS:
+    for admin in ADMINS[:2]:
         try:
             await dp.bot.send_message(admin, "Бот Запущен", reply_markup=keyboards.default.main_menu)
 
