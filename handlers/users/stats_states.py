@@ -63,7 +63,7 @@ async def enter_number(message: Message, state: FSMContext):
         time_stats = await utils.db_api.get_time(message.chat.id, task_number)
         if not time_stats:
             await message.answer(
-                f"Вы пока не решали задачу {task_number}.",
+                f"Вы пока не решили задачу {task_number} правильно",
                 reply_markup=keyboards.default.main_menu)
             await state.finish()
 

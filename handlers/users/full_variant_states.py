@@ -15,6 +15,8 @@ from loader import dp, bot
 async def send_variant(message: Message, state: FSMContext):
 
     var_number = message.text
+    await message.answer(f"⏳ Вариант будет генерироваться 5-10 секунд  \n",
+    reply_markup=ReplyKeyboardRemove()) 
     try:
         if var_number == keyboards.default.skip_captions[0]:
             # random variant

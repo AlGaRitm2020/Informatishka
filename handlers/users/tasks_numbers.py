@@ -49,9 +49,9 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             correct_answer = answers[1].lower().replace('\n', ';').replace(' ', '')
             if user_answer == correct_answer:
                 solved += 1
+                await utils.db_api.add_time(int(task_number), int(time_dict[task_number]), call.message.chat.id)
 
             await utils.db_api.add_score(int(task_number), int(user_answer == correct_answer), call.message.chat.id)
-            await utils.db_api.add_time(int(task_number), int(time_dict[task_number]), call.message.chat.id)
 
 
 
