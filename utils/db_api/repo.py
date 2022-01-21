@@ -107,9 +107,9 @@ async def add_time(task_num, time, chat_id):
 
 
     else:
-        request = "INSERT INTO time(user_id, max_time, min_time, sum_time, count)" \
-                  " VALUES({}, {}, '{}', {}, {})".format(
-            user_id[0][0], time, time, time, 1)
+        request = "INSERT INTO time(user_id, task_num, max_time, min_time, sum_time, count)" \
+                  " VALUES({}, {},  {}, '{}', {}, {})".format(
+            user_id[0][0], task_num,  time, time, time, 1)
     cur.execute(request)
     con.commit()
     return True
@@ -184,6 +184,26 @@ async def get_stats(chat_id, task_number=0):
         count_of_answers_dict[str(task_number)] = (right_answers, all_answers)
     return count_of_answers_dict
 
+
+async def get_time(chat_id, task_number):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    request = "SELECT max_time, min_time, sum_time, count FROM time\
+                \nWHERE user_id in (SELECT id FROM users\
+                \nWHERE chat_id = '{}') AND task_num = {} ORDER BY task_num".format(str(chat_id), task_number)
+    cur.execute(request)
+    result = cur.fetchall()
+    if not len(result):
+        return False
+    time_stats = {
+            'max_time' : result[0][0],
+            'min_time' : result[0][1],
+            'sum_time' : result[0][2],
+            'count' : result[0][3]
+            }
+    return time_stats 
 
 async def get_all_users_chat_ids():
     db_settings = asyncio.create_task(get_db_config_from_url())

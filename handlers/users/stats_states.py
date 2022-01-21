@@ -59,19 +59,17 @@ async def enter_number(message: Message, state: FSMContext):
         if int(task_number) < 1 or int(task_number) > 27:
             raise ValueError
 
-        one_task_stats = await utils.db_api.get_stats(message.chat.id, task_number=task_number)
-        if not one_task_stats:
+        time_stats = await utils.db_api.get_time(message.chat.id, task_number)
+        if not time_stats:
             await message.answer(
                 f"Вы пока не решали задачу {task_number}.",
                 reply_markup=keyboards.default.main_menu)
             await state.finish()
 
             
-        min_time = 347
-        max_time = 507
-        avg_time = 304
+        avg_time = int(time_stats['sum_time'] / time_stats['count'])
         recomend_time = 300
-        stat_diagram = await diagrams.get_time_stats_diagram(task_number, min_time, max_time, avg_time, recomend_time)
+        stat_diagram = await diagrams.get_time_stats_diagram(task_number, time_stats['min_time'], time_stats['max_time'], avg_time, recomend_time)
         await message.answer_photo(stat_diagram, reply_markup=keyboards.default.main_menu)
 
         await state.finish()
