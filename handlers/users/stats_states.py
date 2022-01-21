@@ -1,6 +1,7 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 
+import json
 import diagrams
 import keyboards
 import states
@@ -68,13 +69,13 @@ async def enter_number(message: Message, state: FSMContext):
 
             
         avg_time = int(time_stats['sum_time'] / time_stats['count'])
-        recomend_time = 300
+        recomend_time = json.load(open('data/practice/recommend_time.json'))[task_number] * 60 
         stat_diagram = await diagrams.get_time_stats_diagram(task_number, time_stats['min_time'], time_stats['max_time'], avg_time, recomend_time)
         await message.answer_photo(stat_diagram, reply_markup=keyboards.default.main_menu)
 
         await state.finish()
 
-    except ValueError:
+    except IndexError:
         "if task_number isn't int"
         await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
         await states.TimeStats.enter_number.set()
