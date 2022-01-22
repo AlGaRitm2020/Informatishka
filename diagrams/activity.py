@@ -10,6 +10,7 @@ async def reformat_to_dd_mm_yyyy(date: str) -> str:
 
 
 async def get_user_activity_diagram(dates_and_answers_stats):
+    dates_and_answers_stats = dates_and_answers_stats[-10:] 
     dates = [await reformat_to_dd_mm_yyyy(str(i[0])) for i in dates_and_answers_stats]
     answers = [i[1] for i in dates_and_answers_stats]
     fig, ax = plt.subplots()

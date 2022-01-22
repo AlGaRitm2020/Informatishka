@@ -56,7 +56,8 @@ async def db_management():
     cur.execute("DELETE FROM users WHERE id = 4;")
     """
     #cur.execute("DELETE FROM stats WHERE user_id =3;")
-    #cur.execute("DELETE FROM activity WHERE user_id =3;")
+    #cur.execute(f"DELETE FROM activity WHERE user_id =8 AND date = {datetime.date(2021, 6, 9)}")
+    #.format(datetime.date(2021, 1, 8)))
 
     
     #cur.execute("DELETE FROM users WHERE id = 3;")
