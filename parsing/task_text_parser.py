@@ -48,7 +48,8 @@ async def get_task_text(task):
                 cleaned_task = cleaned_task.replace(html_tag, '')
                 html_tag = ''
 
-    result_task = cleaned_task
+    result_task = cleaned_task.replace("angeImageFilePath('", "")
+
 
     # replace 'ПаскальPythonС++' string
     result_task = result_task.replace('PythonС++', '\n ').replace('PythonСи', '\n')

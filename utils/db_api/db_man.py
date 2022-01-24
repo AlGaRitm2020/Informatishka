@@ -60,7 +60,7 @@ async def db_management():
     #.format(datetime.date(2021, 1, 8)))
 
     
-    #cur.execute("DELETE FROM users WHERE id = 3;")
+    #cur.execute("DELETE FROM feedbacks WHERE user_id = 32;")
     
     # cur.execute("DELETE FROM stats WHERE user_id = 6;")
     # cur.execute("UPDATE stats  SET (right_answers, all_answers) =  (12, 20) WHERE user_id = 8;")
