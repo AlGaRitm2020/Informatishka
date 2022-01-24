@@ -55,6 +55,10 @@ async def enter_answer(message: Message, state: FSMContext):
     data = await state.get_data()
     variant = data.get('variant')
     message_ids = data.get('message_ids')
+    if message_ids == []:
+        await message.answer("Выберите задачу используя кнопки")
+        return False
+        #await states.FullVariant.enter_answer.set()
     main_message_id = data.get('main_message_id')
     current_task = data.get('current_task')
     print(data['current_task'])
