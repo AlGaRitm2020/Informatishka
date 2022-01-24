@@ -26,7 +26,7 @@ async def enter_number(message: Message, state: FSMContext):
         await message.answer("⚠ Номер задания - целое число от 1 до 27, попробуй еще раз")
         await states.SolveTask.enter_number.set()
 
-    result = await parsing.get_task_by_id(task_number)
+    result = await parsing.get_task_by_number(task_number)
 
 
     task_text, right_answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2 = result
