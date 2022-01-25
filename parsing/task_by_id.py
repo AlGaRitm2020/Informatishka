@@ -9,13 +9,17 @@ import asyncio
 
 
 async def get_task_by_id(task_ids: list) -> list:
-    task_ids = ['1', '5']
+    task_ids = ['4832']
     variant = []
     for task_id in task_ids:
         url = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewTopic&topicId=' \
             f'{task_id}'
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
+        task_number_block = soup.text
+        index = task_number_block.index("КИМ №")
+        task_number = task_number_block[index+6:index+8].replace(':', '').replace(' ', '')
+        print('\n\n\n\n',task_number_block)
         task_td = soup.find('td', class_='topicview')
         task_script = task_td.find('script')
         task_script_text = str(task_script)
@@ -96,8 +100,12 @@ async def get_task_by_id(task_ids: list) -> list:
 
         result_task = asyncio.create_task(get_task_text(task_script))
         await asyncio.gather(result_task)
-        task = dict() 
+        task = dict()
+
+        #task['id'] = task_id
+        
         task['description'] = result_task.result()
+        task['task_number'] = task_number
         task['answer'] = answer
         task['image'] = byte_img
         task['word'] = byte_word
@@ -106,7 +114,7 @@ async def get_task_by_id(task_ids: list) -> list:
         task['txt2'] = byte_txt_2
 
         variant.append(task)
-    return variant[1].values()
+    return variant[0].values()
 
 
 if __name__ == '__main__':
