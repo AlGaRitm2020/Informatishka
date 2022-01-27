@@ -29,7 +29,7 @@ async def db_management():
     cur.execute('DROP TABLE stats;')
     cur.execute('DROP TABLE users;') 
     """
-    #cur.execute('DROP TABLE class;')
+    #cur.execute('DROP TABLE classes;')
     # --- create tables ---
     """
     cur.execute("create table users(id serial primary key, username VARCHAR, chat_id  VARCHAR unique);")
@@ -87,7 +87,7 @@ async def db_management():
 
 
     # --- select data from stats ---
-    cur.execute("SELECT * FROM time")
+    cur.execute("SELECT * FROM classes")
     #print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
     pprint(cur.fetchall())
 

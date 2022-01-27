@@ -58,11 +58,13 @@ async def enter_teacher_name(message: Message, state: FSMContext):
 
     data = await state.get_data()
     class_name = data.get('class_name')
-    class_id = str(1)
+    class_id = str(2)
+    
+    class_id = await utils.db_api.create_class(class_name, message.chat.id)
+
     await message.answer(f"Класс '{class_name}' успешно создан \n"
                          f"Id вашего класса: <b>{class_id}</b> \n"
                          f"Отправьте его ученикам, чтобы они присоединились к классу", parse_mode='html')
-    #await utils.db_api.add_feedback(feedback, message.chat.id)
     await states.finish()
 
 
