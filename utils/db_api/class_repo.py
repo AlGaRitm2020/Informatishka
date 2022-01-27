@@ -24,7 +24,7 @@ async def create_class(class_name, chat_id):
     cur.execute(insert_request)
     con.commit()
 
-    cur.execute("SELECT id FROM classes WHERE teacher_id = '{}';".format(user_id))
+    cur.execute("SELECT id FROM classes WHERE teacher_id = '{}' AND name = '{}';".format(user_id, class_name))
     class_id = cur.fetchall()[0][0]
 
 

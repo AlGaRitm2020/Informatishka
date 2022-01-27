@@ -65,7 +65,7 @@ async def enter_teacher_name(message: Message, state: FSMContext):
     await message.answer(f"Класс '{class_name}' успешно создан \n"
                          f"Id вашего класса: <b>{class_id}</b> \n"
                          f"Отправьте его ученикам, чтобы они присоединились к классу", parse_mode='html')
-    await states.finish()
+    await state.finish()
 
 
 
