@@ -29,7 +29,7 @@ async def db_management():
     cur.execute('DROP TABLE stats;')
     cur.execute('DROP TABLE users;') 
     """
-    # cur.execute('DROP TABLE time;')
+    #cur.execute('DROP TABLE class;')
     # --- create tables ---
     """
     cur.execute("create table users(id serial primary key, username VARCHAR, chat_id  VARCHAR unique);")
@@ -38,18 +38,17 @@ async def db_management():
     # cur.execute("create table activity(id serial primary key, user_id INTEGER references users, date DATE, right_answers INTEGER);")
     #cur.execute("create table feedbacks(id serial primary key, user_id INTEGER references users, date DATE, feedback VARCHAR);")
     #cur.execute("create table time(id serial primary key, user_id INTEGER references users, task_num INTEGER, max_time INTEGER, min_time INTEGER, sum_time INTEGER, count INTEGER);") 
-    # --- insert old users ---
-    """
-    cur.execute("INSERT INTO users (username, chat_id) VALUES ('@Joyin1211', '906136828');")
-    cur.execute("INSERT INTO users (username, chat_id) VALUES ('@lelmoo', '614462421');")
-    cur.execute("INSERT INTO users (username, chat_id) VALUES ('@Aleksandr_Zhd', '1294053049');")
-    cur.execute("INSERT INTO users (username, chat_id) VALUES ('@AlGaRitm2020', '1830477841');")
-    cur.execute("INSERT INTO users (username, chat_id) VALUES ('@YulLog19', '1244102957');")
-    cur.execute("INSERT INTO users (username, chat_id) VALUES ('@albert_gareev', '1283628271');")
-    """
-    # cur.execute("INSERT INTO users (username, chat_id) VALUES ('@insanet2', '1283628271');")
-    # print(type(datetime.date.today()))
+    #cur.execute("create table classes(id serial primary key, name VARCHAR, teacher_id INTEGER references users);")
+    #cur.execute("create table classmates(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, name VARCHAR);")
+
+
+    # insert old data
+    #cur.execute("INSERT INTO users (username, chat_id) VALUES ('@AlGaRitm2020', '1830477841');")
+    #cur.execute("INSERT INTO users (username, chat_id) VALUES ('@YulLog19', '1244102957');")
+    #cur.execute("INSERT INTO users (username, chat_id) VALUES ('@albert_gareev', '1283628271');") """ # cur.execute("INSERT INTO users (username, chat_id) VALUES ('@insanet2', '1283628271');") print(type(datetime.date.today()))
     # cur.execute("INSERT INTO activity (user_id, date, right_answers) VALUES (8, '{}', 7);".format('2021-07-07'))
+    
+
     # --- delete data from tables ---
     """
     cur.execute("DELETE FROM stats;")
