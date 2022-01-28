@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 import utils
 from handlers.users.full_variant_states import send_variant
 from loader import dp
-from aiogram.types import Message, ReplyKeyboardRemove, ParseMode
+from aiogram.types import Message, ReplyKeyboardRemove, ParseMode, KeyboardButton
 
 from aiogram.dispatcher.filters import Command
 
@@ -11,7 +11,7 @@ import states
 import parsing
 import keyboards
 import diagrams
-
+from copy import deepcopy
 
 # --- Main Menu Handlers
 @dp.message_handler(text=keyboards.default.main_captions[0], state=None)
@@ -41,8 +41,15 @@ async def statistics_page(message: Message):
 
 @dp.message_handler(text=keyboards.default.main_captions[4])
 async def classes_page(message: Message):
-    await message.answer(f'Вы перешли в раздел классы', reply_markup=keyboards.default.class_menu)
+    await message.answer(str(keyboards.default.class_menu))
+    classes_info = set(await utils.db_api.view_all_my_classes(message.chat.id))
 
+    reply_markup = deepcopy(keyboards.default.class_menu)
+    for class_id, class_name in classes_info:
+        class_button = KeyboardButton(f"{class_name}({class_id})")
+        reply_markup = reply_markup.insert(class_button)
+    await message.answer(f'Вы перешли в раздел классы', reply_markup=reply_markup)
+    await message.answer(keyboards.default.class_menu)
 
 @dp.message_handler(text=keyboards.default.main_captions[5])
 async def feedback_page(message: Message):

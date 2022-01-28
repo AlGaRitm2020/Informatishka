@@ -6,12 +6,13 @@ class_menu = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text=class_captions[0]),
-            KeyboardButton(text=class_captions[1])
-        ],
-[
-            KeyboardButton(text=class_captions[2]),
+            KeyboardButton(text=class_captions[1]),
+            KeyboardButton(text=class_captions[2])
 
-        ]],
+        ]
+
+
+        ],
     resize_keyboard=True
 )
 
