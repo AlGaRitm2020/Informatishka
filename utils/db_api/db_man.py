@@ -29,6 +29,8 @@ async def db_management():
     cur.execute('DROP TABLE stats;')
     cur.execute('DROP TABLE users;') 
     """
+
+    #cur.execute('DROP TABLE classmates;')
     #cur.execute('DROP TABLE classes;')
     # --- create tables ---
     """
@@ -38,7 +40,7 @@ async def db_management():
     # cur.execute("create table activity(id serial primary key, user_id INTEGER references users, date DATE, right_answers INTEGER);")
     #cur.execute("create table feedbacks(id serial primary key, user_id INTEGER references users, date DATE, feedback VARCHAR);")
     #cur.execute("create table time(id serial primary key, user_id INTEGER references users, task_num INTEGER, max_time INTEGER, min_time INTEGER, sum_time INTEGER, count INTEGER);") 
-    #cur.execute("create table classes(id serial primary key, name VARCHAR, teacher_id INTEGER references users);")
+    #cur.execute("create table classes(id serial primary key, name VARCHAR, teacher_id INTEGER references users, teacher_name VARCHAR);")
     #cur.execute("create table classmates(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, name VARCHAR);")
 
 
@@ -88,7 +90,13 @@ async def db_management():
 
     # --- select data from stats ---
     cur.execute("SELECT * FROM classes")
-    #print('stats', 'id, user_id, task, right_answers, all_answers', sep='\n')
+    #print('classes', sep='\n')
+    pprint(cur.fetchall())
+
+
+    # --- select data from stats ---
+    cur.execute("SELECT * FROM classmates")
+    #print('classes', sep='\n')
     pprint(cur.fetchall())
 
 

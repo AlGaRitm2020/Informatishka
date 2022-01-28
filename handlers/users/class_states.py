@@ -60,7 +60,7 @@ async def enter_teacher_name(message: Message, state: FSMContext):
     class_name = data.get('class_name')
     class_id = str(2)
     
-    class_id = await utils.db_api.create_class(class_name, message.chat.id)
+    class_id = await utils.db_api.create_class(class_name, teacher_name, message.chat.id)
 
     await message.answer(f"Класс '{class_name}' успешно создан \n"
                          f"Id вашего класса: <b>{class_id}</b> \n"
@@ -74,22 +74,22 @@ async def enter_teacher_name(message: Message, state: FSMContext):
 @dp.message_handler(state=states.JoinClass.enter_class_id)
 async def enter_class_id(message: Message, state: FSMContext):
     class_id = message.text
-    class_ids = ['1', '2']
-    if class_id not in class_ids:
-        await message.answer("Класс с таким Id не существует\n"
-                             "Введите другой Id")
+
+    class_info = await utils.db_api.view_class(class_id, message.chat.id)
+    if isinstance(class_info, str):
+        await message.answer(class_info)
         return False
+    else:
+        class_name = class_info[0]
+        teacher_name = class_info[1]
 
-
-    class_name = '11A'
-    class_teacher = 'Альберт Мансурович'
-    await message.answer(f"Вы выбрали класс: {class_name}  \n"
-                         f"Учитель: {class_teacher} \n"
+        await message.answer(f"Вы выбрали класс: {class_name}  \n"
+                         f"Учитель: {teacher_name} \n"
                          f"Введите фамилию и имя ( так вас будет видеть учитель)")
-    #await utils.db_api.add_feedback(feedback, message.chat.id)
-    await state.update_data(class_id=class_id, class_name=class_name)
+        #await utils.db_api.add_feedback(feedback, message.chat.id)
+        await state.update_data(class_id=class_id, class_name=class_name)
                             
-    await states.JoinClass.next()
+        await states.JoinClass.next()
 
 @dp.message_handler(state=states.JoinClass.enter_student_name)
 async def enter_student_name(message: Message, state: FSMContext):
@@ -104,9 +104,14 @@ async def enter_student_name(message: Message, state: FSMContext):
     data = await state.get_data()
     class_id = data.get('class_id')
     class_name = data.get('class_name')
-    await message.answer(f"Вы успешно присоединились к классу {class_name} как {student_name}\n")
-    #await utils.db_api.add_feedback(feedback, message.chat.id)
-    await states.finish()
+
+    response = await utils.db_api.join_class(class_id, student_name ,message.chat.id)
+    if response:
+        await message.answer(response)
+        return False
+    else:
+        await message.answer(f"Вы успешно присоединились к классу {class_name} как {student_name}\n")
+        await state.finish()
 
 
 
