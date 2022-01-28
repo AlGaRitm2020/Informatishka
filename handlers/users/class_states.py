@@ -25,13 +25,13 @@ from aiogram.types import Message, ReplyKeyboardRemove, ParseMode
 
 
 # --- class Menu Handlers
-@dp.message_handler(text=keyboards.default.class_captions[0], state=None)
+@dp.message_handler(text=keyboards.default.class_captions[0], state=states.ClassMenu.enter_class)
 async def create_class_start(message: Message):
     await message.answer(f'Введите имя класса:', reply_markup=keyboards.default.back_menu)
     await states.CreateClass.enter_class_name.set()
 
 
-@dp.message_handler(text=keyboards.default.class_captions[1], state=None)
+@dp.message_handler(text=keyboards.default.class_captions[1], state=states.ClassMenu.enter_class)
 async def join_class_start(message: Message):
     await message.answer(f'Введите Id класса:', reply_markup=keyboards.default.back_menu)
     await states.JoinClass.enter_class_id.set()
@@ -113,5 +113,11 @@ async def enter_student_name(message: Message, state: FSMContext):
         await message.answer(f"Вы успешно присоединились к классу {class_name} как {student_name}\n")
         await state.finish()
 
+
+# --- User Classes Handlers
+
+@dp.message_handler(lambda message: message.text in utils.db_api.view_all_my_classes('1830477841'))
+async def class_menu(message):
+    await message.answer('lox')
 
 

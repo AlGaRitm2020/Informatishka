@@ -89,8 +89,11 @@ async def view_all_my_classes(chat_id):
     cur.execute(select_request)
 
     classes_info = cur.fetchall()
+    result = []
+    for class_id, class_name in classes_info:
+        result.append(f"{class_name}({class_id})")
     con.commit()
-    return classes_info
+    return result
 
 
 async def join_class(class_id, student_name, chat_id):

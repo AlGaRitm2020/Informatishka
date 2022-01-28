@@ -41,15 +41,17 @@ async def statistics_page(message: Message):
 
 @dp.message_handler(text=keyboards.default.main_captions[4])
 async def classes_page(message: Message):
-    await message.answer(str(keyboards.default.class_menu))
     classes_info = set(await utils.db_api.view_all_my_classes(message.chat.id))
 
     reply_markup = deepcopy(keyboards.default.class_menu)
-    for class_id, class_name in classes_info:
-        class_button = KeyboardButton(f"{class_name}({class_id})")
+    for class_info in classes_info:
+        class_button = KeyboardButton(class_info)
         reply_markup = reply_markup.insert(class_button)
+    
+    await states.ClassMenu.enter_class.set()
+
     await message.answer(f'Вы перешли в раздел классы', reply_markup=reply_markup)
-    await message.answer(keyboards.default.class_menu)
+
 
 @dp.message_handler(text=keyboards.default.main_captions[5])
 async def feedback_page(message: Message):
@@ -121,6 +123,13 @@ async def get_activity_stats(message: Message):
 
 # Back Menu Handlers ---
 @dp.message_handler(state='*', text=keyboards.default.back_captions[0])
+async def cancel_dialog(message: Message, state: FSMContext):
+    await message.answer(f'Вы вернулись в главное меню', reply_markup=keyboards.default.main_menu)
+    await state.finish()
+
+
+
+@dp.message_handler(state=states.ClassMenu.enter_class,  text=keyboards.default.class_captions[2])
 async def cancel_dialog(message: Message, state: FSMContext):
     await message.answer(f'Вы вернулись в главное меню', reply_markup=keyboards.default.main_menu)
     await state.finish()
