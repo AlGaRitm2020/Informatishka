@@ -133,22 +133,21 @@ async def enter_class_name(message: Message, state: FSMContext):
 
 
 
-@dp.message_handler(state=states.ClassMenu.class_menu)
-async def class_menu(message: Message, state: FSMContext):
-    user_classes = await utils.db_api.view_all_user_classes(message.chat.id)
-    for class_id, class_name in user_classes:
-        if message.text == f"{class_name}({class_id})":
+@dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.student_menu_captions[0])
+async def print_class_members(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_id = data.get('class_id')
+    class_name = data.get('class_name')
+    members_list = await utils.db_api.view_class_members(class_id)
+    
+    response = f'<b>Список класса {class_name}</b>\n'
+    for i, item in enumerate(members_list):
+        name = item[0]
+        if i == 0:
+            response += f'Учитель: {name}\nУченики:\n'
+            
+        else:
+            response += f'{i}. {name}'
 
-            is_teacher = await utils.db_api.is_teacher(class_id, message.chat.id)
-            if is_teacher:
-                status = 'учитель'
-            else:
-                status = 'ученик'
-
-            await state.update_data(class_name=class_name, class_id=class_id, is_teacher=is_teacher)
-            await message.answer(f"Вы вошли в меню класса {class_name} как {status}")
-            await states.ClassMenu.next()
-            break
-    else:
-        await message.answer("Ошибка сервера. Возможно данный класс был только что удален")
+    await message.answer(response, parse_mode='html')
 

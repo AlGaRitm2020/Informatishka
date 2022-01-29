@@ -83,8 +83,6 @@ async def view_all_user_classes(chat_id):
     user_id = user[0][0]
 
 
-
-
     select_request = "SELECT classes.id, classes.name FROM classes, classmates WHERE classmates.user_id = '{}' OR classes.teacher_id = '{}'".format(user_id, user_id)
     cur.execute(select_request)
 
@@ -92,6 +90,28 @@ async def view_all_user_classes(chat_id):
     con.commit()
     return classes_info
 
+
+
+
+async def view_class_members(class_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+
+    select_request = "SELECT name FROM classmates WHERE class_id = '{}'".format(class_id)
+    cur.execute(select_request)
+
+    members_list = cur.fetchall()
+
+    select_request = "SELECT teacher_name FROM classes WHERE id = '{}'".format(class_id)
+    cur.execute(select_request)
+    
+    members_list = cur.fetchall() + members_list
+
+    con.commit()
+    return members_list 
 
 
 
@@ -107,9 +127,6 @@ async def is_teacher(class_id, chat_id):
     if not user:
         return False
     user_id = user[0][0]
-
-
-
 
     select_request = "SELECT teacher_id FROM classes WHERE teacher_id = '{}' AND id = '{}'".format(user_id, class_id)
     cur.execute(select_request)
