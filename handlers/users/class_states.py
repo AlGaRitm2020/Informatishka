@@ -120,6 +120,28 @@ async def enter_class_name(message: Message, state: FSMContext):
             is_teacher = await utils.db_api.is_teacher(class_id, message.chat.id)
             if is_teacher:
                 status = 'учитель'
+                reply_keyboard = keyboards.default.teacher_menu
+            else:
+                status = 'ученик'
+                reply_keyboard = keyboards.default.student_menu
+            await state.update_data(class_name=class_name, class_id=class_id, is_teacher=is_teacher)
+            await message.answer(f"Вы вошли в меню класса {class_name} как {status}", reply_markup=reply_keyboard)
+            await states.ClassMenu.next()
+            break
+    else:
+        await message.answer("Ошибка сервера. Возможно данный класс был только что удален")
+
+
+
+@dp.message_handler(state=states.ClassMenu.class_menu)
+async def class_menu(message: Message, state: FSMContext):
+    user_classes = await utils.db_api.view_all_user_classes(message.chat.id)
+    for class_id, class_name in user_classes:
+        if message.text == f"{class_name}({class_id})":
+
+            is_teacher = await utils.db_api.is_teacher(class_id, message.chat.id)
+            if is_teacher:
+                status = 'учитель'
             else:
                 status = 'ученик'
 
