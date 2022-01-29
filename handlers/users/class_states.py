@@ -95,11 +95,6 @@ async def enter_class_id(message: Message, state: FSMContext):
 async def enter_student_name(message: Message, state: FSMContext):
     student_name = message.text
     
-    students_names = ['Альберт']
-    if student_name in students_names:
-        await message.answer("Ученик с таким именем уже есть в этом классе \n"
-                             "Введите другое имя")
-        return False
 
     data = await state.get_data()
     class_id = data.get('class_id')
@@ -116,8 +111,22 @@ async def enter_student_name(message: Message, state: FSMContext):
 
 # --- User Classes Handlers
 
-@dp.message_handler(lambda message: message.text in utils.db_api.view_all_my_classes('1830477841'))
-async def class_menu(message):
-    await message.answer('lox')
+@dp.message_handler(state=states.ClassMenu.enter_class)
+async def enter_class_name(message: Message, state: FSMContext):
+    user_classes = await utils.db_api.view_all_user_classes(message.chat.id)
+    for class_id, class_name in user_classes:
+        if message.text == f"{class_name}({class_id})":
 
+            is_teacher = await utils.db_api.is_teacher(class_id, message.chat.id)
+            if is_teacher:
+                status = 'учитель'
+            else:
+                status = 'ученик'
+
+            await state.update_data(class_name=class_name, class_id=class_id, is_teacher=is_teacher)
+            await message.answer(f"Вы вошли в меню класса {class_name} как {status}")
+            await states.ClassMenu.next()
+            break
+    else:
+        await message.answer("Ошибка сервера. Возможно данный класс был только что удален")
 

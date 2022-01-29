@@ -41,11 +41,11 @@ async def statistics_page(message: Message):
 
 @dp.message_handler(text=keyboards.default.main_captions[4])
 async def classes_page(message: Message):
-    classes_info = set(await utils.db_api.view_all_my_classes(message.chat.id))
+    classes_info = set(await utils.db_api.view_all_user_classes(message.chat.id))
 
     reply_markup = deepcopy(keyboards.default.class_menu)
-    for class_info in classes_info:
-        class_button = KeyboardButton(class_info)
+    for class_id, class_name in classes_info:
+        class_button = KeyboardButton(f"{class_name}({class_id})")
         reply_markup = reply_markup.insert(class_button)
     
     await states.ClassMenu.enter_class.set()
