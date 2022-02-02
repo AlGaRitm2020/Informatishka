@@ -84,12 +84,36 @@ async def view_all_user_classes(chat_id):
 
 
     select_request = "SELECT classes.id, classes.name FROM classes, classmates WHERE classmates.user_id = '{}' OR classes.teacher_id = '{}'".format(user_id, user_id)
+    select_request = "SELECT id, name FROM classes WHERE teacher_id = '{}'".format(user_id)
     cur.execute(select_request)
-
     classes_info = cur.fetchall()
+
+    select_request = "SELECT id, name FROM classes WHERE id IN (SELECT class_id FROM classmates WHERE user_id = '{}')".format(user_id)
+    cur.execute(select_request)
+    classes_info = classes_info + cur.fetchall()
+
     con.commit()
     return classes_info
 
+async def leave_from_class(class_id, chat_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    check_request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
+    cur.execute(check_request)
+    user = cur.fetchall()
+    if not user:
+        return False
+    user_id = user[0][0]
+
+
+    cur.execute("DELETE FROM classmates WHERE user_id = '{}' AND class_id = '{}'".format(user_id, class_id))
+    print('deleted')
+    con.commit()
+    
+    return True
 
 
 

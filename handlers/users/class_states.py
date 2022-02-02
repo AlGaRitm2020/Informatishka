@@ -151,3 +151,13 @@ async def print_class_members(message: Message, state: FSMContext):
 
     await message.answer(response, parse_mode='html')
 
+
+@dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.student_menu_captions[3])
+async def leave_from_class(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_id = data.get('class_id')
+    class_name = data.get('class_name')
+    
+    await utils.db_api.leave_from_class(class_id, message.chat.id)
+
+    await message.answer(f"Вы покинули класс {class_name}")
