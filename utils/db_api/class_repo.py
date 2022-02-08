@@ -110,12 +110,20 @@ async def leave_from_class(class_id, chat_id):
 
 
     cur.execute("DELETE FROM classmates WHERE user_id = '{}' AND class_id = '{}'".format(user_id, class_id))
-    print('deleted')
     con.commit()
     
-    return True
 
+async def delete_class(class_id, chat_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
 
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+
+    cur.execute("DELETE FROM classmates WHERE class_id = '{}'".format(class_id))
+    cur.execute("DELETE FROM classes WHERE id = '{}'".format(class_id))
+    con.commit()
+ 
 
 async def view_class_members(class_id):
     db_settings = asyncio.create_task(get_db_config_from_url())

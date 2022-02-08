@@ -161,3 +161,14 @@ async def leave_from_class(message: Message, state: FSMContext):
     await utils.db_api.leave_from_class(class_id, message.chat.id)
 
     await message.answer(f"Вы покинули класс {class_name}")
+
+
+@dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.teacher_menu_captions[2])
+async def delete_class(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_id = data.get('class_id')
+    class_name = data.get('class_name')
+    
+    await utils.db_api.delete_class(class_id, message.chat.id)
+
+    await message.answer(f"Класс {class_name} удален")
