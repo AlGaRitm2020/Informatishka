@@ -162,13 +162,28 @@ async def leave_from_class(message: Message, state: FSMContext):
 
     await message.answer(f"Вы покинули класс {class_name}")
 
-
 @dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.teacher_menu_captions[2])
+async def approve_deletion(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_name = data.get('class_name')
+    
+    await message.answer(f"Вы точно хотите удалить класс {class_name}? Отменить это действие будет невозможно\n"
+                         f"Введите имя класса в качестве подтверждения")
+    await states.ClassMenu.delete_class.set()
+
+@dp.message_handler(state=states.ClassMenu.delete_class)
 async def delete_class(message: Message, state: FSMContext):
     data = await state.get_data()
     class_id = data.get('class_id')
     class_name = data.get('class_name')
-    
-    await utils.db_api.delete_class(class_id, message.chat.id)
+    if message.text == class_name:
 
-    await message.answer(f"Класс {class_name} удален")
+        await utils.db_api.delete_class(class_id, message.chat.id)
+
+        await message.answer(f"Класс {class_name} удален")
+    else:
+        await message.answer(f"Имя класса введено неверно. Отмена операции")
+        await state.finish()
+        await states.ClassMenu.class_menu.set()
+        await state.update_data(class_name=class_name, class_id=class_id)
+
