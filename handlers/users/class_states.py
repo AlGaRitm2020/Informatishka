@@ -19,7 +19,7 @@ import utils
 
 
 from loader import dp
-from aiogram.types import Message, ReplyKeyboardRemove, ParseMode
+from aiogram.types import Message, ReplyKeyboardRemove, ParseMode, KeyboardButton
 
 
 
@@ -186,4 +186,21 @@ async def delete_class(message: Message, state: FSMContext):
         await state.finish()
         await states.ClassMenu.class_menu.set()
         await state.update_data(class_name=class_name, class_id=class_id)
+
+
+@dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.teacher_menu_captions[0])
+async def print_class_members(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_id = data.get('class_id')
+    class_name = data.get('class_name')
+    members_list = await utils.db_api.view_class_members(class_id, teacher=False)
+    
+    reply_markup = (keyboards.default.back_menu)
+    for student_name in members_list:
+        class_button = KeyboardButton(f"{student_name[0]}")
+        reply_markup = reply_markup.insert(class_button)
+
+    await message.answer("Выберите ученика",reply_markup=reply_markup, parse_mode='html')
+
+
 

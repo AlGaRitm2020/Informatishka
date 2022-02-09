@@ -125,7 +125,7 @@ async def delete_class(class_id, chat_id):
     con.commit()
  
 
-async def view_class_members(class_id):
+async def view_class_members(class_id, teacher=True):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
@@ -136,11 +136,11 @@ async def view_class_members(class_id):
     cur.execute(select_request)
 
     members_list = cur.fetchall()
-
-    select_request = "SELECT teacher_name FROM classes WHERE id = '{}'".format(class_id)
-    cur.execute(select_request)
+    if teacher:
+        select_request = "SELECT teacher_name FROM classes WHERE id = '{}'".format(class_id)
+        cur.execute(select_request)
     
-    members_list = cur.fetchall() + members_list
+        members_list = cur.fetchall() + members_list
 
     con.commit()
     return members_list 
