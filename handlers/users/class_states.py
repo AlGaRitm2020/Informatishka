@@ -13,11 +13,6 @@ import states
 import utils
 
 
-
-
-
-
-
 from loader import dp
 from aiogram.types import Message, ReplyKeyboardRemove, ParseMode, KeyboardButton
 
@@ -129,7 +124,7 @@ async def enter_class_name(message: Message, state: FSMContext):
             await states.ClassMenu.next()
             break
     else:
-        await message.answer("Ошибка сервера. Возможно данный класс был только что удален")
+        await message.answer("404: Класс с таким именем и id не найден")
 
 
 
@@ -201,6 +196,27 @@ async def print_class_members(message: Message, state: FSMContext):
         reply_markup = reply_markup.insert(class_button)
 
     await message.answer("Выберите ученика",reply_markup=reply_markup, parse_mode='html')
+    await states.ClassMenu.specific_student.set()
+
+@dp.message_handler(state=states.ClassMenu.specific_student)
+async def enter_class_name(message: Message, state: FSMContext):
+    user_classes = await utils.db_api.view_all_user_classes(message.chat.id)
+    for class_id, class_name in user_classes:
+        if message.text == f"{class_name}({class_id})":
+
+            is_teacher = await utils.db_api.is_teacher(class_id, message.chat.id)
+            if is_teacher:
+                status = 'учитель'
+                reply_keyboard = keyboards.default.teacher_menu
+            else:
+                status = 'ученик'
+                reply_keyboard = keyboards.default.student_menu
+            await state.update_data(class_name=class_name, class_id=class_id, is_teacher=is_teacher)
+            await message.answer(f"Вы вошли в меню класса {class_name} как {status}", reply_markup=reply_keyboard)
+            await states.ClassMenu.next()
+            break
+    else:
+        await message.answer("404: Класс с таким именем и id не найден")
 
 
 

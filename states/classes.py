@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 class ClassMenu(StatesGroup):
     enter_class = State()
     class_menu = State()
+    specific_student = State()
     delete_class = State()
 
 class CreateClass(StatesGroup):
