@@ -199,24 +199,23 @@ async def print_class_members(message: Message, state: FSMContext):
     await states.ClassMenu.specific_student.set()
 
 @dp.message_handler(state=states.ClassMenu.specific_student)
-async def enter_class_name(message: Message, state: FSMContext):
-    user_classes = await utils.db_api.view_all_user_classes(message.chat.id)
-    for class_id, class_name in user_classes:
-        if message.text == f"{class_name}({class_id})":
+async def specific_student(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_id = data.get('class_id')
 
-            is_teacher = await utils.db_api.is_teacher(class_id, message.chat.id)
-            if is_teacher:
-                status = 'учитель'
-                reply_keyboard = keyboards.default.teacher_menu
-            else:
-                status = 'ученик'
-                reply_keyboard = keyboards.default.student_menu
-            await state.update_data(class_name=class_name, class_id=class_id, is_teacher=is_teacher)
-            await message.answer(f"Вы вошли в меню класса {class_name} как {status}", reply_markup=reply_keyboard)
+    members_list = await utils.db_api.view_class_members(class_id, teacher=False)
+    print(members_list)
+    for student_name in members_list:
+        if message.text == student_name[0]:
+           
+            reply_keyboard = keyboards.default.student_menu
+            await state.update_data(student_name=student_name[0])
+            await message.answer(f"Выберите действие", reply_markup=keyboards.default.specific_student_menu)
+
             await states.ClassMenu.next()
             break
     else:
-        await message.answer("404: Класс с таким именем и id не найден")
+        await message.answer("404: Ученик с таким именем не найден")
 
 
 
