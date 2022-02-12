@@ -216,6 +216,19 @@ async def specific_student(message: Message, state: FSMContext):
         await message.answer("404: Ученик с таким именем не найден")
 
 
+
+
+@dp.message_handler(state=states.ClassMenu.write_message) 
+async def write_message(message: Message, state: FSMContext):
+    
+    data = await state.get_data()
+    student_name = data.get("student_name")
+
+    await message.answer(f"Введите сообщение для ученика {student_name}:")
+    await states.ClassMenu.next()
+
+
+
 @dp.message_handler(state=states.ClassMenu.send_message) 
 async def send_message(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -225,7 +238,6 @@ async def send_message(message: Message, state: FSMContext):
     class_name = data.get('class_name')
     student_chat_id = int(await utils.db_api.get_student_chat_id(class_id, student_name))
     
-    print(student_chat_id,'\n','\n','\n')
     class_info = await utils.db_api.view_class(class_id, message.chat.id, read_only=True)
     if isinstance(class_info, str):
         await message.answer(class_info)
@@ -233,10 +245,10 @@ async def send_message(message: Message, state: FSMContext):
     else:
         teacher_name = class_info[1]
 
-    messsage_from_teacher = 'test message'
+    message_from_teacher = message.text 
 
-    await bot.send_message(student_chat_id, f"Ваш учитель {teacher_name} отправил вам сообщение:"
-                               f"message_from_teacher")
+    await bot.send_message(student_chat_id, f"Ваш учитель {teacher_name} отправил вам сообщение:\n"
+                               f"{message_from_teacher}")
 
     await message.answer("Сообщение успешно отправлено")
 

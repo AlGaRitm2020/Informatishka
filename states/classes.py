@@ -5,7 +5,9 @@ class ClassMenu(StatesGroup):
     enter_class = State()
     class_menu = State()
     specific_student = State()
+    write_message = State()
     send_message = State()
+
     delete_class = State()
 
 class CreateClass(StatesGroup):
