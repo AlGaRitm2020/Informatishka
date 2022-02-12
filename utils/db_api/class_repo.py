@@ -31,7 +31,7 @@ async def create_class(class_name, teacher_name, chat_id):
     return class_id
 
 
-async def view_class(class_id, chat_id):
+async def view_class(class_id, chat_id, read_only=False):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
@@ -50,7 +50,7 @@ async def view_class(class_id, chat_id):
     teacher_id = cur.fetchall()
     if not teacher_id:
         return "Класс с таким id не существует"
-    if teacher_id[0][0] == student_id:
+    if teacher_id[0][0] == student_id and read_only == False:
         return "Вы уже являетесь учителем в этом классе"
 
 
@@ -165,6 +165,21 @@ async def is_teacher(class_id, chat_id):
 
     is_teacher = cur.fetchall()
     return bool(is_teacher)
+
+async def get_student_chat_id(class_id, student_name):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    check_request = "SELECT chat_id FROM users WHERE id in (SELECT user_id from classmates WHERE name = '{}' AND class_id = '{}')".format(student_name, class_id)
+    cur.execute(check_request)
+    user = cur.fetchall()
+    if not user:
+        return False
+    chat_id = user[0][0]
+
+    return chat_id 
 
 
 
