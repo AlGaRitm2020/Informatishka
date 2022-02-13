@@ -275,12 +275,13 @@ async def remove_student(message: Message, state: FSMContext):
     class_name = data.get('class_name')
 
 
-    await message.answer(class_id) 
     if message.text == student_name:
 
         await utils.db_api.remove_student(class_id, student_name)
 
-        await message.answer(f"Ученик {student_name} исключен")
+        await message.answer(f"Ученик {student_name} исключен", reply_markup=keyboards.default.teacher_menu)
+
+        await states.ClassMenu.class_menu.set()
     else:
         await message.answer(f"Имя ученика введено неверно. Отмена операции", reply_markup=keyboards.default.teacher_menu)
         await state.finish()
