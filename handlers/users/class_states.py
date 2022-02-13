@@ -198,6 +198,19 @@ async def print_class_members(message: Message, state: FSMContext):
     await message.answer("Выберите ученика",reply_markup=reply_markup, parse_mode='html')
     await states.ClassMenu.specific_student.set()
 
+
+
+
+@dp.message_handler(state=states.ClassMenu.specific_student, text=keyboards.default.specific_student_captions[0]) 
+async def write_message(message: Message, state: FSMContext):
+    
+    data = await state.get_data()
+    student_name = data.get("student_name")
+
+    await message.answer(f"Введите сообщение для ученика {student_name}:")
+    await states.ClassMenu.next()
+
+
 @dp.message_handler(state=states.ClassMenu.specific_student)
 async def specific_student(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -210,7 +223,6 @@ async def specific_student(message: Message, state: FSMContext):
             reply_keyboard = keyboards.default.student_menu
             await state.update_data(student_name=student_name[0])
             await message.answer(f"Выберите действие", reply_markup=keyboards.default.specific_student_menu)
-            await states.ClassMenu.next()
             break
     else:
         await message.answer("404: Ученик с таким именем не найден")
@@ -218,14 +230,6 @@ async def specific_student(message: Message, state: FSMContext):
 
 
 
-@dp.message_handler(state=states.ClassMenu.write_message) 
-async def write_message(message: Message, state: FSMContext):
-    
-    data = await state.get_data()
-    student_name = data.get("student_name")
-
-    await message.answer(f"Введите сообщение для ученика {student_name}:")
-    await states.ClassMenu.next()
 
 
 
