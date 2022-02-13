@@ -1,6 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-specific_student_captions = ['✉ Отправить сообщение', '❌ Исключить из класса', '⬅ Назад']
+specific_student_captions = ['✉ Отправить сообщение', '❌ Исключить из класса', '⬅ Назад в главное меню']
 
 specific_student_menu = ReplyKeyboardMarkup(
     keyboard=[
