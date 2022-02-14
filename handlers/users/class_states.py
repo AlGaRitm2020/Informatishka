@@ -16,8 +16,7 @@ import utils
 from loader import dp
 from aiogram.types import Message, ReplyKeyboardRemove, ParseMode, KeyboardButton
 
-
-
+from copy import deepcopy
 
 # --- class Menu Handlers
 @dp.message_handler(text=keyboards.default.class_captions[0], state=states.ClassMenu.enter_class)
@@ -190,7 +189,7 @@ async def print_class_members(message: Message, state: FSMContext):
     class_name = data.get('class_name')
     members_list = await utils.db_api.view_class_members(class_id, teacher=False)
     
-    reply_markup = (keyboards.default.back_menu)
+    reply_markup = deepcopy(keyboards.default.back_menu)
     for student_name in members_list:
         class_button = KeyboardButton(f"{student_name[0]}")
         reply_markup = reply_markup.insert(class_button)
@@ -275,6 +274,7 @@ async def remove_student(message: Message, state: FSMContext):
     class_name = data.get('class_name')
 
 
+    await message.answer(class_id) 
     if message.text == student_name:
 
         await utils.db_api.remove_student(class_id, student_name)
