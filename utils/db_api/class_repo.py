@@ -225,4 +225,39 @@ async def join_class(class_id, student_name, chat_id):
         format(student_id, class_id, student_name)
     cur.execute(insert_request)
     con.commit()
+   
+
+
+
+
+
+#=====HOMEWORKS_BLOCK=====
+
+async def create_homework(name, class_id, tasks):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+
+    insert_request = "INSERT INTO homeworks(class_id, name, tasks) VALUES('{}', '{}', '{}' )". \
+        format(class_id, name, tasks)
+    cur.execute(insert_request)
+    con.commit()
+
+async def get_homeworks(class_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    check_request = "SELECT name, tasks FROM homeworks WHERE class_id = '{}'".format(class_id)
+    cur.execute(check_request)
+    homeworks = cur.fetchall()
+    if not homeworks:
+        return False
     
+
+    return homeworks 
+
+
