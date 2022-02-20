@@ -248,6 +248,27 @@ async def go_to_specific_work(message: Message, state: FSMContext):
 
             await states.ClassMenu.specific_work.set()
 
+@dp.message_handler(state=states.ClassMenu.specific_work, text=keyboards.default.specific_work_student_captions[0])
+async def work_info(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+    class_id = data.get("class_id")
+    work_name = data.get("work_name")
+
+    try:
+        work_info = await utils.db_api.get_work_info(class_id, work_name)
+        
+        if work_info[1]:
+            status = "Открыта для решения"
+        else:
+            status = "Закрыта для решения"
+
+        await message.answer(f"Задание '{work_name}'\n"\
+                             f"Статус: {status}\n"\
+                             f"Дата создания(ГГГГ-ММ-ДД): {work_info[0]}\n")
+        await states.ClassMenu.specific_work.set()
+    except Exception:
+        await message.answer("Такого задания больше не существует")
 
 
 @dp.message_handler(state=states.ClassMenu.enter_work_name)

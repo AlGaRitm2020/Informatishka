@@ -258,3 +258,14 @@ async def get_homeworks(class_id):
     return homeworks 
 
 
+async def get_work_info(class_id, work_name):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    check_request = "SELECT date, is_open FROM homeworks WHERE class_id = '{}' AND name = '{}'".format(class_id, work_name)
+    cur.execute(check_request)
+    work_info = cur.fetchall()[0]
+
+    return work_info 
