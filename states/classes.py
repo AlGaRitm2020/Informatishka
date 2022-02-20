@@ -7,6 +7,10 @@ class ClassMenu(StatesGroup):
     specific_student = State()
     send_message = State()
 
+    create_work = State()
+    enter_work_name = State()
+    enter_tasks = State()
+
     delete_class = State()
     remove_student = State()
 

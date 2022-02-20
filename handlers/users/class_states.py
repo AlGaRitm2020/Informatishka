@@ -146,6 +146,14 @@ async def print_class_members(message: Message, state: FSMContext):
     await message.answer(response, parse_mode='html')
 
 
+
+@dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.student_menu_captions[1])
+async def print_class_members(message: Message, state: FSMContext):
+
+    await message.answer("Выберите задание", reply_markup=keyboards.default.works_menu)
+    await states.ClassMenu.create_work.set()
+
+
 @dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.student_menu_captions[3])
 async def leave_from_class(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -197,8 +205,36 @@ async def print_class_members(message: Message, state: FSMContext):
     await message.answer("Выберите ученика",reply_markup=reply_markup, parse_mode='html')
     await states.ClassMenu.specific_student.set()
 
+@dp.message_handler(state=states.ClassMenu.create_work)
+async def create_work(message: Message, state: FSMContext):
+
+    await message.answer("Введите название для новой работы. Постарайтесь сделать его понятным для учеников") 
+    await states.ClassMenu.next()
 
 
+
+
+@dp.message_handler(state=states.ClassMenu.enter_work_name)
+async def enter_work_name(message: Message, state: FSMContext):
+    work_name = message.text
+    await state.update_data(work_name=work_name)
+
+    await message.answer("Введите номера заданий из базы данных Полякова через запятую")
+    await states.ClassMenu.next()
+
+
+@dp.message_handler(state=states.ClassMenu.enter_tasks)
+async def enter_tasks(message: Message, state: FSMContext):
+    tasks = message.text.replace(' ', '')
+    data = await state.get_data()
+    work_name = data.get("work_name")
+    class_id = data.get("class_id")
+
+    await utils.db_api.create_homework(work_name, class_id, tasks)
+
+
+    await message.answer("Работа была отправлена вашим ученикам. Они получат уведомление в боте", reply_markup=keyboards.default.teacher_menu)
+    await states.ClassMenu.class_menu.set()
 
 @dp.message_handler(state=states.ClassMenu.specific_student, text=keyboards.default.specific_student_captions[0]) 
 async def write_message(message: Message, state: FSMContext):

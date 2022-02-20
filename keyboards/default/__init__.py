@@ -5,3 +5,4 @@ from .skip_menu import skip_menu, skip_captions
 from .class_member_menu import *
 from .specific_student import *
 from .class_menu import class_menu, class_captions
+from .works_menu import *
