@@ -165,7 +165,7 @@ async def works_menu(message: Message, state: FSMContext):
 
     await message.answer("Выберите задание",reply_markup=reply_markup, parse_mode='html')
 
-    await states.ClassMenu.create_work.set()
+    await states.ClassMenu.works_menu.set()
 
 
 @dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.student_menu_captions[3])
@@ -219,12 +219,34 @@ async def print_class_members(message: Message, state: FSMContext):
     await message.answer("Выберите ученика",reply_markup=reply_markup, parse_mode='html')
     await states.ClassMenu.specific_student.set()
 
-@dp.message_handler(state=states.ClassMenu.create_work)
+
+@dp.message_handler(state=states.ClassMenu.works_menu, text=keyboards.default.works_captions[0])
 async def create_work(message: Message, state: FSMContext):
 
     await message.answer("Введите название для новой работы. Постарайтесь сделать его понятным для учеников") 
     await states.ClassMenu.next()
 
+
+@dp.message_handler(state=states.ClassMenu.works_menu)
+async def go_to_specific_work(message: Message, state: FSMContext):
+    data = await state.get_data()
+    is_teacher = data.get("is_teacher")
+    class_id = data.get("class_id")
+    works_list = await utils.db_api.get_homeworks(class_id)
+
+    for name, tasks in works_list:
+        if message.text == name:
+            await state.update_data(work_name=name, work_tasks=tasks)
+            
+            if is_teacher:
+
+            
+                await message.answer(f"Вы перешли в меню задания {name}, как учитель",reply_markup=keyboards.default.specific_work_teacher_menu)
+
+            else:
+                await message.answer(f"Вы перешли в меню задания {name}",reply_markup=keyboards.default.specific_work_student_menu)
+
+            await states.ClassMenu.specific_work.set()
 
 
 
