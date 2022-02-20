@@ -29,7 +29,9 @@ async def db_management():
     cur.execute('DROP TABLE stats;')
     cur.execute('DROP TABLE users;') 
     """
-
+    
+    #cur.execute("DROP TABLE homework_results;")
+    #cur.execute("DROP TABLE homeworks;")
     #cur.execute('DROP TABLE classmates;')
     #cur.execute('DROP TABLE classes;')
     # --- create tables ---
@@ -42,7 +44,7 @@ async def db_management():
     #cur.execute("create table time(id serial primary key, user_id INTEGER references users, task_num INTEGER, max_time INTEGER, min_time INTEGER, sum_time INTEGER, count INTEGER);") 
     #cur.execute("create table classes(id serial primary key, name VARCHAR, teacher_id INTEGER references users, teacher_name VARCHAR);")
     #cur.execute("create table classmates(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, name VARCHAR);")
-    #cur.execute("CREATE table homeworks(id serial primary key, name VARCHAR, class_id INTEGER references classes, tasks VARCHAR);")
+    #cur.execute("CREATE table homeworks(id serial primary key, name VARCHAR, class_id INTEGER references classes, tasks VARCHAR, date DATE, is_open INTEGER);")
     #cur.execute("CREATE table homework_results(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, task_id INTEGER references homeworks);")
 
     # insert old data

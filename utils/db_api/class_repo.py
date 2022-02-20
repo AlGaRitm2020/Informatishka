@@ -240,8 +240,8 @@ async def create_homework(name, class_id, tasks):
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
 
-    insert_request = "INSERT INTO homeworks(class_id, name, tasks) VALUES('{}', '{}', '{}' )". \
-        format(class_id, name, tasks)
+    insert_request = "INSERT INTO homeworks(class_id, name, tasks, date, is_open) VALUES('{}', '{}', '{}', '{}', '{}' )". \
+        format(class_id, name, tasks, datetime.date.today(), 1)
     cur.execute(insert_request)
     con.commit()
 
@@ -254,9 +254,6 @@ async def get_homeworks(class_id):
     check_request = "SELECT name, tasks FROM homeworks WHERE class_id = '{}'".format(class_id)
     cur.execute(check_request)
     homeworks = cur.fetchall()
-    if not homeworks:
-        return False
-    
 
     return homeworks 
 
