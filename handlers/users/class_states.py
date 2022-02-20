@@ -150,11 +150,15 @@ async def print_class_members(message: Message, state: FSMContext):
 @dp.message_handler(state=states.ClassMenu.class_menu, text=keyboards.default.student_menu_captions[1])
 async def works_menu(message: Message, state: FSMContext):
     data = await state.get_data()
+    
     class_id = data.get("class_id")
+    is_teacher = data.get("is_teacher")
     works_list = await utils.db_api.get_homeworks(class_id)
 
-    
-    reply_markup = deepcopy(keyboards.default.works_menu)
+    if is_teacher:
+        reply_markup = deepcopy(keyboards.default.works_menu)
+    else:
+        reply_markup = deepcopy(keyboards.default.back_menu)
     for name, tasks in works_list:
         class_button = KeyboardButton(f"{name}")
         reply_markup = reply_markup.insert(class_button)
