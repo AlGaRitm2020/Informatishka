@@ -8,7 +8,6 @@ class ClassMenu(StatesGroup):
     send_message = State()
 
     specific_work = State()
-    disable_work = State()
     delete_work = State()
     work_results = State()
 

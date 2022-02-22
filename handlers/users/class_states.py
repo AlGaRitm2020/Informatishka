@@ -290,6 +290,33 @@ async def change_work_status(message: Message, state: FSMContext):
     except IndexError:
         await message.answer("Такого задания больше не существует")
 
+@dp.message_handler(state=states.ClassMenu.specific_work, text=keyboards.default.specific_work_teacher_captions[2])
+async def approve_deletion_work(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+    work_name = data.get("work_name")
+
+    await message.answer(f"Вы точно хотите задание {work_name}?\n"
+                         f"Введите название задания в качестве подтверждения")
+    await states.ClassMenu.delete_work.set()
+
+@dp.message_handler(state=states.ClassMenu.delete_work)
+async def delete_work(message: Message, state: FSMContext):
+    data = await state.get_data()
+    class_id = data.get('class_id')
+    work_name = data.get('work_name')
+    if message.text == work_name:
+
+        await utils.db_api.delete_work(class_id, work_name)
+
+        await message.answer(f"Задание {work_name} удалено", reply_markup=keyboards.default.teacher_menu)
+        await states.ClassMenu.class_menu.set()
+    else:
+        await message.answer(f"Имя работы введено неверно. Отмена операции")
+        await state.finish()
+        await states.ClassMenu.class_menu.set()
+        await state.update_data(class_name=class_name, class_id=class_id)
+
 
 
 
