@@ -258,10 +258,10 @@ async def work_info(message: Message, state: FSMContext):
     try:
         work_info = await utils.db_api.get_work_info(class_id, work_name)
         
-        if work_info[1]:
-            status = "Открыта для решения"
+        if work_info[1] == 1:
+            status = "Открыто для решения"
         else:
-            status = "Закрыта для решения"
+            status = "Закрыто для решения"
 
         await message.answer(f"Задание '{work_name}'\n"\
                              f"Статус: {status}\n"\
@@ -269,6 +269,28 @@ async def work_info(message: Message, state: FSMContext):
         await states.ClassMenu.specific_work.set()
     except Exception:
         await message.answer("Такого задания больше не существует")
+
+@dp.message_handler(state=states.ClassMenu.specific_work, text=keyboards.default.specific_work_teacher_captions[1])
+async def change_work_status(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+    class_id = data.get("class_id")
+    work_name = data.get("work_name")
+
+    try:
+        updated_status = await utils.db_api.change_work_status(class_id, work_name)
+        
+        if updated_status == 1:
+            status = "открыто для решения"
+        else:
+            status = "закрыто для решения"
+
+        await message.answer(f"Статус изменен. Теперь задание '{work_name}' {status}\n")
+        await states.ClassMenu.specific_work.set()
+    except IndexError:
+        await message.answer("Такого задания больше не существует")
+
+
 
 
 @dp.message_handler(state=states.ClassMenu.enter_work_name)
