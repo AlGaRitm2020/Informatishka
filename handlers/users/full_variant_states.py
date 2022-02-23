@@ -57,7 +57,8 @@ async def enter_answer(message: Message, state: FSMContext):
     message_ids = data.get('message_ids')
     main_message_id = data.get('main_message_id')
     current_task = data.get('current_task')
-    print(data['current_task'])
+    custom_keyboard = data.get('custom_keyboard')
+
     data['answers'][data['current_task']] = answer, variant[int(current_task) - 1]['answer']
 
     for message_id in message_ids:
@@ -66,8 +67,13 @@ async def enter_answer(message: Message, state: FSMContext):
         except Exception:
             logging.info('Message to delete not found')
     await bot.delete_message(message.chat.id, main_message_id)
+    
+    if custom_keyboard:
+        reply_markup = custom_keyboard
+    else:
+        reply_markup = keyboards.inline.variant_task_buttons
 
-    message_obj = await message.answer(f'Ваш ответ сохранен', reply_markup=keyboards.inline.variant_task_buttons)
+    message_obj = await message.answer(f'Ваш ответ сохранен', reply_markup=reply_markup)
     await state.update_data(message_ids=[], main_message_id=message_obj.message_id,
                             answers=data['answers'])
     await states.FullVariant.enter_answer.set()

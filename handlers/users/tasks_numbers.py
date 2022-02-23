@@ -87,9 +87,16 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             except Exception:
                 logging.info('Message to delete not found')
         message_ids = []
+        
+        custom_keyboard = data.get("custom_keyboard")
+        if custom_keyboard:
+            reply_markup = custom_keyboard
+        else:
+            reply_markup = keyboards.inline.variant_task_buttons
+
 
         await call.message.edit_text(f'Вы выбрали задачу под номером {task_number}\n'
-                                     f'{task_data["description"]}', reply_markup=keyboards.inline.variant_task_buttons,
+                                     f'{task_data["description"]}', reply_markup=reply_markup,
                                      parse_mode=ParseMode.MARKDOWN)
 
         if task_data['image']:

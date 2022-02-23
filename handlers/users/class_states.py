@@ -15,6 +15,7 @@ import parsing
 
 from loader import dp
 from aiogram.types import Message, ReplyKeyboardRemove, ParseMode, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from copy import deepcopy
 
@@ -287,14 +288,20 @@ async def solve_work(message: Message, state: FSMContext):
         tasks_list = tasks.split(",")
         variant = await parsing.get_task_by_id(tasks_list)
         # putting variant to state storage
-        await state.update_data(variant=variant, message_ids=[], current_task=0, main_message_id=None)
+        
+        inline_keyboard = InlineKeyboardMarkup()
+        for i, task_id in enumerate(tasks_list):
+            inline_keyboard = inline_keyboard.insert(InlineKeyboardButton(text=task_id, callback_data=i))
+        inline_keyboard = inline_keyboard.add(InlineKeyboardButton(text="Завершить решение варианта", callback_data="break"))
+
+        await state.update_data(variant=variant, message_ids=[], current_task=0, main_message_id=None, custom_keyboard=inline_keyboard)
 
         await message.answer(f"🎉 Задание от учителя {work_name} успешно получено \n",
                              reply_markup=ReplyKeyboardRemove())
         message_obj = await message.answer(
             f"Выберите задачу которую хотите решить \n",
 
-            reply_markup=keyboards.inline.variant_task_buttons)
+            reply_markup=inline_keyboard)
         main_message_id = message_obj.message_id
 
         # putting variant to state storage
