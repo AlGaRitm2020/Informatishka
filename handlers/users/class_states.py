@@ -332,15 +332,37 @@ async def enter_work_name(message: Message, state: FSMContext):
 @dp.message_handler(state=states.ClassMenu.enter_tasks)
 async def enter_tasks(message: Message, state: FSMContext):
     tasks = message.text.replace(' ', '')
+
     data = await state.get_data()
     work_name = data.get("work_name")
     class_id = data.get("class_id")
-
+    student_name = data.get('student_name')
+    class_name = data.get('class_name')
+    
     await utils.db_api.create_homework(work_name, class_id, tasks)
+    
+    class_info = await utils.db_api.view_class(class_id, message.chat.id, read_only=True)
+    if isinstance(class_info, str):
+        await message.answer(class_info)
+        return False
+    else:
+        teacher_name = class_info[1]
 
 
+    chat_id_list = await utils.db_api.get_all_students_chat_ids(class_id)
+    if chat_id_list:
+        for chat_id in chat_id_list:
+            chat_id = chat_id[0]
+
+            await bot.send_message(chat_id, f"🔔 Ваш учитель {teacher_name} в классе {class_name} отправил вам задание {work_name}\n"
+                               f"Вы можете решить его в меню классы -> задания")
+    
     await message.answer("Работа была отправлена вашим ученикам. Они получат уведомление в боте", reply_markup=keyboards.default.teacher_menu)
+
     await states.ClassMenu.class_menu.set()
+
+
+
 
 @dp.message_handler(state=states.ClassMenu.specific_student, text=keyboards.default.specific_student_captions[0]) 
 async def write_message(message: Message, state: FSMContext):
@@ -400,7 +422,7 @@ async def send_message(message: Message, state: FSMContext):
 
     message_from_teacher = message.text 
 
-    await bot.send_message(student_chat_id, f"Ваш учитель {teacher_name} отправил вам сообщение:\n"
+    await bot.send_message(student_chat_id, f"🔔 Ваш учитель {teacher_name} отправил вам сообщение:\n"
                                f"{message_from_teacher}")
 
     await message.answer("Сообщение успешно отправлено", reply_markup=keyboards.default.teacher_menu)

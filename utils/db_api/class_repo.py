@@ -1,3 +1,4 @@
+
 import datetime
 import asyncio
 import logging
@@ -190,6 +191,20 @@ async def get_student_chat_id(class_id, student_name):
 
     return chat_id 
 
+async def get_all_students_chat_ids(class_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    check_request = "SELECT chat_id FROM users WHERE id in (SELECT user_id from classmates WHERE class_id = '{}')".format(class_id)
+    cur.execute(check_request)
+    chat_id_list = cur.fetchall()
+    if not chat_id_list:
+        return False
+
+    return chat_id_list 
+
 
 
 async def join_class(class_id, student_name, chat_id):
@@ -305,4 +320,4 @@ async def delete_work(class_id, work_name):
     delete_request = "DELETE FROM homeworks WHERE class_id = '{}' AND name = '{}'".format(class_id, work_name)
     cur.execute(delete_request)
     con.commit()
-    
+
