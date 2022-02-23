@@ -9,7 +9,6 @@ import asyncio
 
 
 async def get_task_by_id(task_ids: list) -> list:
-    task_ids = ['4832']
     variant = []
     for task_id in task_ids:
         url = f'https://kpolyakov.spb.ru/school/ege/gen.php?action=viewTopic&topicId=' \
@@ -114,7 +113,7 @@ async def get_task_by_id(task_ids: list) -> list:
         task['txt2'] = byte_txt_2
 
         variant.append(task)
-    return variant[0].values()
+    return variant
 
 
 if __name__ == '__main__':

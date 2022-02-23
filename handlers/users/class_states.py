@@ -11,7 +11,7 @@ from loader import dp, bot
 import keyboards
 import states
 import utils
-
+import parsing
 
 from loader import dp
 from aiogram.types import Message, ReplyKeyboardRemove, ParseMode, KeyboardButton
@@ -270,6 +270,41 @@ async def work_info(message: Message, state: FSMContext):
         await states.ClassMenu.specific_work.set()
     except IndexError:
         await message.answer("Такого задания больше не существует")
+
+@dp.message_handler(state=states.ClassMenu.specific_work, text=keyboards.default.specific_work_student_captions[1])
+async def solve_work(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+    class_id = data.get("class_id")
+    work_name = data.get("work_name")
+    
+    tasks = data.get("work_tasks").replace(",",", ")
+
+
+    await message.answer(f"⏳ Задание будет получено через 5-10 секунд  \n",
+    reply_markup=ReplyKeyboardRemove()) 
+    try:
+        tasks_list = tasks.split(",")
+        variant = await parsing.get_task_by_id(tasks_list)
+        # putting variant to state storage
+        await state.update_data(variant=variant, message_ids=[], current_task=0, main_message_id=None)
+
+        await message.answer(f"🎉 Задание от учителя {work_name} успешно получено \n",
+                             reply_markup=ReplyKeyboardRemove())
+        message_obj = await message.answer(
+            f"Выберите задачу которую хотите решить \n",
+
+            reply_markup=keyboards.inline.variant_task_buttons)
+        main_message_id = message_obj.message_id
+
+        # putting variant to state storage
+        await state.update_data(variant=variant, message_ids=[], current_task=0,
+                                main_message_id=main_message_id, answers=dict(), last_time=None, time_dict=dict())
+        await states.FullVariant.enter_answer.set()
+    except IndexError:
+        await message.answer("Такого задания больше не существует")
+
+
 
 @dp.message_handler(state=states.ClassMenu.specific_work, text=keyboards.default.specific_work_teacher_captions[1])
 async def change_work_status(message: Message, state: FSMContext):
