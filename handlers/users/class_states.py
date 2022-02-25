@@ -160,7 +160,7 @@ async def works_menu(message: Message, state: FSMContext):
         reply_markup = deepcopy(keyboards.default.works_menu)
     else:
         reply_markup = deepcopy(keyboards.default.back_menu)
-    for name, tasks in works_list:
+    for id, name, tasks in works_list:
         class_button = KeyboardButton(f"{name}")
         reply_markup = reply_markup.insert(class_button)
 
@@ -235,9 +235,9 @@ async def go_to_specific_work(message: Message, state: FSMContext):
     class_id = data.get("class_id")
     works_list = await utils.db_api.get_homeworks(class_id)
 
-    for name, tasks in works_list:
+    for id, name, tasks in works_list:
         if message.text == name:
-            await state.update_data(work_name=name, work_tasks=tasks)
+            await state.update_data(work_id=id, work_name=name, work_tasks=tasks)
             
             if is_teacher:
 
@@ -255,9 +255,11 @@ async def work_info(message: Message, state: FSMContext):
     data = await state.get_data()
     class_id = data.get("class_id")
     work_name = data.get("work_name")
+    work_id = data.get("work_id")
+
     tasks = data.get("work_tasks").replace(",",", ")
     try:
-        work_info = await utils.db_api.get_work_info(class_id, work_name)
+        work_info = await utils.db_api.get_work_info(class_id, work_id)
         
         if work_info[1] == 1:
             status = "Открыто для решения"
@@ -319,9 +321,10 @@ async def change_work_status(message: Message, state: FSMContext):
     data = await state.get_data()
     class_id = data.get("class_id")
     work_name = data.get("work_name")
+    work_id = data.get("work_id")
 
     try:
-        updated_status = await utils.db_api.change_work_status(class_id, work_name)
+        updated_status = await utils.db_api.change_work_status(class_id, work_id)
         
         if updated_status == 1:
             status = "открыто для решения"
@@ -348,9 +351,11 @@ async def delete_work(message: Message, state: FSMContext):
     data = await state.get_data()
     class_id = data.get('class_id')
     work_name = data.get('work_name')
+    work_id = data.get('work_id')
+
     if message.text == work_name:
 
-        await utils.db_api.delete_work(class_id, work_name)
+        await utils.db_api.delete_work(class_id, work_id)
 
         await message.answer(f"Задание {work_name} удалено", reply_markup=keyboards.default.teacher_menu)
         await states.ClassMenu.class_menu.set()

@@ -266,20 +266,20 @@ async def get_homeworks(class_id):
 
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
-    check_request = "SELECT name, tasks FROM homeworks WHERE class_id = '{}'".format(class_id)
+    check_request = "SELECT id, name, tasks FROM homeworks WHERE class_id = '{}'".format(class_id)
     cur.execute(check_request)
     homeworks = cur.fetchall()
 
     return homeworks 
 
 
-async def get_work_info(class_id, work_name):
+async def get_work_info(class_id, work_id):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
-    check_request = "SELECT date, is_open FROM homeworks WHERE class_id = '{}' AND name = '{}'".format(class_id, work_name)
+    check_request = "SELECT date, is_open FROM homeworks WHERE class_id = '{}' AND id = '{}'".format(class_id, work_id)
     cur.execute(check_request)
     work_info = cur.fetchall()[0]
 
@@ -287,14 +287,14 @@ async def get_work_info(class_id, work_name):
 
 
 
-async def change_work_status(class_id, work_name):
+async def change_work_status(class_id, work_id):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
 
-    check_request = "SELECT is_open FROM homeworks WHERE class_id = '{}' AND name = '{}'".format(class_id, work_name)
+    check_request = "SELECT is_open FROM homeworks WHERE class_id = '{}' AND id = '{}'".format(class_id, work_id)
     cur.execute(check_request)
     status = cur.fetchall()[0][0]
     if status == 0:
@@ -310,14 +310,37 @@ async def change_work_status(class_id, work_name):
 
 
 
-async def delete_work(class_id, work_name):
+async def delete_work(class_id, work_id):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
     con = psql.connect(**db_settings.result())
     cur = con.cursor()
 
-    delete_request = "DELETE FROM homeworks WHERE class_id = '{}' AND name = '{}'".format(class_id, work_name)
+    delete_request = "DELETE FROM homeworks WHERE class_id = '{}' AND id= '{}'".format(class_id, work_id)
     cur.execute(delete_request)
     con.commit()
+
+
+
+async def create_work_results(name, class_id, task_id, task_results, chat_id):
+    db_settings = asyncio.create_task(get_db_config_from_url())
+    await asyncio.gather(db_settings)
+
+    con = psql.connect(**db_settings.result())
+    cur = con.cursor()
+    
+    check_request = "SELECT id FROM users WHERE chat_id = '{}'".format(str(chat_id))
+    cur.execute(check_request)
+    user = cur.fetchall()
+    if not user:
+        return False
+    user_id = user[0][0]
+
+
+    insert_request = "INSERT INTO homework_resutls(class_id, name, tasks, date, is_open) VALUES('{}', (SELECT id FROM homeworks WHERE name= '{}'), '{}', '{}', '{}' )". \
+        format(class_id, name, tasks, datetime.date.today(), 1)
+    cur.execute(insert_request)
+    con.commit()
+
 

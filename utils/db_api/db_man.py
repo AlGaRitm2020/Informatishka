@@ -45,7 +45,8 @@ async def db_management():
     #cur.execute("create table classes(id serial primary key, name VARCHAR, teacher_id INTEGER references users, teacher_name VARCHAR);")
     #cur.execute("create table classmates(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, name VARCHAR);")
     #cur.execute("CREATE table homeworks(id serial primary key, name VARCHAR, class_id INTEGER references classes, tasks VARCHAR, date DATE, is_open INTEGER);")
-    #cur.execute("CREATE table homework_results(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, task_id INTEGER references homeworks);")
+    #cur.execute("CREATE table homework_results(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, task_id INTEGER references homeworks, result VARCHAR);")
+    
 
     # insert old data
     #cur.execute("INSERT INTO users (username, chat_id) VALUES ('@AlGaRitm2020', '1830477841');")
