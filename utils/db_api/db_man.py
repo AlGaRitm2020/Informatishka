@@ -45,7 +45,7 @@ async def db_management():
     #cur.execute("create table classes(id serial primary key, name VARCHAR, teacher_id INTEGER references users, teacher_name VARCHAR);")
     #cur.execute("create table classmates(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, name VARCHAR);")
     #cur.execute("CREATE table homeworks(id serial primary key, name VARCHAR, class_id INTEGER references classes, tasks VARCHAR, date DATE, is_open INTEGER);")
-    #cur.execute("CREATE table homework_results(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, task_id INTEGER references homeworks, result VARCHAR);")
+    #cur.execute("CREATE table homework_results(id serial primary key, user_id INTEGER references users, class_id INTEGER references classes, work_id INTEGER references homeworks, result VARCHAR);")
     
 
     # insert old data
@@ -99,7 +99,7 @@ async def db_management():
 
 
     # --- select data from stats ---
-    cur.execute("SELECT * FROM classmates")
+    cur.execute("SELECT * FROM homework_results")
     #print('classes', sep='\n')
     pprint(cur.fetchall())
 

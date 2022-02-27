@@ -36,8 +36,8 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
 
 
 
-
-
+    work_result = ""
+    
     if call.data == 'break':
         reply_message = '🔬 Результаты: \n'
         solved, all = 0, len(data['answers'])
@@ -49,10 +49,24 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             correct_answer = answers[1].lower().replace('\n', ';').replace(' ', '')
             if user_answer == correct_answer:
                 solved += 1
+                work_result += f"{task_number},1" 
+
                 await utils.db_api.add_time(int(task_number), int(time_dict[task_number]), call.message.chat.id)
+            else:
+                work_result += f"{task_number},0"
+
+            work_result += f",{str(int(time_dict[task_number]))};"
+            
 
             await utils.db_api.add_score(int(task_number), int(user_answer == correct_answer), call.message.chat.id)
 
+            
+             
+        class_id = data.get('class_id')
+        if class_id:
+            work_id = data.get('work_id')
+
+            await utils.db_api.create_work_results(class_id, work_id, work_result, call.message.chat.id)
 
 
         await call.message.answer(reply_message)
@@ -95,7 +109,7 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             reply_markup = keyboards.inline.variant_task_buttons
 
 
-        await call.message.edit_text(f'Вы выбрали задачу под номером {task_number}\n'
+        await call.message.edit_text(f'Вы выбрали задачу под номером {int(task_number) + 1}\n'
                                      f'{task_data["description"]}', reply_markup=reply_markup,
                                      parse_mode=ParseMode.MARKDOWN)
 

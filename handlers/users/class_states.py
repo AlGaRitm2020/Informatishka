@@ -293,7 +293,7 @@ async def solve_work(message: Message, state: FSMContext):
         
         inline_keyboard = InlineKeyboardMarkup()
         for i, task_id in enumerate(tasks_list):
-            inline_keyboard = inline_keyboard.insert(InlineKeyboardButton(text=task_id, callback_data=i))
+            inline_keyboard = inline_keyboard.insert(InlineKeyboardButton(text=str(i+1), callback_data=str(i+1)))
         inline_keyboard = inline_keyboard.add(InlineKeyboardButton(text="Завершить решение варианта", callback_data="break"))
 
         await state.update_data(variant=variant, message_ids=[], current_task=0, main_message_id=None, custom_keyboard=inline_keyboard)

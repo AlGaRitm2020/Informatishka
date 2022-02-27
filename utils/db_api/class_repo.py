@@ -323,7 +323,7 @@ async def delete_work(class_id, work_id):
 
 
 
-async def create_work_results(name, class_id, task_id, task_results, chat_id):
+async def create_work_results(class_id, work_id, task_results, chat_id):
     db_settings = asyncio.create_task(get_db_config_from_url())
     await asyncio.gather(db_settings)
 
@@ -336,10 +336,11 @@ async def create_work_results(name, class_id, task_id, task_results, chat_id):
     if not user:
         return False
     user_id = user[0][0]
+    
 
 
-    insert_request = "INSERT INTO homework_resutls(class_id, name, tasks, date, is_open) VALUES('{}', (SELECT id FROM homeworks WHERE name= '{}'), '{}', '{}', '{}' )". \
-        format(class_id, name, tasks, datetime.date.today(), 1)
+    insert_request = "INSERT INTO homework_results(class_id, work_id , user_id, result) VALUES('{}','{}', '{}', '{}')". \
+        format(class_id, user_id, work_id, task_results)
     cur.execute(insert_request)
     con.commit()
 
