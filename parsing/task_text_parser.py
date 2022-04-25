@@ -42,7 +42,7 @@ async def get_task_text(task):
                 cleaned_task = cleaned_task.replace(html_tag, '\n')
                 html_tag = ''
             elif html_tag == "<sup>":
-                cleaned_task = cleaned_task.replace(html_tag, '"')
+                cleaned_task = cleaned_task.replace(html_tag, '^')
                 html_tag = ''
             else:
                 cleaned_task = cleaned_task.replace(html_tag, '')
