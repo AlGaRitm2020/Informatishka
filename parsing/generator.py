@@ -45,29 +45,28 @@ async def generate_random_variant(var_num):
         task_script_text = str(tasks_script[task_number])
 
                 # --- making xls and docx bytes lists ---
-        if '<a' in task_script_text and 'xls' or 'docx' in task_script_text:
-            begin_index = task_script_text.find('<a') + 9
-            end_index = 0
-            for i in range(begin_index, len(task_script_text)):
-                if task_script_text[i] == '"':
-                    end_index = i
-                    break
-            address = task_script_text[begin_index:end_index]
-            if 'xls' in task_script_text:
-                byte_excel_list.append(get_files.get_excel(address))
-                byte_word_list.append(None)
-            else:
-                byte_word_list.append(get_files.get_word(address))
-                byte_excel_list.append(None)
-
-            byte_img_list.append(None)
-            byte_txt_list.append(None)
+        begin_index = task_script_text.find('<a') + 9
+        end_index = 0
+        for i in range(begin_index, len(task_script_text)):
+            if task_script_text[i] == '"':
+                end_index = i
+                break
+        address = task_script_text[begin_index:end_index]
+        if 'xls' in task_script_text:
+            byte_excel_list.append(get_files.get_excel(address))
+        else: 
+            byte_excel_list.append(None)
+        if 'docx' in task_script_text:
+            byte_word_list.append(get_files.get_word(address))
+            
+        else:
+            byte_word_list.append(None)
 
 
 
 
         # --- making img byte list
-        elif 'img' in task_script_text:
+        if 'img' in task_script_text:
             begin_index = task_script_text.find('img') + 9
             end_index = 0
             for i in range(begin_index, len(task_script_text)):
@@ -76,11 +75,10 @@ async def generate_random_variant(var_num):
                     break
             img_address = task_script_text[begin_index:end_index]
             byte_img_list.append(get_files.get_photo(img_address))
-            byte_excel_list.append(None)
-            byte_word_list.append(None)
-            byte_txt_list.append(None)
+        else:
+            byte_img_list.append(None)
         # --- making txt bytes list ---
-        elif '<a' in task_script_text and 'txt' in task_script_text and task_number != 10 - 1:
+        if '<a' in task_script_text and 'txt' in task_script_text and task_number != 10 - 1:
             # task_number == 27
             if task_number == 27 - 3:
                 begin_index_1, begin_index_2 = task_script_text.find('<a') + 9, \
@@ -106,19 +104,13 @@ async def generate_random_variant(var_num):
                         break
                 txg_address_1 = task_script_text[begin_index:end_index]
                 byte_txt_list.append(get_files.get_word(txg_address_1))
-
-            byte_img_list.append(None)
-            byte_word_list.append(None)
-            byte_excel_list.append(None)
-
-
-
-
         else:
-            byte_img_list.append(None)
+            
             byte_txt_list.append(None)
-            byte_word_list.append(None)
-            byte_excel_list.append(None)
+
+
+
+
 
     tasks_description = []
     for task_number in range(len(tasks_script)):
