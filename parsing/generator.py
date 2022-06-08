@@ -43,8 +43,31 @@ async def generate_random_variant(var_num):
            making bytes objects lists
         """
         task_script_text = str(tasks_script[task_number])
+
+                # --- making xls and docx bytes lists ---
+        if '<a' in task_script_text and 'xls' or 'docx' in task_script_text:
+            begin_index = task_script_text.find('<a') + 9
+            end_index = 0
+            for i in range(begin_index, len(task_script_text)):
+                if task_script_text[i] == '"':
+                    end_index = i
+                    break
+            address = task_script_text[begin_index:end_index]
+            if 'xls' in task_script_text:
+                byte_excel_list.append(get_files.get_excel(address))
+                byte_word_list.append(None)
+            else:
+                byte_word_list.append(get_files.get_word(address))
+                byte_excel_list.append(None)
+
+            byte_img_list.append(None)
+            byte_txt_list.append(None)
+
+
+
+
         # --- making img byte list
-        if 'img' in task_script_text:
+        elif 'img' in task_script_text:
             begin_index = task_script_text.find('img') + 9
             end_index = 0
             for i in range(begin_index, len(task_script_text)):
@@ -87,24 +110,9 @@ async def generate_random_variant(var_num):
             byte_img_list.append(None)
             byte_word_list.append(None)
             byte_excel_list.append(None)
-        # --- making xls and docx bytes lists ---
-        elif '<a' in task_script_text and 'xls' or 'docx' in task_script_text:
-            begin_index = task_script_text.find('<a') + 9
-            end_index = 0
-            for i in range(begin_index, len(task_script_text)):
-                if task_script_text[i] == '"':
-                    end_index = i
-                    break
-            address = task_script_text[begin_index:end_index]
-            if 'xls' in task_script_text:
-                byte_excel_list.append(get_files.get_excel(address))
-                byte_word_list.append(None)
-            else:
-                byte_word_list.append(get_files.get_word(address))
-                byte_excel_list.append(None)
 
-            byte_img_list.append(None)
-            byte_txt_list.append(None)
+
+
 
         else:
             byte_img_list.append(None)

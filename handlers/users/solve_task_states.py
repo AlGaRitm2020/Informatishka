@@ -48,9 +48,9 @@ async def enter_number(message: Message, state: FSMContext):
         await message.answer_photo(img)
 
     if byte_excel:
-        with open(f'data/temp_task_files/{task_number}_task.xlsx', 'wb') as xlsx:
+        with open(f'data/temp_task_files/{task_number}_task.xls', 'wb') as xlsx:
             xlsx.write(byte_excel)
-        excel_file = open(f"data/temp_task_files/{task_number}_task.xlsx", "rb")
+        excel_file = open(f"data/temp_task_files/{task_number}_task.xls", "rb")
         await message.answer_document(excel_file)
     if byte_word:
         with open(f'data/temp_task_files/{task_number}_task.docx', 'wb') as docx:

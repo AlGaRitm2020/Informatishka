@@ -58,7 +58,9 @@ async def get_task_by_number(task_number):
         answer = answer.replace('1) ', '').replace('<br/>2) ', ';').replace('<br/>3) ', ';')
 
     # getting excel file
+    print(task_script_text)
     if '<a' in task_script_text and 'xls' in task_script_text:
+        print('EXCEL GET')
         begin_index = task_script_text.find('<a') + 9
         end_index = 0
         for i in range(begin_index, len(task_script_text)):
@@ -110,7 +112,6 @@ async def get_task_by_number(task_number):
     else:
         byte_txt_1 = None
         byte_txt_2 = None
-
     result_task = asyncio.create_task(get_task_text(task_script))
     await asyncio.gather(result_task)
     return result_task.result(), answer, byte_img, byte_excel, byte_word, byte_txt_1, byte_txt_2

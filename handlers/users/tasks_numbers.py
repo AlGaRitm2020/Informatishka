@@ -100,9 +100,9 @@ async def enter_task_number(call: CallbackQuery, state: FSMContext):
             message_ids.append(message_obj.message_id)
 
         if task_data['excel']:
-            with open(f'data/temp_task_files/{task_number}_task.xlsx', 'wb') as xlsx:
+            with open(f'data/temp_task_files/{task_number}_task.xls', 'wb') as xlsx:
                 xlsx.write(task_data['excel'])
-            excel_file = open(f"data/temp_task_files/{task_number}_task.xlsx", "rb")
+            excel_file = open(f"data/temp_task_files/{task_number}_task.xls", "rb")
             message_obj = await call.message.answer_document(excel_file)
             message_ids.append(message_obj.message_id)
 
